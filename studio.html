@@ -266,15 +266,39 @@ button { cursor: pointer; }
 .stage { position: relative; min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--canvas-bg); background-image: radial-gradient(var(--dot) 1px, transparent 1px); background-size: 18px 18px; }
 .stage-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; flex: none; }
 .stage-info { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.stage-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; display: flex; justify-content: center; padding: 4px 16px 18px; }
-.device { position: relative; flex: none; transform-origin: top center; border-radius: 30px; background: #000; padding: 10px; box-shadow: 0 30px 70px -20px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,0.06); }
-.device.tablet { border-radius: 24px; padding: 12px; }
-.device.desktop { border-radius: 10px; padding: 0; background: var(--panel); box-shadow: var(--shadow); overflow: hidden; }
+.stage-wrap { position: relative; flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; padding: 8px 24px 20px; }
+.device { position: relative; flex: none; transform-origin: top center; }
+.dev-screen { position: relative; height: 100%; display: flex; flex-direction: column; overflow: hidden; background: var(--dev-top, #fff); }
+.device iframe { display: block; width: 100%; border: 0; background: transparent; flex: none; margin-top: -1px; }
+.dev-top { flex: none; background: var(--dev-top, #fff); color: var(--dev-ink, #000); transition: background-color .25s, color .25s; }
+.dev-status, .dev-tg, .dev-home { display: none; }
+/* Телефон */
+.device.phone { padding: 12px; border-radius: 62px; background: linear-gradient(145deg, #3a3d44 0%, #1b1d22 38%, #2b2e34 70%, #15171b 100%); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.14), inset 0 0 0 4px #0b0c0e, 0 40px 80px -30px rgba(15,23,42,.45), 0 12px 28px -12px rgba(15,23,42,.35); }
+.device.phone::before, .device.phone::after { content: ""; position: absolute; width: 4px; border-radius: 2px; background: linear-gradient(90deg, #15171b, #3a3d44); }
+.device.phone::before { left: -3px; top: 190px; height: 64px; box-shadow: 0 -74px 0 -1px #2a2c31, 0 80px 0 0 #2a2c31; }
+.device.phone::after { right: -3px; top: 250px; height: 100px; background: linear-gradient(270deg, #15171b, #3a3d44); }
+.device.phone .dev-screen { border-radius: 50px; }
+.device.phone .dev-status { display: flex; align-items: center; justify-content: space-between; height: 47px; padding: 0 26px 0 44px; position: relative; font: 600 16px/1 -apple-system, "SF Pro Text", "Inter", system-ui, sans-serif; letter-spacing: -.01em; }
+.dev-island { position: absolute; left: 50%; top: 11px; width: 122px; height: 35px; margin-left: -61px; border-radius: 20px; background: #000; }
+.dev-sys { display: flex; align-items: center; gap: 6px; }
+.device.phone .dev-tg, .device.tablet .dev-tg { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: 44px; padding: 0 14px; font: 15px/1.1 -apple-system, "SF Pro Text", "Inter", system-ui, sans-serif; }
+.dev-tg-x { color: var(--dev-accent, #2481cc); justify-self: start; }
+.dev-tg-c { display: flex; flex-direction: column; align-items: center; min-width: 0; max-width: 220px; }
+.dev-tg-c b { font-weight: 600; font-size: 15.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.dev-tg-c small { font-size: 11.5px; opacity: .55; margin-top: 2px; }
+.dev-tg-m { justify-self: end; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; color: var(--dev-accent, #2481cc); background: color-mix(in srgb, var(--dev-ink, #000) 7%, transparent); }
+.device.phone .dev-home { display: block; position: absolute; left: 50%; bottom: 8px; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: rgba(128,128,128,.75); pointer-events: none; }
+/* Планшет */
+.device.tablet { padding: 14px; border-radius: 34px; background: linear-gradient(145deg, #34373d, #18191d); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.12), 0 40px 80px -30px rgba(15,23,42,.45); }
+.device.tablet .dev-screen { border-radius: 22px; }
+.device.tablet .dev-status { display: flex; align-items: center; justify-content: space-between; height: 24px; padding: 0 22px; font: 600 12px/1 -apple-system, "Inter", system-ui, sans-serif; }
+.device.tablet .dev-island { display: none; }
+/* Компьютер */
+.device.desktop { border-radius: 10px; background: var(--panel); box-shadow: var(--shadow); overflow: hidden; }
+.device.desktop .dev-screen { border-radius: 0; }
 .device.desktop::before { content: ""; display: block; height: 26px; background: var(--panel2) radial-gradient(circle at 14px 13px, #ff5f57 4px, transparent 5px), radial-gradient(circle at 30px 13px, #febc2e 4px, transparent 5px), radial-gradient(circle at 46px 13px, #28c840 4px, transparent 5px); background-color: var(--panel2); border-bottom: 1px solid var(--line); }
-.device.bare { padding: 0; border-radius: 0; background: transparent; box-shadow: none; }
-.device iframe { display: block; width: 100%; height: 100%; border: 0; border-radius: 21px; background: #fff; }
-.device.tablet iframe { border-radius: 14px; }
-.device.desktop iframe, .device.bare iframe { border-radius: 0; }
+.device.desktop .dev-screen { height: calc(100% - 27px); }
+.device.bare .dev-screen { border-radius: 0; }
 .stage-empty { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); }
 
 /* ---------- Инспектор ---------- */
@@ -706,6 +730,15 @@ body { font-size: 13.5px; }
   .pz-chat { border-radius: 18px 18px 0 0; }
 }
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid2>*{min-width:0}
+.pz-caret { display: inline-block; width: 7px; height: 1.05em; margin-left: 2px; vertical-align: -0.15em; border-radius: 2px; background: #4b8df8; animation: pzCaret .8s steps(1) infinite; }
+@keyframes pzCaret { 50% { opacity: 0; } }
+.pz-dots { display: inline-flex; gap: 5px; padding: 10px 14px; border-radius: 12px 12px 12px 4px; background: #f1f3f7; }
+.pz-dots i { width: 7px; height: 7px; border-radius: 50%; background: #8b929c; animation: pzDot 1.1s ease-in-out infinite; }
+.pz-dots i:nth-child(2) { animation-delay: .15s; } .pz-dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes pzDot { 0%, 60%, 100% { transform: translateY(0); opacity: .45; } 30% { transform: translateY(-5px); opacity: 1; } }
+.pz-a .pz-btns, .pz-a .pz-tools { animation: pzFade .3s ease both; }
+@keyframes pzFade { from { opacity: 0; transform: translateY(4px); } }
+@media (prefers-reduced-motion: reduce) { .pz-caret, .pz-dots i { animation: none; } }
 
 </style>
 </head>
@@ -1067,7 +1100,7 @@ function mascotImg(kind = 'logo', size = 40) {
 /* Справочник: стандартные переменные PuzzleBot (из раздела «Переменные» вашего проекта)
    + примеры своих переменных, которые нужно создать в PuzzleBot самостоятельно.
    Варианты «(ссылкой)» PuzzleBot может подставить как ссылку — в HTML надёжнее варианты _TEXT. */
-const VAR_CATALOG = [{"cat": "Пользователь","items": [{"key": "FIRST_NAME","type": "Текст","desc": "Имя пользователя (ссылкой)","link": true,"sample": "Анна"},{"key": "FIRST_NAME_TEXT","type": "Текст","desc": "Имя пользователя","link": false,"sample": "Анна"},{"key": "LAST_NAME","type": "Текст","desc": "Фамилия пользователя (ссылкой)","link": true,"sample": "Смирнова"},{"key": "LAST_NAME_TEXT","type": "Текст","desc": "Фамилия пользователя","link": false,"sample": "Смирнова"},{"key": "FIRST_AND_LAST_NAME","type": "Текст","desc": "Имя и фамилия пользователя (ссылкой)","link": true,"sample": "Анна Смирнова"},{"key": "FIRST_AND_LAST_NAME_TEXT","type": "Текст","desc": "Имя и фамилия пользователя","link": false,"sample": "Анна Смирнова"},{"key": "USERNAME","type": "Текст","desc": "Юзернейм пользователя (ссылкой)","link": true,"sample": "@anna_s"},{"key": "USERNAME_TEXT","type": "Текст","desc": "Юзернейм пользователя","link": false,"sample": "anna_s"},{"key": "USER_ID","type": "Текст","desc": "ID пользователя в Telegram (ссылкой)","link": true,"sample": "584920117"},{"key": "USER_ID_TEXT","type": "Число","desc": "ID пользователя в Telegram","link": false,"sample": "584920117"},{"key": "FULL_NAME","type": "Текст","desc": "Имя, фамилия и юзернейм пользователя (ссылками)","link": true,"sample": "Анна Смирнова @anna_s"},{"key": "HAS_PREMIUM","type": "Текст","desc": "Наличие Telegram Premium у пользователя (Есть или Нет)","link": false,"sample": "Есть"},{"key": "HAS_PREMIUM_BOOL","type": "Текст","desc": "Наличие Telegram Premium у пользователя (1 или 0)","link": false,"sample": "1"},{"key": "JOIN_DATE","type": "Текст","desc": "Дата входа в бота или ресурс (в формате “26.06.2020 15:41:29”)","link": false,"sample": "26.06.2025 15:41:29"},{"key": "JOIN_DATE_TIMESTAMP","type": "Число","desc": "Дата входа в бота или ресурс (в формате Timestamp)","link": false,"sample": "1750941689"},{"key": "ACTIVE_SCENARIOS","type": "Текст","desc": "Активные сценарии (названия текстом через запятую)","link": false,"sample": "Онбординг"},{"key": "CATEGORY_NAME","type": "Текст","desc": "Название категории, в которой находится пользователь.","link": false,"sample": "Клиенты"},{"key": "CATEGORIES_NAMES","type": "Текст","desc": "Название категории, в которой находится пользователь.","link": false,"sample": "Клиенты, VIP"},{"key": "START_PAYLOAD","type": "Текст","desc": "Данные из ссылки /start=DATA","link": false,"sample": "promo"},{"key": "WEB_PAGES_START_PAYLOAD","type": "Текст","desc": "Данные из ссылки на Mini App startapp=..._DATA","link": false,"sample": "shop"},{"key": "USER_AVATAR_URL","type": "Текст","desc": "Ссылка на аватар пользователя","link": false,"sample": ""},{"key": "LAST_USER_MESSAGE_ID","type": "Число","desc": "ID последнего сообщения пользователя","link": false,"sample": ""},{"key": "LAST_BOT_MESSAGE_ID","type": "Число","desc": "ID последнего сообщения бота","link": false,"sample": ""}]},{"cat": "Mini App","items": [{"key": "MINI_APP_SESSION_IP_ADDR","type": "Текст","desc": "IP-адрес пользователя из последнего запущеннного Mini App","link": false,"sample": "203.0.113.7"},{"key": "MINI_APP_SESSION_LANG_CODE","type": "Текст","desc": "Код языка пользователя из последнего запущеннного Mini App","link": false,"sample": "ru"},{"key": "MINI_APP_SESSION_LOCAL_DATE","type": "Текст","desc": "Дата и время пользователя в его часовом поясе из последнего запущеннного Mini App (в формате “06.09.2022 15:41:29”)","link": false,"sample": "12.10.2026 15:41:29"}]},{"cat": "Платежи","items": [{"key": "PAYMENT_LAST_SUM","type": "Число","desc": "Сумма последнего платежа","link": false,"sample": "990"},{"key": "PAYMENT_LAST_CURRENCY","type": "Текст","desc": "Валюта последнего платежа","link": false,"sample": "RUB"},{"key": "PAYMENT_LAST_DATE","type": "Текст","desc": "Дата и время оплаты последнего платежа (в формате “06.09.2022 15:41:29”)","link": false,"sample": "10.10.2026 12:00:00"},{"key": "PAYMENT_LAST_NAME","type": "Текст","desc": "Наименование последнего платежа","link": false,"sample": "Подписка Pro"},{"key": "PAYMENT_LAST_SYSTEM","type": "Текст","desc": "Название платежной системы последнего платежа","link": false,"sample": "ЮKassa"}]},{"cat": "Магазин","items": [{"key": "SHOP_ORDER_LAST_SUM","type": "Число","desc": "Сумма последнего заказа в магазине","link": false,"sample": "1490"},{"key": "SHOP_ORDER_LAST_CURRENCY","type": "Текст","desc": "Валюта последнего заказа в магазине","link": false,"sample": "RUB"},{"key": "SHOP_ORDER_LAST_DATE","type": "Текст","desc": "Дата и время оплаты последнего заказа в магазине (в формате “06.09.2022 15:41:29”)","link": false,"sample": ""},{"key": "SHOP_ORDER_LAST_NUMBER","type": "Текст","desc": "Номер последнего заказа в магазине","link": false,"sample": "1042"},{"key": "SHOP_ORDER_LAST_SYSTEM","type": "Текст","desc": "Название платежной системы последнего заказа в магазине","link": false,"sample": ""},{"key": "SHOP_ORDER_LAST_PROMOCODE","type": "Текст","desc": "Промокод из последнего заказа в магазине","link": false,"sample": ""},{"key": "SHOP_ORDER_LAST_RECEIPT","type": "Текст","desc": "Данные чека последнего заказа в магазине в JSON формате","link": false,"sample": ""}]},{"cat": "Веб-магазин","items": [{"key": "WEB_SHOP_ORDER_LAST_SUM","type": "Число","desc": "Сумма последнего заказа в веб-магазине","link": false,"sample": "2490"},{"key": "WEB_SHOP_ORDER_LAST_CURRENCY","type": "Текст","desc": "Валюта последнего заказа в веб-магазине","link": false,"sample": ""},{"key": "WEB_SHOP_ORDER_LAST_DATE","type": "Текст","desc": "Дата и время оплаты последнего заказа в веб-магазине (в формате “06.09.2022 15:41:29”)","link": false,"sample": ""},{"key": "WEB_SHOP_ORDER_LAST_NUMBER","type": "Текст","desc": "Номер последнего заказа в веб-магазине","link": false,"sample": "318"},{"key": "WEB_SHOP_ORDER_LAST_SYSTEM","type": "Текст","desc": "Название платежной системы последнего заказа в веб-магазине","link": false,"sample": ""},{"key": "WEB_SHOP_ORDER_LAST_PROMOCODE","type": "Текст","desc": "Промокод из последнего заказа в веб-магазине","link": false,"sample": ""},{"key": "WEB_SHOP_ORDER_LAST_RECEIPT","type": "Текст","desc": "Данные чека последнего заказа в веб-магазине в JSON формате","link": false,"sample": ""}]},{"cat": "Ссылки и рефералы","items": [{"key": "LINK_LAST_KEY","type": "Текст","desc": "Ключ последней активированной ссылки","link": false,"sample": ""},{"key": "LINK_LAST_NAME","type": "Текст","desc": "Имя последней активированной ссылки","link": false,"sample": ""},{"key": "LINK_LAST_DATE","type": "Текст","desc": "Дата последней активированной ссылки","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_KEY","type": "Текст","desc": "Ключ последней активированной реферальной ссылки","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_NAME","type": "Текст","desc": "Имя последней активированной реферальной ссылки","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_DATE","type": "Текст","desc": "Дата последней активированной реферальной ссылки","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_FIRST_NAME","type": "Текст","desc": "Имя создателя последней активированной реферальной ссылки (ссылкой)","link": true,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_FIRST_NAME_TEXT","type": "Текст","desc": "Имя создателя последней активированной реферальной ссылки","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_LAST_NAME","type": "Текст","desc": "Фамилия создателя последней активированной реферальной ссылки (ссылкой)","link": true,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_LAST_NAME_TEXT","type": "Текст","desc": "Фамилия создателя последней активированной реферальной ссылки","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_USERNAME","type": "Текст","desc": "Юзернейм создателя последней активированной реферальной ссылки (ссылкой)","link": true,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_USERNAME_TEXT","type": "Текст","desc": "Юзернейм создателя последней активированной реферальной ссылки","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_USER_ID","type": "Текст","desc": "ID создателя последней активированной реферальной ссылки (ссылкой)","link": true,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_USER_ID_TEXT","type": "Число","desc": "ID создателя последней активированной реферальной ссылки","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_FULL_NAME","type": "Текст","desc": "Имя, фамилия и юзернейм создателя последней активированной реферальной ссылки (ссылками)","link": true,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_HAS_PREMIUM","type": "Текст","desc": "Наличие Telegram Premium у создателя последней активированной реферальной ссылки (Есть или Нет)","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_HAS_PREMIUM_BOOL","type": "Текст","desc": "Наличие Telegram Premium у создателя последней активированной реферальной ссылки (1 или 0)","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_CATEGORIES_NAMES","type": "Текст","desc": "Название категории, в которой находится создатель последней активированной реферальной ссылки","link": false,"sample": ""}]},{"cat": "Бот и ресурс","items": [{"key": "PLATFORM","type": "Текст","desc": "Платформа бота (tg - Telegram, max - MAX)","link": false,"sample": "tg"},{"key": "BOT_NAME","type": "Текст","desc": "Название бота (ссылкой)","link": true,"sample": "Broot"},{"key": "BOT_NAME_TEXT","type": "Текст","desc": "Название бота","link": false,"sample": "Broot"},{"key": "BOT_USERNAME","type": "Текст","desc": "Юзернейм бота (ссылкой)","link": true,"sample": "@BrootsBot"},{"key": "BOT_USERNAME_TEXT","type": "Текст","desc": "Юзернейм бота","link": false,"sample": "BrootsBot"},{"key": "BOT_ID","type": "Число","desc": "Telegram ID бота","link": false,"sample": "8842784777"},{"key": "BOT_ID_TEXT","type": "Текст","desc": "Telegram ID бота (ссылкой)","link": true,"sample": ""},{"key": "RES_TITLE","type": "Текст","desc": "Название ресурса, в который происходит отправка сообщения, приветствия и пр. (ссылкой)","link": true,"sample": ""},{"key": "RES_TITLE_TEXT","type": "Текст","desc": "Название ресурса, в который происходит отправка сообщения, приветствия и пр.","link": false,"sample": ""},{"key": "RES_DESCRIPTION","type": "Текст","desc": "Описание ресурса, в который происходит отправка сообщения, приветствия и прочее","link": false,"sample": ""}]},{"cat": "Дата и время","items": [{"key": "SECONDS","type": "Число","desc": "Секунды (двузначное число)","link": false,"sample": "29"},{"key": "MINUTES","type": "Число","desc": "Минуты (двузначное число)","link": false,"sample": "41"},{"key": "HOURS","type": "Число","desc": "Часы (двузначное число)","link": false,"sample": "15"},{"key": "WEEKDAY","type": "Текст","desc": "День недели (текстом)","link": false,"sample": "понедельник"},{"key": "DAY","type": "Число","desc": "День в месяце (двузначное число)","link": false,"sample": "12"},{"key": "MONTH","type": "Число","desc": "Номер месяца (двузначное число)","link": false,"sample": "10"},{"key": "MONTH_TEXT","type": "Текст","desc": "Месяц (текстом)","link": false,"sample": "октябрь"},{"key": "YEAR","type": "Число","desc": "Год (четырёхзначное число)","link": false,"sample": "2026"},{"key": "CURRENT_DATE","type": "Текст","desc": "Текущая дата и время (в формате “26.06.2020 15:41:29”)","link": false,"sample": "12.10.2026 15:41:29"},{"key": "CURRENT_TIMESTAMP","type": "Число","desc": "Текущее время (в Timestamp)","link": false,"sample": "1791801689"},{"key": "CURRENT_TIMEZONE","type": "Число","desc": "Текущий часовой пояс (в секундах)","link": false,"sample": "18000"}]},{"cat": "Курсы и файлы","items": [{"key": "LINK_BY_FILE_ID","type": "Текст","desc": "Часть прямой ссылки на файл (нужно соединить с file_id)","link": false,"sample": ""},{"key": "USD","type": "Число","desc": "Курс доллара (берётся с cbr.ru, отображается в долларах)","link": false,"sample": "92.4"},{"key": "EUR","type": "Число","desc": "Курс евро (берётся с cbr.ru, отображается в долларах)","link": false,"sample": "100.1"},{"key": "BTC","type": "Число","desc": "Курс Bitcoin (берётся с CoinMarketCap)","link": false,"sample": "61200"},{"key": "ETH","type": "Число","desc": "Курс Ethereum (берётся с CoinMarketCap)","link": false,"sample": "2450"},{"key": "TONCOIN","type": "Число","desc": "Курс TON Coin (берётся с CoinMarketCap)","link": false,"sample": "5.2"}]},{"cat": "Статистика","items": [{"key": "STATS_TOTAL_USERS","type": "Число","desc": "Количество пользователей за всё время","link": false,"sample": "16"},{"key": "STATS_TOTAL_PAYMENTS_COUNT","type": "Число","desc": "Количество платежей за всё время","link": false,"sample": ""},{"key": "STATS_TOTAL_PAYMENTS_SUM","type": "Число","desc": "Сумма платежей за всё время","link": false,"sample": ""},{"key": "STATS_TOTAL_SHOP_ORDERS_COUNT","type": "Число","desc": "Количество заказов за всё время","link": false,"sample": ""},{"key": "STATS_TOTAL_SHOP_ORDERS_SUM","type": "Число","desc": "Сумма заказов за всё время","link": false,"sample": ""},{"key": "STATS_TOTAL_COMMANDS_CALLS","type": "Число","desc": "Количество вызванных команд за всё время","link": false,"sample": ""},{"key": "STATS_TOTAL_CONDITIONS_CALLS","type": "Число","desc": "Количество вызванных условий за всё время","link": false,"sample": ""},{"key": "STATS_TOTAL_MESSAGES_COUNT","type": "Число","desc": "Количество отправленных сообщений за всё время","link": false,"sample": ""},{"key": "STATS_TODAY_USERS","type": "Число","desc": "Количество вошедших пользователей за день","link": false,"sample": ""},{"key": "STATS_TODAY_LEFT","type": "Число","desc": "Количество вышедших пользователей за день","link": false,"sample": ""},{"key": "STATS_TODAY_ACTIVE","type": "Число","desc": "Количество активных пользователей за день","link": false,"sample": ""},{"key": "STATS_TODAY_PAYMENTS_COUNT","type": "Число","desc": "Количество платежей за день","link": false,"sample": ""},{"key": "STATS_TODAY_PAYMENTS_SUM","type": "Число","desc": "Сумма платежей за день","link": false,"sample": ""},{"key": "STATS_TODAY_SHOP_ORDERS_COUNT","type": "Число","desc": "Количество заказов за день","link": false,"sample": ""},{"key": "STATS_TODAY_SHOP_ORDERS_SUM","type": "Число","desc": "Сумма заказов за день","link": false,"sample": ""},{"key": "STATS_TODAY_COMMANDS_CALLS","type": "Число","desc": "Количество вызванных команд за день","link": false,"sample": ""},{"key": "STATS_TODAY_CONDITIONS_CALLS","type": "Число","desc": "Количество вызванных условий за день","link": false,"sample": ""},{"key": "STATS_TODAY_MESSAGES_COUNT","type": "Число","desc": "Количество отправленных сообщений за день","link": false,"sample": ""}]},{"cat": "CRM","items": [{"key": "BITRIX_CONTACT_ID","type": "Число","desc": "ID контакта в Битрикс24","link": false,"sample": ""},{"key": "BITRIX_LAST_LEAD_ID","type": "Число","desc": "ID последнего лида в Битрикс24","link": false,"sample": ""},{"key": "BITRIX_LAST_LEAD_STATUS_ID","type": "Текст","desc": "ID статуса последнего лида в Битрикс24","link": false,"sample": ""},{"key": "BITRIX_LAST_LEAD_STATUS_NAME","type": "Текст","desc": "Название статуса последнего лида в Битрикс24","link": false,"sample": ""},{"key": "BITRIX_LAST_DEAL_ID","type": "Число","desc": "ID последней сделки в Битрикс24","link": false,"sample": ""},{"key": "BITRIX_LAST_DEAL_STAGE_ID","type": "Текст","desc": "ID этапа последней сделки в Битрикс24","link": false,"sample": ""},{"key": "BITRIX_LAST_DEAL_STAGE_NAME","type": "Текст","desc": "Название этапа последней сделки в Битрикс24","link": false,"sample": ""},{"key": "AMOCRM_CONTACT_ID","type": "Число","desc": "ID контакта в AmoCRM","link": false,"sample": ""},{"key": "AMOCRM_LAST_LEAD_ID","type": "Число","desc": "ID последнего лида в AmoCRM","link": false,"sample": ""},{"key": "AMOCRM_LAST_LEAD_STATUS_ID","type": "Текст","desc": "ID статуса последнего лида в AmoCRM","link": false,"sample": ""},{"key": "AMOCRM_LAST_LEAD_STATUS_NAME","type": "Текст","desc": "Название статуса последнего лида в AmoCRM","link": false,"sample": ""}]},{"cat": "Примеры своих переменных","example": true,"items": [{"key": "BALANCE","type": "Число","desc": "Баланс пользователя — создайте в PuzzleBot","sample": "1 250","example": true},{"key": "CURRENCY","type": "Текст","desc": "Валюта баланса — создайте в PuzzleBot","sample": "₽","example": true},{"key": "BONUS","type": "Число","desc": "Бонусные баллы — создайте в PuzzleBot","sample": "340","example": true},{"key": "SUBSCRIPTION_NAME","type": "Текст","desc": "Название тарифа — создайте в PuzzleBot","sample": "Pro","example": true},{"key": "SUBSCRIPTION_END","type": "Текст","desc": "Дата окончания подписки — создайте в PuzzleBot","sample": "12.11.2026","example": true},{"key": "SUBSCRIPTION_DAYS","type": "Число","desc": "Дней подписки осталось — создайте в PuzzleBot","sample": "31","example": true},{"key": "REF_LINK","type": "Текст","desc": "Личная реферальная ссылка — создайте в PuzzleBot","sample": "https://t.me/BrootsBot?start=ref584920117","example": true},{"key": "REF_COUNT","type": "Число","desc": "Приглашено друзей — создайте в PuzzleBot","sample": "12","example": true},{"key": "REF_EARNED","type": "Число","desc": "Заработано на рефералах — создайте в PuzzleBot","sample": "1 800","example": true},{"key": "LEVEL","type": "Число","desc": "Уровень в игре — создайте в PuzzleBot","sample": "7","example": true},{"key": "XP","type": "Число","desc": "Очки опыта — создайте в PuzzleBot","sample": "2 340","example": true},{"key": "RANK","type": "Число","desc": "Место в рейтинге — создайте в PuzzleBot","sample": "18","example": true},{"key": "SUPPORT_USERNAME","type": "Текст","desc": "Юзернейм поддержки без @ — создайте в PuzzleBot","sample": "broot_support","example": true}]}];
+const VAR_CATALOG = [{"cat": "Пользователь","items": [{"key": "FIRST_NAME","type": "Текст","desc": "Имя пользователя (ссылкой)","link": true,"sample": "Анна"},{"key": "FIRST_NAME_TEXT","type": "Текст","desc": "Имя пользователя","link": false,"sample": "Анна"},{"key": "LAST_NAME","type": "Текст","desc": "Фамилия пользователя (ссылкой)","link": true,"sample": "Смирнова"},{"key": "LAST_NAME_TEXT","type": "Текст","desc": "Фамилия пользователя","link": false,"sample": "Смирнова"},{"key": "FIRST_AND_LAST_NAME","type": "Текст","desc": "Имя и фамилия пользователя (ссылкой)","link": true,"sample": "Анна Смирнова"},{"key": "FIRST_AND_LAST_NAME_TEXT","type": "Текст","desc": "Имя и фамилия пользователя","link": false,"sample": "Анна Смирнова"},{"key": "USERNAME","type": "Текст","desc": "Юзернейм пользователя (ссылкой)","link": true,"sample": "@anna_s"},{"key": "USERNAME_TEXT","type": "Текст","desc": "Юзернейм пользователя","link": false,"sample": "anna_s"},{"key": "USER_ID","type": "Текст","desc": "ID пользователя в Telegram (ссылкой)","link": true,"sample": "584920117"},{"key": "USER_ID_TEXT","type": "Число","desc": "ID пользователя в Telegram","link": false,"sample": "584920117"},{"key": "FULL_NAME","type": "Текст","desc": "Имя, фамилия и юзернейм пользователя (ссылками)","link": true,"sample": "Анна Смирнова @anna_s"},{"key": "HAS_PREMIUM","type": "Текст","desc": "Наличие Telegram Premium у пользователя (Есть или Нет)","link": false,"sample": "Есть"},{"key": "HAS_PREMIUM_BOOL","type": "Текст","desc": "Наличие Telegram Premium у пользователя (1 или 0)","link": false,"sample": "1"},{"key": "JOIN_DATE","type": "Текст","desc": "Дата входа в бота или ресурс (в формате “26.06.2020 15:41:29”)","link": false,"sample": "26.06.2025 15:41:29"},{"key": "JOIN_DATE_TIMESTAMP","type": "Число","desc": "Дата входа в бота или ресурс (в формате Timestamp)","link": false,"sample": "1750941689"},{"key": "ACTIVE_SCENARIOS","type": "Текст","desc": "Активные сценарии (названия текстом через запятую)","link": false,"sample": "Онбординг"},{"key": "CATEGORY_NAME","type": "Текст","desc": "Название категории, в которой находится пользователь.","link": false,"sample": "Клиенты"},{"key": "CATEGORIES_NAMES","type": "Текст","desc": "Название категории, в которой находится пользователь.","link": false,"sample": "Клиенты, VIP"},{"key": "START_PAYLOAD","type": "Текст","desc": "Данные из ссылки /start=DATA","link": false,"sample": "promo"},{"key": "WEB_PAGES_START_PAYLOAD","type": "Текст","desc": "Данные из ссылки на Mini App startapp=..._DATA","link": false,"sample": "shop"},{"key": "USER_AVATAR_URL","type": "Текст","desc": "Ссылка на аватар пользователя","link": false,"sample": ""},{"key": "LAST_USER_MESSAGE_ID","type": "Число","desc": "ID последнего сообщения пользователя","link": false,"sample": ""},{"key": "LAST_BOT_MESSAGE_ID","type": "Число","desc": "ID последнего сообщения бота","link": false,"sample": ""}]},{"cat": "Mini App","items": [{"key": "MINI_APP_SESSION_IP_ADDR","type": "Текст","desc": "IP-адрес пользователя из последнего запущеннного Mini App","link": false,"sample": "203.0.113.7"},{"key": "MINI_APP_SESSION_LANG_CODE","type": "Текст","desc": "Код языка пользователя из последнего запущеннного Mini App","link": false,"sample": "ru"},{"key": "MINI_APP_SESSION_LOCAL_DATE","type": "Текст","desc": "Дата и время пользователя в его часовом поясе из последнего запущеннного Mini App (в формате “06.09.2022 15:41:29”)","link": false,"sample": "12.10.2026 15:41:29"}]},{"cat": "Платежи","items": [{"key": "PAYMENT_LAST_SUM","type": "Число","desc": "Сумма последнего платежа","link": false,"sample": "990"},{"key": "PAYMENT_LAST_CURRENCY","type": "Текст","desc": "Валюта последнего платежа","link": false,"sample": "RUB"},{"key": "PAYMENT_LAST_DATE","type": "Текст","desc": "Дата и время оплаты последнего платежа (в формате “06.09.2022 15:41:29”)","link": false,"sample": "10.10.2026 12:00:00"},{"key": "PAYMENT_LAST_NAME","type": "Текст","desc": "Наименование последнего платежа","link": false,"sample": "Подписка Pro"},{"key": "PAYMENT_LAST_SYSTEM","type": "Текст","desc": "Название платежной системы последнего платежа","link": false,"sample": "ЮKassa"}]},{"cat": "Магазин","items": [{"key": "SHOP_ORDER_LAST_SUM","type": "Число","desc": "Сумма последнего заказа в магазине","link": false,"sample": "1490"},{"key": "SHOP_ORDER_LAST_CURRENCY","type": "Текст","desc": "Валюта последнего заказа в магазине","link": false,"sample": "RUB"},{"key": "SHOP_ORDER_LAST_DATE","type": "Текст","desc": "Дата и время оплаты последнего заказа в магазине (в формате “06.09.2022 15:41:29”)","link": false,"sample": ""},{"key": "SHOP_ORDER_LAST_NUMBER","type": "Текст","desc": "Номер последнего заказа в магазине","link": false,"sample": "1042"},{"key": "SHOP_ORDER_LAST_SYSTEM","type": "Текст","desc": "Название платежной системы последнего заказа в магазине","link": false,"sample": ""},{"key": "SHOP_ORDER_LAST_PROMOCODE","type": "Текст","desc": "Промокод из последнего заказа в магазине","link": false,"sample": ""},{"key": "SHOP_ORDER_LAST_RECEIPT","type": "Текст","desc": "Данные чека последнего заказа в магазине в JSON формате","link": false,"sample": ""}]},{"cat": "Веб-магазин","items": [{"key": "WEB_SHOP_ORDER_LAST_SUM","type": "Число","desc": "Сумма последнего заказа в веб-магазине","link": false,"sample": "2490"},{"key": "WEB_SHOP_ORDER_LAST_CURRENCY","type": "Текст","desc": "Валюта последнего заказа в веб-магазине","link": false,"sample": ""},{"key": "WEB_SHOP_ORDER_LAST_DATE","type": "Текст","desc": "Дата и время оплаты последнего заказа в веб-магазине (в формате “06.09.2022 15:41:29”)","link": false,"sample": ""},{"key": "WEB_SHOP_ORDER_LAST_NUMBER","type": "Текст","desc": "Номер последнего заказа в веб-магазине","link": false,"sample": "318"},{"key": "WEB_SHOP_ORDER_LAST_SYSTEM","type": "Текст","desc": "Название платежной системы последнего заказа в веб-магазине","link": false,"sample": ""},{"key": "WEB_SHOP_ORDER_LAST_PROMOCODE","type": "Текст","desc": "Промокод из последнего заказа в веб-магазине","link": false,"sample": ""},{"key": "WEB_SHOP_ORDER_LAST_RECEIPT","type": "Текст","desc": "Данные чека последнего заказа в веб-магазине в JSON формате","link": false,"sample": ""}]},{"cat": "Ссылки и рефералы","items": [{"key": "LINK_LAST_KEY","type": "Текст","desc": "Ключ последней активированной ссылки","link": false,"sample": ""},{"key": "LINK_LAST_NAME","type": "Текст","desc": "Имя последней активированной ссылки","link": false,"sample": ""},{"key": "LINK_LAST_DATE","type": "Текст","desc": "Дата последней активированной ссылки","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_KEY","type": "Текст","desc": "Ключ последней активированной реферальной ссылки","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_NAME","type": "Текст","desc": "Имя последней активированной реферальной ссылки","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_DATE","type": "Текст","desc": "Дата последней активированной реферальной ссылки","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_FIRST_NAME","type": "Текст","desc": "Имя создателя последней активированной реферальной ссылки (ссылкой)","link": true,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_FIRST_NAME_TEXT","type": "Текст","desc": "Имя создателя последней активированной реферальной ссылки","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_LAST_NAME","type": "Текст","desc": "Фамилия создателя последней активированной реферальной ссылки (ссылкой)","link": true,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_LAST_NAME_TEXT","type": "Текст","desc": "Фамилия создателя последней активированной реферальной ссылки","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_USERNAME","type": "Текст","desc": "Юзернейм создателя последней активированной реферальной ссылки (ссылкой)","link": true,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_USERNAME_TEXT","type": "Текст","desc": "Юзернейм создателя последней активированной реферальной ссылки","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_USER_ID","type": "Текст","desc": "ID создателя последней активированной реферальной ссылки (ссылкой)","link": true,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_USER_ID_TEXT","type": "Число","desc": "ID создателя последней активированной реферальной ссылки","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_FULL_NAME","type": "Текст","desc": "Имя, фамилия и юзернейм создателя последней активированной реферальной ссылки (ссылками)","link": true,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_HAS_PREMIUM","type": "Текст","desc": "Наличие Telegram Premium у создателя последней активированной реферальной ссылки (Есть или Нет)","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_HAS_PREMIUM_BOOL","type": "Текст","desc": "Наличие Telegram Premium у создателя последней активированной реферальной ссылки (1 или 0)","link": false,"sample": ""},{"key": "REFERRAL_LINK_LAST_CREATOR_CATEGORIES_NAMES","type": "Текст","desc": "Название категории, в которой находится создатель последней активированной реферальной ссылки","link": false,"sample": ""}]},{"cat": "Бот и ресурс","items": [{"key": "PLATFORM","type": "Текст","desc": "Платформа бота (tg - Telegram, max - MAX)","link": false,"sample": "tg"},{"key": "BOT_NAME","type": "Текст","desc": "Название бота (ссылкой)","link": true,"sample": "Broot"},{"key": "BOT_NAME_TEXT","type": "Текст","desc": "Название бота","link": false,"sample": "Broot"},{"key": "BOT_USERNAME","type": "Текст","desc": "Юзернейм бота (ссылкой)","link": true,"sample": "@my_bot"},{"key": "BOT_USERNAME_TEXT","type": "Текст","desc": "Юзернейм бота","link": false,"sample": "имя_бота"},{"key": "BOT_ID","type": "Число","desc": "Telegram ID бота","link": false,"sample": "8842784777"},{"key": "BOT_ID_TEXT","type": "Текст","desc": "Telegram ID бота (ссылкой)","link": true,"sample": ""},{"key": "RES_TITLE","type": "Текст","desc": "Название ресурса, в который происходит отправка сообщения, приветствия и пр. (ссылкой)","link": true,"sample": ""},{"key": "RES_TITLE_TEXT","type": "Текст","desc": "Название ресурса, в который происходит отправка сообщения, приветствия и пр.","link": false,"sample": ""},{"key": "RES_DESCRIPTION","type": "Текст","desc": "Описание ресурса, в который происходит отправка сообщения, приветствия и прочее","link": false,"sample": ""}]},{"cat": "Дата и время","items": [{"key": "SECONDS","type": "Число","desc": "Секунды (двузначное число)","link": false,"sample": "29"},{"key": "MINUTES","type": "Число","desc": "Минуты (двузначное число)","link": false,"sample": "41"},{"key": "HOURS","type": "Число","desc": "Часы (двузначное число)","link": false,"sample": "15"},{"key": "WEEKDAY","type": "Текст","desc": "День недели (текстом)","link": false,"sample": "понедельник"},{"key": "DAY","type": "Число","desc": "День в месяце (двузначное число)","link": false,"sample": "12"},{"key": "MONTH","type": "Число","desc": "Номер месяца (двузначное число)","link": false,"sample": "10"},{"key": "MONTH_TEXT","type": "Текст","desc": "Месяц (текстом)","link": false,"sample": "октябрь"},{"key": "YEAR","type": "Число","desc": "Год (четырёхзначное число)","link": false,"sample": "2026"},{"key": "CURRENT_DATE","type": "Текст","desc": "Текущая дата и время (в формате “26.06.2020 15:41:29”)","link": false,"sample": "12.10.2026 15:41:29"},{"key": "CURRENT_TIMESTAMP","type": "Число","desc": "Текущее время (в Timestamp)","link": false,"sample": "1791801689"},{"key": "CURRENT_TIMEZONE","type": "Число","desc": "Текущий часовой пояс (в секундах)","link": false,"sample": "18000"}]},{"cat": "Курсы и файлы","items": [{"key": "LINK_BY_FILE_ID","type": "Текст","desc": "Часть прямой ссылки на файл (нужно соединить с file_id)","link": false,"sample": ""},{"key": "USD","type": "Число","desc": "Курс доллара (берётся с cbr.ru, отображается в долларах)","link": false,"sample": "92.4"},{"key": "EUR","type": "Число","desc": "Курс евро (берётся с cbr.ru, отображается в долларах)","link": false,"sample": "100.1"},{"key": "BTC","type": "Число","desc": "Курс Bitcoin (берётся с CoinMarketCap)","link": false,"sample": "61200"},{"key": "ETH","type": "Число","desc": "Курс Ethereum (берётся с CoinMarketCap)","link": false,"sample": "2450"},{"key": "TONCOIN","type": "Число","desc": "Курс TON Coin (берётся с CoinMarketCap)","link": false,"sample": "5.2"}]},{"cat": "Статистика","items": [{"key": "STATS_TOTAL_USERS","type": "Число","desc": "Количество пользователей за всё время","link": false,"sample": "16"},{"key": "STATS_TOTAL_PAYMENTS_COUNT","type": "Число","desc": "Количество платежей за всё время","link": false,"sample": ""},{"key": "STATS_TOTAL_PAYMENTS_SUM","type": "Число","desc": "Сумма платежей за всё время","link": false,"sample": ""},{"key": "STATS_TOTAL_SHOP_ORDERS_COUNT","type": "Число","desc": "Количество заказов за всё время","link": false,"sample": ""},{"key": "STATS_TOTAL_SHOP_ORDERS_SUM","type": "Число","desc": "Сумма заказов за всё время","link": false,"sample": ""},{"key": "STATS_TOTAL_COMMANDS_CALLS","type": "Число","desc": "Количество вызванных команд за всё время","link": false,"sample": ""},{"key": "STATS_TOTAL_CONDITIONS_CALLS","type": "Число","desc": "Количество вызванных условий за всё время","link": false,"sample": ""},{"key": "STATS_TOTAL_MESSAGES_COUNT","type": "Число","desc": "Количество отправленных сообщений за всё время","link": false,"sample": ""},{"key": "STATS_TODAY_USERS","type": "Число","desc": "Количество вошедших пользователей за день","link": false,"sample": ""},{"key": "STATS_TODAY_LEFT","type": "Число","desc": "Количество вышедших пользователей за день","link": false,"sample": ""},{"key": "STATS_TODAY_ACTIVE","type": "Число","desc": "Количество активных пользователей за день","link": false,"sample": ""},{"key": "STATS_TODAY_PAYMENTS_COUNT","type": "Число","desc": "Количество платежей за день","link": false,"sample": ""},{"key": "STATS_TODAY_PAYMENTS_SUM","type": "Число","desc": "Сумма платежей за день","link": false,"sample": ""},{"key": "STATS_TODAY_SHOP_ORDERS_COUNT","type": "Число","desc": "Количество заказов за день","link": false,"sample": ""},{"key": "STATS_TODAY_SHOP_ORDERS_SUM","type": "Число","desc": "Сумма заказов за день","link": false,"sample": ""},{"key": "STATS_TODAY_COMMANDS_CALLS","type": "Число","desc": "Количество вызванных команд за день","link": false,"sample": ""},{"key": "STATS_TODAY_CONDITIONS_CALLS","type": "Число","desc": "Количество вызванных условий за день","link": false,"sample": ""},{"key": "STATS_TODAY_MESSAGES_COUNT","type": "Число","desc": "Количество отправленных сообщений за день","link": false,"sample": ""}]},{"cat": "CRM","items": [{"key": "BITRIX_CONTACT_ID","type": "Число","desc": "ID контакта в Битрикс24","link": false,"sample": ""},{"key": "BITRIX_LAST_LEAD_ID","type": "Число","desc": "ID последнего лида в Битрикс24","link": false,"sample": ""},{"key": "BITRIX_LAST_LEAD_STATUS_ID","type": "Текст","desc": "ID статуса последнего лида в Битрикс24","link": false,"sample": ""},{"key": "BITRIX_LAST_LEAD_STATUS_NAME","type": "Текст","desc": "Название статуса последнего лида в Битрикс24","link": false,"sample": ""},{"key": "BITRIX_LAST_DEAL_ID","type": "Число","desc": "ID последней сделки в Битрикс24","link": false,"sample": ""},{"key": "BITRIX_LAST_DEAL_STAGE_ID","type": "Текст","desc": "ID этапа последней сделки в Битрикс24","link": false,"sample": ""},{"key": "BITRIX_LAST_DEAL_STAGE_NAME","type": "Текст","desc": "Название этапа последней сделки в Битрикс24","link": false,"sample": ""},{"key": "AMOCRM_CONTACT_ID","type": "Число","desc": "ID контакта в AmoCRM","link": false,"sample": ""},{"key": "AMOCRM_LAST_LEAD_ID","type": "Число","desc": "ID последнего лида в AmoCRM","link": false,"sample": ""},{"key": "AMOCRM_LAST_LEAD_STATUS_ID","type": "Текст","desc": "ID статуса последнего лида в AmoCRM","link": false,"sample": ""},{"key": "AMOCRM_LAST_LEAD_STATUS_NAME","type": "Текст","desc": "Название статуса последнего лида в AmoCRM","link": false,"sample": ""}]},{"cat": "Примеры своих переменных","example": true,"items": [{"key": "BALANCE","type": "Число","desc": "Баланс пользователя — создайте в PuzzleBot","sample": "1 250","example": true},{"key": "CURRENCY","type": "Текст","desc": "Валюта баланса — создайте в PuzzleBot","sample": "₽","example": true},{"key": "BONUS","type": "Число","desc": "Бонусные баллы — создайте в PuzzleBot","sample": "340","example": true},{"key": "SUBSCRIPTION_NAME","type": "Текст","desc": "Название тарифа — создайте в PuzzleBot","sample": "Pro","example": true},{"key": "SUBSCRIPTION_END","type": "Текст","desc": "Дата окончания подписки — создайте в PuzzleBot","sample": "12.11.2026","example": true},{"key": "SUBSCRIPTION_DAYS","type": "Число","desc": "Дней подписки осталось — создайте в PuzzleBot","sample": "31","example": true},{"key": "REF_LINK","type": "Текст","desc": "Личная реферальная ссылка — создайте в PuzzleBot","sample": "https://t.me/my_bot?start=ref584920117","example": true},{"key": "REF_COUNT","type": "Число","desc": "Приглашено друзей — создайте в PuzzleBot","sample": "12","example": true},{"key": "REF_EARNED","type": "Число","desc": "Заработано на рефералах — создайте в PuzzleBot","sample": "1 800","example": true},{"key": "LEVEL","type": "Число","desc": "Уровень в игре — создайте в PuzzleBot","sample": "7","example": true},{"key": "XP","type": "Число","desc": "Очки опыта — создайте в PuzzleBot","sample": "2 340","example": true},{"key": "RANK","type": "Число","desc": "Место в рейтинге — создайте в PuzzleBot","sample": "18","example": true},{"key": "SUPPORT_USERNAME","type": "Текст","desc": "Юзернейм поддержки без @ — создайте в PuzzleBot","sample": "broot_support","example": true}]}];
 const VAR_RE = /\{\{\s*([A-Za-z0-9_]+)\s*\}\}/g;
 
 function allVars(project) {
@@ -1629,7 +1662,7 @@ const COMP = {
   navmenu: {
     label: 'Меню', icon: 'grid',
     fields: [
-      { k: 'items', label: 'Пункты меню', type: 'items', itemLabel: 'text', fields: [{ k: 'icon', label: 'Иконка', type: 'icon', allowNone: true }, { k: 'text', label: 'Название', type: 'text', vars: true }, { k: 'sub', label: 'Подпись', type: 'text', vars: true }, { k: 'page', label: 'Страница Mini App PuzzleBot (goto_web_page)', type: 'text', placeholder: 'https://t.me/BrootsBot?startapp=623ec549b7791482' }, { k: 'url', label: 'Или обычная ссылка (https://, t.me, #якорь)', type: 'url' }], add: { icon: 'star', text: 'Раздел', sub: '', page: '', url: '' } },
+      { k: 'items', label: 'Пункты меню', type: 'items', itemLabel: 'text', fields: [{ k: 'icon', label: 'Иконка', type: 'icon', allowNone: true }, { k: 'text', label: 'Название', type: 'text', vars: true }, { k: 'sub', label: 'Подпись', type: 'text', vars: true }, { k: 'page', label: 'Страница Mini App PuzzleBot (goto_web_page)', type: 'text', placeholder: 'https://t.me/имя_бота?startapp=ID' }, { k: 'url', label: 'Или обычная ссылка (https://, t.me, #якорь)', type: 'url' }], add: { icon: 'star', text: 'Раздел', sub: '', page: '', url: '' } },
       { k: 'variant', label: 'Вид', type: 'seg', options: [['tiles', 'Плитки'], ['list', 'Список'], ['pills', 'Таблетки']] },
       { k: 'cols', label: 'Колонок (для плиток)', type: 'number', min: 1, max: 4 },
     ],
@@ -1648,7 +1681,7 @@ const COMP = {
   bottomnav: {
     label: 'Нижняя навигация', icon: 'nav',
     fields: [
-      { k: 'items', label: 'Пункты', type: 'items', itemLabel: 'text', fields: [{ k: 'icon', label: 'Иконка', type: 'icon' }, { k: 'text', label: 'Название', type: 'text' }, { k: 'page', label: 'Страница Mini App PuzzleBot (goto_web_page)', type: 'text', placeholder: 'https://t.me/BrootsBot?startapp=…' }, { k: 'url', label: 'Или ссылка / #якорь', type: 'url' }], add: { icon: 'star', text: 'Пункт', page: '', url: '' } },
+      { k: 'items', label: 'Пункты', type: 'items', itemLabel: 'text', fields: [{ k: 'icon', label: 'Иконка', type: 'icon' }, { k: 'text', label: 'Название', type: 'text' }, { k: 'page', label: 'Страница Mini App PuzzleBot (goto_web_page)', type: 'text', placeholder: 'https://t.me/имя_бота?startapp=…' }, { k: 'url', label: 'Или ссылка / #якорь', type: 'url' }], add: { icon: 'star', text: 'Пункт', page: '', url: '' } },
       { k: 'active', label: 'Активный пункт №', type: 'number', min: 1, max: 6 },
       { k: 'sticky', label: 'Прилипает к низу экрана', type: 'toggle' },
     ],
@@ -1979,15 +2012,15 @@ const ACTION_DEFS = [
   { id: 'none', g: 0, label: 'Нет действия' },
   { id: 'url', g: 0, label: 'Обычная ссылка', link: true, params: [{ k: 'value', label: 'Адрес', type: 'url', ph: 'https://example.com', req: true }, { k: 'newTab', label: 'Открывать во внешнем браузере', type: 'toggle', def: true }],
     info: 'Внутри Telegram откроется через openLink. Ссылки https://t.me/… открываются внутри Telegram.' },
-  { id: 'goto', g: 0, label: 'Страница Mini App PuzzleBot (goto_web_page)', link: true, params: [{ k: 'value', label: 'Ссылка на страницу Mini App или её ID', type: 'text', ph: 'https://t.me/BrootsBot?startapp=623ec549b7791482', req: true }, { k: 'win', label: 'Открыть в новом окне (gotoWebPage)', type: 'toggle', def: false }],
+  { id: 'goto', g: 0, label: 'Страница Mini App PuzzleBot (goto_web_page)', link: true, params: [{ k: 'value', label: 'Ссылка на страницу Mini App или её ID', type: 'text', ph: 'https://t.me/имя_бота?startapp=ID', req: true }, { k: 'win', label: 'Открыть в новом окне (gotoWebPage)', type: 'toggle', def: false }],
     info: 'Переход между страницами мини-приложения PuzzleBot: <a goto_web_page="ID">. Его обрабатывает сам PuzzleBot, поэтому он работает только внутри мини-приложения PuzzleBot. ID — всё, что после «startapp=».' },
   { id: 'anchor', g: 0, label: 'Прокрутить к блоку на странице', link: true, params: [{ k: 'value', label: 'К какому блоку', type: 'anchor', req: true }] },
-  { id: 'tg', g: 0, label: 'Канал, группа или профиль', link: true, params: [{ k: 'value', label: '@username или https://t.me/…', type: 'text', ph: '@BrootsBot', req: true }] },
-  { id: 'bot', g: 0, label: 'Бот с параметром /start', link: true, params: [{ k: 'bot', label: 'Юзернейм бота', type: 'text', ph: 'BrootsBot', req: true }, { k: 'value', label: 'Параметр start', type: 'text', ph: 'menu' }],
+  { id: 'tg', g: 0, label: 'Канал, группа или профиль', link: true, params: [{ k: 'value', label: '@username или https://t.me/…', type: 'text', ph: '@username', req: true }] },
+  { id: 'bot', g: 0, label: 'Бот с параметром /start', link: true, params: [{ k: 'bot', label: 'Юзернейм бота', type: 'text', ph: 'имя_бота', req: true }, { k: 'value', label: 'Параметр start', type: 'text', ph: 'menu' }],
     info: 'Открывает чат с ботом. Значение параметра в PuzzleBot попадёт в переменную {{START_PAYLOAD}}.' },
-  { id: 'app', g: 0, label: 'Другая Mini App', link: true, params: [{ k: 'bot', label: 'Юзернейм бота', type: 'text', ph: 'BrootsBot', req: true }, { k: 'app', label: 'Короткое имя Mini App (если есть)', type: 'text', ph: 'shop' }, { k: 'value', label: 'Параметр startapp', type: 'text', ph: 'home' }],
-    info: 'Ссылка https://t.me/бот/приложение?startapp=… Параметр в PuzzleBot попадёт в {{WEB_PAGES_START_PAYLOAD}}.' },
-  { id: 'share', g: 0, label: 'Поделиться ссылкой в чат', link: true, params: [{ k: 'value', label: 'Ссылка', type: 'text', ph: 'https://t.me/BrootsBot', req: true }, { k: 'text', label: 'Текст сообщения', type: 'text' }],
+  { id: 'app', g: 0, label: 'Другая Mini App', params: [{ k: 'value', label: 'Ссылка на Mini App или её ID', type: 'text', ph: 'https://t.me/имя_бота?startapp=ID', req: true }, { k: 'win', label: 'Открыть в новом окне', type: 'toggle', def: false }],
+    info: 'Кнопка вызывает функцию PuzzleBot gotoWebPage("ID"). ID берётся из ссылки на Mini App — всё, что после «startapp=». Работает внутри мини-приложений PuzzleBot.' },
+  { id: 'share', g: 0, label: 'Поделиться ссылкой в чат', link: true, params: [{ k: 'value', label: 'Ссылка', type: 'text', ph: 'https://t.me/имя_бота', req: true }, { k: 'text', label: 'Текст сообщения', type: 'text' }],
     info: 'Telegram откроет выбор чата (t.me/share/url). Переменные {{…}} в ссылке сохраняются.' },
   { id: 'addset', g: 0, label: 'Стикеры, эмодзи, тема, папка чатов', link: true, params: [{ k: 'kind', label: 'Что открыть', type: 'select', options: [['addstickers', 'Набор стикеров'], ['addemoji', 'Набор эмодзи'], ['addtheme', 'Тема Telegram'], ['addlist', 'Папка чатов'], ['addvoice', 'Набор голосов']], def: 'addstickers' }, { k: 'value', label: 'Имя набора (из ссылки t.me/add…/ИМЯ)', type: 'text', req: true }] },
   { id: 'tgpage', g: 0, label: 'Telegram Premium или Stars', link: true, params: [{ k: 'value', label: 'Что открыть', type: 'select', options: [['premium', 'Telegram Premium'], ['stars', 'Telegram Stars']], def: 'premium' }] },
@@ -2035,7 +2068,7 @@ const ACTION_DEFS = [
 const ACT = Object.fromEntries(ACTION_DEFS.map(d => [d.id, d]));
 const LINK_ONLY_GROUPS = [0];
 
-/* ID страницы Mini App из ссылки вида https://t.me/BrootsBot?startapp=623ec549b7791482 */
+/* ID страницы Mini App из ссылки вида https://t.me/имя_бота?startapp=ID */
 function parseGoto(v) {
   const s = String(v || '').trim();
   const m = s.match(/startapp=([A-Za-z0-9_-]{1,64})/);
@@ -2105,6 +2138,16 @@ function actionParts(act, ctx) {
     const an = String(a.value || '').replace(/^#/, '');
     if (!/^[a-z0-9_-]+$/i.test(an)) return { tag: 'button', attrs: ' type="button"' + extra };
     return { tag: 'a', attrs: ` href="#ps-${an}"${a.confirm && ctx.js ? ' data-ps-act="anchor"' : ''}` + extra };
+  }
+  if (a.type === 'app') {
+    const id = parseGoto(a.value);
+    if (id) {
+      // gotoWebPage — функция PuzzleBot; если её нет (предпросмотр), клик обрабатывает наш скрипт
+      return { tag: 'a', attrs: ` role="button" tabindex="0" data-ps-gotowp="${escAttr(id)}" onclick="return window.gotoWebPage ? (gotoWebPage('${id}', ${a.win ? 'true' : 'false'}), false) : true"` + extra };
+    }
+    const legacy = a.bot ? actionHref(a) : null; // старые проекты: ссылка t.me/бот/приложение
+    if (legacy) return { tag: 'a', attrs: ` href="${escAttr(legacy)}" target="_blank" rel="noopener noreferrer"` + extra };
+    return { tag: 'button', attrs: ' type="button"' + extra };
   }
   const d = ACT[a.type];
   if (d && d.link) {
@@ -2865,9 +2908,10 @@ function runtimeJs(pid, feat, opt = {}) {
     ${(opt.acts || []).map(k => ACT_JS[k]).filter(Boolean).join(',\n    ')}
   };
   root.addEventListener('click', function (e) {
-    var el = e.target.closest ? e.target.closest('[data-ps-act], [goto_web_page]') : null;
+    var el = e.target.closest ? e.target.closest('[data-ps-act], [goto_web_page], [data-ps-gotowp]') : null;
     if (el && root.contains(el)) {
       var hh = el.getAttribute('data-ps-h'); hap(hh === null ? DEFH : hh);
+      if (el.hasAttribute('data-ps-gotowp')) { e.preventDefault(); if (PREVIEW || typeof window.gotoWebPage !== 'function') say('Переход в Mini App: gotoWebPage("' + el.getAttribute('data-ps-gotowp') + '") — работает внутри PuzzleBot'); return; }
       if (el.hasAttribute('goto_web_page')) {
         var gid = el.getAttribute('goto_web_page'), gw = el.hasAttribute('data-ps-gw'), gc = el.getAttribute('data-ps-confirm');
         if (PREVIEW) { e.preventDefault(); say('Переход на страницу мини-приложения PuzzleBot: ' + gid + (gw ? ' (новое окно)' : '')); return; }
@@ -3174,7 +3218,10 @@ function lintProject(project, opts = {}) {
       if (n.type === 'button' && t === 'none' && !p.disabled) add('info', `«${L}»: у кнопки нет действия`, n.id);
       if (d && t !== 'none') {
         for (const f of d.params || []) if (f.req && !String(a[f.k] ?? '').trim()) add('error', `«${L}»: в действии «${d.label}» не заполнено «${f.label}»`, n.id);
-        if (t === 'goto') {
+        if (t === 'app') {
+          if (!parseGoto(a.value) && !a.bot) add('error', `«${L}»: не удалось найти ID Mini App — нужна ссылка с «startapp=»`, n.id);
+          else add('info', `«${L}»: gotoWebPage — функция PuzzleBot, проверьте переход внутри мини-приложения`, n.id);
+        } else if (t === 'goto') {
           if (a.value && !parseGoto(a.value)) add('error', `«${L}»: не удалось найти ID страницы Mini App`, n.id);
           add('info', `«${L}»: переход goto_web_page обрабатывает PuzzleBot — проверьте его внутри мини-приложения`, n.id);
         } else if (t === 'anchor') {
@@ -4310,7 +4357,17 @@ function psHelper() {
       document.body.style.background = d.host || '#fff';
       mount.style.padding = d.pad ? '16px 16px 24px' : '0';
       document.body.classList.toggle('psx-showbox', !!d.boxes);
+      if (document.body.classList.contains('psx-building') && !d.building) setTimeout(function () { window.scrollTo({ top: 0, behavior: 'smooth' }); }, 250);
+      document.body.classList.toggle('psx-building', !!d.building);
       sel = d.sel;
+      if (d.fresh) {
+        var fe = elOf(d.fresh);
+        if (fe) {
+          fe.classList.add('psx-new');
+          var fr = fe.getBoundingClientRect();
+          if (fr.bottom > innerHeight - 20) window.scrollTo({ top: scrollY + fr.bottom - innerHeight + 40, behavior: 'smooth' });
+        }
+      }
       buildToolbar(); position();
       setTimeout(position, 60);
     } else if (d.t === 'sel') {
@@ -4487,8 +4544,14 @@ function psHelper() {
   post({ t: 'ready' });
 }
 
+const NO_SCROLLBAR_CSS = 'html{scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}';
 const CANVAS_EDIT_CSS = `
 html, body { margin: 0; min-height: 100%; }
+${NO_SCROLLBAR_CSS}
+.psx-new { animation: psxNew .55s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes psxNew { 0% { opacity: 0; transform: translateY(18px) scale(.97); filter: blur(3px); } 60% { opacity: 1; filter: none; } 100% { opacity: 1; transform: none; } }
+.psx-building::after { content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: 3px; background: linear-gradient(90deg, transparent, #4b8df8, #b8a3f6, transparent); background-size: 200% 100%; animation: psxBar 1s linear infinite; z-index: 99; }
+@keyframes psxBar { to { background-position: -200% 0; } }
 body { background: #fff; }
 .ps-edit-var { display: inline-block; padding: 0 5px; border-radius: 5px; background: rgba(110,106,255,.18); box-shadow: inset 0 0 0 1px rgba(110,106,255,.55); font-size: .9em; line-height: 1.35; white-space: normal; overflow-wrap: anywhere; }
 .ps-edit-img-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 90px; width: 100%; padding: 12px; border: 1.5px dashed rgba(127,127,127,.5); border-radius: 12px; background: rgba(127,127,127,.07); color: rgba(127,127,127,.95); font: 500 12px/1.35 system-ui, sans-serif; text-align: center; }
@@ -4533,19 +4596,40 @@ function hostColor(project) {
 function previewSrcdoc(project, varMode, opt = {}) {
   const g = generate(project, { mode: 'export', js: true, varMode, pretty: false, embed: opt.embed });
   const pad = g.embed !== 'fill' && g.embed !== 'doc';
-  return `<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${g.fontsHref ? `<link rel="stylesheet" href="${escAttr(g.fontsHref)}">` : ''}<style>html,body{margin:0;background:${g.embed === 'doc' ? embedHex(project) : hostColor(project)}}${pad ? 'body{padding:16px 16px 24px}' : ''}${g.css}</style></head><body>${g.html}<script>window.__psPreview = 1;<\/script>${g.js ? `<script>${g.js}<\/script>` : ''}</body></html>`;
+  return `<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${g.fontsHref ? `<link rel="stylesheet" href="${escAttr(g.fontsHref)}">` : ''}<style>${NO_SCROLLBAR_CSS}html,body{margin:0;background:${g.embed === 'doc' ? embedHex(project) : hostColor(project)}}${pad ? 'body{padding:16px 16px 24px}' : ''}${g.css}</style></head><body>${g.html}<script>window.__psPreview = 1;<\/script>${g.js ? `<script>${g.js}<\/script>` : ''}</body></html>`;
 }
 
 const DEVICES = { mobile: { w: 390, label: 'Телефон', icon: 'smartphone' }, tablet: { w: 768, label: 'Планшет', icon: 'tablet' }, desktop: { w: 1280, label: 'Компьютер', icon: 'monitor' } };
 
 const Canvas = {
+  buildN: null, fresh: null,
+  /* Пошаговое появление блоков страницы (после создания шаблона Puzzlo) */
+  build(step = 420) {
+    const kids = (S.project && S.project.root.children) || [];
+    clearTimeout(this._bt);
+    if (!kids.length) return Promise.resolve();
+    this.buildN = 0; this.render();
+    return new Promise(res => {
+      const tick = () => {
+        if (this.buildN == null) return res(); // сборку прервали правкой
+        if (!this.ready) { this._bt = setTimeout(tick, 100); return; }
+        const list = S.project.root.children;
+        if (this.buildN >= list.length) { this.buildN = null; this.render(); return res(); }
+        this.buildN++;
+        this.fresh = list[this.buildN - 1].id;
+        this.render();
+        this._bt = setTimeout(tick, step);
+      };
+      this._bt = setTimeout(tick, 300);
+    });
+  },
+  stopBuild() { if (this.buildN != null) { clearTimeout(this._bt); this.buildN = null; this.render(); } },
   frame: null, dev: null, wrap: null, ready: false, raf: 0, info: null,
   mount(stage) {
     this.ready = false;
     this.wrap = h('div', { class: 'stage-wrap' });
-    this.dev = h('div', { class: 'device' });
     this.frame = h('iframe', { title: 'Холст страницы', sandbox: 'allow-scripts' });
-    this.dev.append(this.frame);
+    this.dev = makeDevice(this.frame);
     this.wrap.append(this.dev);
     stage.append(this.wrap);
     this.frame.srcdoc = canvasSrcdoc();
@@ -4586,10 +4670,15 @@ const Canvas = {
     if (this.raf) return;
     this.raf = requestAnimationFrame(() => {
       this.raf = 0;
-      const g = safe(() => generate(S.project, { mode: 'edit', varMode: S.settings.varMode }), null);
+      // Сборка на глазах: показываем только первые buildN блоков страницы
+      const bn = this.buildN;
+      const proj = bn == null ? S.project : { ...S.project, root: { ...S.project.root, children: S.project.root.children.slice(0, bn) } };
+      const g = safe(() => generate(proj, { mode: 'edit', varMode: S.settings.varMode }), null);
       if (!g) { UI.toast('Не удалось построить страницу. Последнее действие можно отменить.', { err: true }); return; }
       if (!this._vars || this._varsFor !== S.project.page.customVars) { this._vars = allVars(S.project).map(v => ({ k: v.key, d: v.desc })); this._varsFor = S.project.page.customVars; }
-      this.post({ t: 'render', html: g.html, css: g.css, fonts: g.fontsHref, sel: S.sel, meta: this.meta(), boxes: S.settings.showBoxes, vars: this._vars, host: hostColor(S.project), pad: g.embed !== 'fill' });
+      deviceTheme(this.dev, S.project);
+      this.post({ t: 'render', html: g.html, css: g.css, fonts: g.fontsHref, sel: S.sel, meta: this.meta(), boxes: S.settings.showBoxes, vars: this._vars, host: hostColor(S.project), pad: g.embed !== 'fill', fresh: this.fresh || null, building: bn != null });
+      this.fresh = null;
     });
   },
   post(m) { try { this.frame && this.frame.contentWindow && this.frame.contentWindow.postMessage(m, '*'); } catch (e) { console.warn(e); } },
@@ -4629,23 +4718,64 @@ const S = {
 };
 const isMobile = () => window.matchMedia('(max-width: 860px)').matches;
 
+/* ---------- Макет устройства: телефон как в Telegram (статус-бар, шапка Mini App, полоска «домой») ---------- */
+const DEV_FRAME = { mobile: { h: 844, px: 12, py: 12, top: 47 + 44 }, tablet: { h: 1024, px: 14, py: 14, top: 24 + 44 } };
+function makeDevice(frame) {
+  const sys = '<svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>'
+    + '<svg width="15" height="11" viewBox="0 0 15 11" fill="currentColor"><path d="M7.5 2.2c2.1 0 4 .8 5.5 2.1l1.1-1.2A9.6 9.6 0 0 0 7.5.5 9.6 9.6 0 0 0 .9 3.1L2 4.3a8 8 0 0 1 5.5-2.1Zm0 3.3c1.2 0 2.3.4 3.2 1.2l1.1-1.2a6.4 6.4 0 0 0-8.6 0l1.1 1.2c.9-.8 2-1.2 3.2-1.2Zm0 3.3c-.4 0-.8.2-1.1.4l1.1 1.3 1.1-1.3c-.3-.2-.7-.4-1.1-.4Z"/></svg>'
+    + '<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3.5" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="18" height="8" rx="2" fill="currentColor"/><path d="M23 4v4c.8-.3 1.3-1.1 1.3-2S23.8 4.3 23 4Z" fill="currentColor" opacity=".45"/></svg>';
+  const title = h('b', { class: 'dev-tg-t' }, 'Mini App');
+  const screen = h('div', { class: 'dev-screen' },
+    h('div', { class: 'dev-top' },
+      h('div', { class: 'dev-status' }, h('b', null, '9:41'), h('i', { class: 'dev-island' }), h('span', { class: 'dev-sys', html: sys })),
+      h('div', { class: 'dev-tg' }, h('span', { class: 'dev-tg-x' }, 'Закрыть'), h('span', { class: 'dev-tg-c' }, title, h('small', null, 'мини-приложение')), h('span', { class: 'dev-tg-m', html: iconSvg('more', 16) }))),
+    frame, h('i', { class: 'dev-home' }));
+  const dev = h('div', { class: 'device' }, screen);
+  dev._title = title;
+  return dev;
+}
+function hexLum(hex) { const m = /^#?([0-9a-f]{6})$/i.exec(String(hex || '')); if (!m) return 1; const n = parseInt(m[1], 16); return (0.2126 * (n >> 16 & 255) + 0.7152 * (n >> 8 & 255) + 0.0722 * (n & 255)) / 255; }
+function deviceTheme(dev, project) {
+  if (!dev || !project) return;
+  const top = /^#[0-9a-f]{6}$/i.test(hostColor(project)) ? hostColor(project) : '#ffffff';
+  const dark = hexLum(top) < 0.5;
+  dev.style.setProperty('--dev-top', top);
+  dev.style.setProperty('--dev-ink', dark ? '#ffffff' : '#000000');
+  dev.style.setProperty('--dev-accent', dark ? '#6ab3f3' : '#2481cc');
+  if (dev._title) dev._title.textContent = (project.name || 'Mini App').slice(0, 28);
+}
 function fitDevice(wrap, dev, frame, device, info) {
-  const W = wrap.clientWidth, H = wrap.clientHeight;
+  const cs = getComputedStyle(wrap);
+  const W = wrap.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const H = wrap.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
   if (!W || !H) return;
   const d = DEVICES[device] || DEVICES.mobile;
-  const narrow = W < 520 && device === 'mobile';
-  dev.className = 'device ' + (narrow ? 'bare' : device === 'mobile' ? '' : device);
-  const pad = narrow || device === 'desktop' ? 0 : device === 'tablet' ? 24 : 20;
-  const chrome = device === 'desktop' ? 26 : 0;
-  const width = narrow ? W : d.w;
-  const scale = narrow ? 1 : Math.min(1, (W - 24) / (width + pad));
-  const outerH = narrow ? H : H / scale - 4;
-  dev.style.width = (width + pad) + 'px';
+  const narrow = wrap.clientWidth < 520 && device === 'mobile';
+  dev.className = 'device ' + (narrow ? 'bare' : device === 'mobile' ? 'phone' : device);
+  dev.style.marginTop = '';
+  if (narrow) {
+    dev.style.width = W + 'px'; dev.style.height = H + 'px'; frame.style.height = H + 'px';
+    dev.style.transform = ''; dev.style.marginBottom = '';
+    if (info) info.textContent = `${d.label} · ${Math.round(W)}px`;
+    return;
+  }
+  let outerW, outerH, frameH, scale;
+  if (device === 'desktop') {
+    outerW = d.w; scale = Math.min(1, W / outerW);
+    outerH = H / scale; frameH = outerH - 26;
+  } else {
+    const f = DEV_FRAME[device];
+    outerW = d.w + f.px * 2; outerH = f.h + f.py * 2; frameH = f.h - f.top;
+    scale = Math.min(1, W / outerW, H / outerH);
+    const free = H - outerH * scale;
+    if (free > 0) dev.style.marginTop = Math.floor(free / 2) + 'px';
+  }
+  dev.style.width = outerW + 'px';
   dev.style.height = outerH + 'px';
-  frame.style.height = (outerH - pad - chrome) + 'px';
+  frame.style.height = frameH + 'px';
   dev.style.transform = scale < 1 ? `scale(${scale})` : '';
   dev.style.marginBottom = scale < 1 ? `${-(outerH * (1 - scale))}px` : '';
-  if (info) info.textContent = `${d.label} · ${narrow ? W : width}px${scale < 1 ? ' · масштаб ' + Math.round(scale * 100) + '%' : ''}`;
+  if (info) info.textContent = `${d.label} · ${d.w}px${scale < 1 ? ' · ' + Math.round(scale * 100) + '%' : ''}`;
 }
 Canvas.layout = function () { if (this.wrap && this.dev) fitDevice(this.wrap, this.dev, this.frame, S.device, this.info); };
 
@@ -4702,6 +4832,7 @@ const Editor = {
   /* ---------- изменения модели ---------- */
   act(label, fn, opts = {}) {
     if (!S.project) return;
+    if (Canvas.buildN != null) Canvas.stopBuild();
     History.before(S.project, label, opts.key);
     try { fn(S.project); }
     catch (e) { console.error(e); UI.toast('Не удалось выполнить действие: ' + label, { err: true }); }
@@ -5295,9 +5426,8 @@ const Editor = {
     let device = isMobile() ? 'mobile' : S.device;
     let varMode = 'sample';
     const wrap = h('div', { class: 'stage-wrap' });
-    const dev = h('div', { class: 'device' });
     const frame = h('iframe', { title: 'Предпросмотр страницы', sandbox: 'allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms' });
-    dev.append(frame); wrap.append(dev);
+    const dev = makeDevice(frame); deviceTheme(dev, S.project); wrap.append(dev);
     const info = h('span', { class: 'stage-info hide-sm' });
     const load = () => { frame.srcdoc = previewSrcdoc(S.project, varMode); };
     const close = () => { ov.remove(); window.removeEventListener('resize', fit); document.removeEventListener('keydown', onKey, true); };
@@ -5601,6 +5731,7 @@ const Inspector = {
     const d = ACT[a.type];
     if (!d || a.type === 'none') return null;
     for (const f of d.params || []) if (f.req && !String(a[f.k] ?? '').trim()) return ['bad', 'Заполните поле «' + f.label + '»'];
+    if (a.type === 'app') { const id = parseGoto(a.value); return id ? ['ok', `✓ gotoWebPage("${id}", ${a.win ? 'true' : 'false'})`] : ['bad', 'Не нашёл ID: нужна ссылка вида https://t.me/имя_бота?startapp=ID']; }
     if (a.type === 'goto') { const id = parseGoto(a.value); return id ? ['ok', '✓ <a goto_web_page="' + id + '">'] : ['bad', 'Не нашёл ID: нужна ссылка вида https://t.me/бот?startapp=ID']; }
     if (a.type === 'anchor') return null;
     if (d.link) { const href = actionHref(a); return href ? ['ok', '✓ ' + href] : ['bad', 'Ссылка некорректна: проверьте поля']; }
@@ -5629,7 +5760,7 @@ const Inspector = {
     }
     out.push(status);
     check();
-    if (a.type === 'goto') out.push(h('button', { class: 'btn sm', onclick: () => this.askGoto(a.value, id => upd('value', id)) }, ic('link', 14), 'Вставить ссылку на страницу'));
+    if (a.type === 'goto' || a.type === 'app') out.push(h('button', { class: 'btn sm', onclick: () => this.askGoto(a.value, id => upd('value', id)) }, ic('link', 14), 'Вставить ссылку на страницу'));
     if (d.info) out.push(h('div', { class: 'hint box' + (/только|нужен|нужна|не сработает|работает, только/.test(d.info) ? ' warn' : '') }, d.info));
     if (d.min) out.push(h('div', { class: 'hint' }, `Нужен Telegram с Bot API ${d.min} или новее. На старых версиях пользователь увидит просьбу обновить Telegram, вне Telegram — подсказку открыть страницу в Telegram.`));
     if (a.type !== 'none') {
@@ -5642,11 +5773,11 @@ const Inspector = {
     }
     return out;
   },
-  askGoto(cur, done) {
-    return UI.prompt({ title: 'Страница мини-приложения', label: 'Вставьте ссылку на страницу Mini App из PuzzleBot (Конструктор → мини-приложение → ссылка). ID — всё, что после «startapp=».', value: cur ? 'https://t.me/?startapp=' + cur : '', placeholder: 'https://t.me/BrootsBot?startapp=623ec549b7791482', ok: 'Готово' }).then(v => {
+  askGoto(cur, done, other) {
+    return UI.prompt({ title: other ? 'Другая Mini App' : 'Страница мини-приложения', label: other ? 'Введите ссылку на Mini App. Из неё возьмём ID — всё, что после «=», и вставим в gotoWebPage("ID").' : 'Введите ссылку на страницу Mini App из PuzzleBot (Конструктор → мини-приложение → ссылка). ID — всё, что после «startapp=».', value: cur ? 'https://t.me/?startapp=' + cur : '', placeholder: 'https://t.me/имя_бота?startapp=ID', ok: 'Готово' }).then(v => {
       if (v === null) return null;
       const id = parseGoto(v);
-      if (!id) { UI.toast('Не нашёл ID страницы. Нужна ссылка вида https://t.me/бот?startapp=ID', { err: true, ms: 5000 }); return null; }
+      if (!id) { UI.toast('Не нашёл ID. Нужна ссылка вида https://t.me/имя_бота?startapp=ID', { err: true, ms: 5000 }); return null; }
       done(id);
       UI.toast('Страница: ' + id, { icon: 'check' });
       return id;
@@ -5663,7 +5794,7 @@ const Inspector = {
       for (const f of d.params || []) if (f.def !== undefined) next[f.k] = f.def;
       if (v === 'tg') next.value = '@';
       const apply = () => Editor.setProp(n.id, ['action'], next, null, { panel: true });
-      if (v === 'goto') this.askGoto('', id => { next.value = id; }).then(() => apply());
+      if (v === 'goto' || v === 'app') this.askGoto('', id => { next.value = id; }, v === 'app').then(() => apply());
       else apply();
     });
     return [field('Что делает', pick), ...this.actionFields(a, set)];
@@ -6732,7 +6863,7 @@ const KB = [
 - функция \`gotoWebPage("ID", true)\` — второй аргумент открывает в новом окне.
 
 ## Где взять ID
-В PuzzleBot у мини-приложения есть ссылка вида \`https://t.me/BrootsBot?startapp=623ec549b7791482\`. ID — всё, что после \`startapp=\`.
+В PuzzleBot у мини-приложения есть ссылка вида \`https://t.me/имя_бота?startapp=ID\`. ID — всё, что после \`startapp=\`.
 
 ## В Puzzle Studio
 Кнопка → «Действия» → «Страница Mini App PuzzleBot» → вставьте ссылку целиком. Редактор сам выделит ID. В пунктах меню и нижней навигации есть поле «Страница Mini App».
@@ -6988,6 +7119,17 @@ const PZ_BLOCKS = [
   [/stories|сторис/, 'storyBtn', 'кнопка Stories'], [/экран.{0,6}домой/, 'homeBtn', 'кнопка «На экран Домой»'], [/пользовател[ья] telegram|карточк[ау] пользовател/, 'tguser', 'пользователь Telegram'],
 ];
 
+/* Текст ответа → абзацы и списки; caret — мигающий курсор печати */
+function pzFill(body, text, caret) {
+  body.innerHTML = '';
+  let list = null, last = null;
+  for (const line of String(text).split('\n')) {
+    if (/^- /.test(line)) { if (!list) { list = h('ul'); body.append(list); } last = h('li', null, line.slice(2)); list.append(last); }
+    else { list = null; if (line.trim()) { last = h('p', null, line); body.append(last); } }
+  }
+  if (caret) (last || body).append(h('span', { class: 'pz-caret' }));
+}
+
 const PuzzloAI = {
   norm(t) { return String(t || '').toLowerCase().replace(/ё/g, 'е'); },
   quoted(t) { const m = t.match(/[«"“„]([^»"”]{1,80})[»"”]/); return m ? m[1].trim() : ''; },
@@ -7126,7 +7268,7 @@ const PuzzloAI = {
     const wantsNew = /созда|собери|сгенер|нов(ую|ая|ый) (страниц|проект)|с нуля/.test(t) || (S.view !== 'editor' && /сделай|нужн|хочу/.test(t));
     if (wantsNew || S.view !== 'editor') {
       const r = this.create(text);
-      Home.persist(r.project).then(() => Editor.open(r.project));
+      Home.persist(r.project).then(() => { Editor.open(r.project); Canvas.build(); });
       return { text: 'Готово! ' + cap(r.done.join(', ')) + '.\n\nТеперь можно менять тексты на холсте или попросить меня: «добавь отзывы», «сделай зелёным», «удали FAQ».', mood: 'like', btns: [['Открыть экспорт', 'export'], ['Просмотр', 'preview']] };
     }
     const r = this.modify(text);
@@ -7195,11 +7337,9 @@ const Puzzlo = {
         if (m.role === 'user') msgs.append(h('div', { class: 'pz-u' }, m.text));
         else {
           const body = h('div', { class: 'pz-a-t' });
-          let list = null;
-          for (const line of m.text.split('\n')) {
-            if (/^- /.test(line)) { if (!list) { list = h('ul'); body.append(list); } list.append(h('li', null, line.slice(2))); }
-            else { list = null; if (line.trim()) body.append(h('p', null, line)); }
-          }
+          const typing = this.typing && this.typing.msg === m;
+          if (typing) { this.typing.el = body; pzFill(body, m.text.slice(0, this.typing.i), true); msgs.append(h('div', { class: 'pz-a' }, body)); continue; }
+          pzFill(body, m.text);
           const btns = (m.btns || []).length ? h('div', { class: 'pz-btns' }, m.btns.map(([l, r]) => h('button', { onclick: () => App.go(r) }, l))) : null;
           msgs.append(h('div', { class: 'pz-a' }, body, btns, h('div', { class: 'pz-tools' },
             h('button', { 'aria-label': 'Копировать', title: 'Копировать', onclick: () => UI.copy(m.text) }, ic('copy', 15)),
@@ -7208,6 +7348,8 @@ const Puzzlo = {
         }
       }
     }
+    if (!this.history && this.thinking) msgs.append(h('div', { class: 'pz-a' }, h('div', { class: 'pz-dots', 'aria-label': 'Puzzlo печатает' }, h('i'), h('i'), h('i'))));
+    this._msgs = msgs;
     const ta = h('textarea', { rows: 1, placeholder: 'Введите сообщение...', 'aria-label': 'Сообщение для Puzzlo', 'data-novar': '' });
     const sendBtn = h('button', { class: 'pz-send', 'aria-label': 'Отправить', disabled: true, onclick: () => { this.send(ta.value); } }, ic('send', 18));
     ta.addEventListener('input', () => { sendBtn.disabled = !ta.value.trim(); ta.style.height = 'auto'; ta.style.height = Math.min(120, ta.scrollHeight) + 'px'; });
@@ -7232,9 +7374,28 @@ const Puzzlo = {
     el.append(panel);
     msgs.scrollTop = msgs.scrollHeight;
   },
+  /* эффект печати: текст появляется по нескольку символов, кнопки — в конце */
+  typeOut(m) {
+    clearInterval(this._tt);
+    this.typing = { msg: m, i: 0, el: null };
+    const total = m.text.length;
+    const per = Math.max(1, Math.ceil(total / 110)); // длинные ответы печатаются быстрее (~2 сек максимум)
+    this._tt = setInterval(() => {
+      const t = this.typing;
+      if (!t || t.msg !== m) { clearInterval(this._tt); return; }
+      t.i = Math.min(total, t.i + per + (Math.random() < 0.3 ? 1 : 0));
+      if (t.el && t.el.isConnected) {
+        pzFill(t.el, m.text.slice(0, t.i), true);
+        const box = this._msgs; if (box && box.scrollHeight - box.scrollTop - box.clientHeight < 80) box.scrollTop = box.scrollHeight;
+      }
+      if (t.i >= total) { clearInterval(this._tt); this.typing = null; this.render(); }
+    }, 18);
+  },
   push(role, text, btns, mood) {
     if (!this.cur) this.newChat();
-    this.cur.msgs.push({ role, text, btns: btns || null, ts: Date.now() });
+    const msg = { role, text, btns: btns || null, ts: Date.now() };
+    this.cur.msgs.push(msg);
+    if (role === 'assistant' && this.open) this.typeOut(msg);
     if (role === 'user' && this.cur.title === 'Новый чат') this.cur.title = text.slice(0, 40);
     this.cur.ts = Date.now();
     this.save();
@@ -7245,12 +7406,15 @@ const Puzzlo = {
     text = String(text || '').trim();
     if (!text) return;
     this.expanded = true;
+    if (this.typing) { clearInterval(this._tt); this.typing = null; }
+    this.thinking = true;
     this.push('user', text);
     setTimeout(() => {
       let r;
       try { r = PuzzloAI.answer(text); } catch (e) { console.error(e); r = { text: 'Что-то пошло не так. Попробуйте сформулировать иначе.', mood: 'error' }; }
+      this.thinking = false;
       this.push('assistant', r.text, r.btns, r.mood);
-    }, 250);
+    }, 650 + Math.random() * 350);
   },
 };
 
