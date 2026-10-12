@@ -538,6 +538,175 @@ body { font-size: 13.5px; }
 .usage { font-size: 12px; line-height: 1.45; color: var(--muted); padding: 8px 10px; border-radius: var(--r-sm); background: var(--panel2); }
 .usage b { color: var(--text); font-weight: 600; }
 
+/* ================================================================
+   ПРАВАЯ КОЛОНКА РЕДАКТОРА (всё меню справа, как в PuzzleBot)
+   ================================================================ */
+.ed-main { grid-template-columns: minmax(0, 1fr) 344px !important; }
+.rcol { display: flex; flex-direction: column; min-height: 0; min-width: 0; border-left: 1px solid var(--line); background: var(--insp-bg); }
+.rswitch { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; margin: 10px 10px 0; padding: 3px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); flex: none; }
+.rswitch button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 34px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: 13px; font-weight: 600; }
+.rswitch button.on { background: var(--accent-soft); color: var(--accent); }
+.rcol > .pane { flex: 1; min-height: 0; border: 0 !important; background: transparent; }
+.rcol > .pane.left { margin: 10px; border: 1px solid var(--line) !important; border-radius: 12px; background: var(--panel); overflow: hidden; }
+@media (min-width: 861px) {
+  .rcol[data-t="props"] > .pane.left, .rcol:not([data-t="props"]) > .pane.right { display: none; }
+}
+@media (max-width: 1180px) { .ed-main { grid-template-columns: minmax(0, 1fr) 316px !important; } }
+@media (max-width: 860px) {
+  .ed-main { grid-template-columns: minmax(0, 1fr) !important; }
+  .rcol { display: contents; }
+  .rswitch { display: none; }
+  .rcol > .pane.left { margin: 0; border-radius: 18px 18px 0 0; }
+}
+
+/* Главный экран: меню справа */
+.home { grid-template-columns: minmax(0, 1fr) 236px; }
+.home > .side { border-right: 0; border-left: 1px solid var(--line); }
+@media (max-width: 860px) { .home { grid-template-columns: 1fr; } }
+
+/* Маскот: без рамок, теней и подложек */
+.mascot { display: block; flex: none; object-fit: contain; background: none; border: 0; box-shadow: none; image-rendering: auto; user-select: none; -webkit-user-drag: none; }
+.mascot-fb { display: grid; place-items: center; color: var(--accent); }
+.logo .mascot { width: 34px; height: 34px; }
+.top .logo .mascot { width: 30px; height: 30px; }
+.toast .mascot { width: 30px; height: 30px; margin: -6px 0 -6px -6px; }
+.empty .mascot { width: 96px; height: 96px; }
+
+/* ================================================================
+   БАЗА ЗНАНИЙ (как help.puzzle.bot)
+   ================================================================ */
+.home-main.kb-main { padding: 0; background: var(--panel); }
+.kb-wrap { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: 100%; }
+.kb-nav { display: flex; flex-direction: column; gap: 2px; padding: 16px; border-right: 1px solid var(--line); background: var(--panel2); position: sticky; top: 0; max-height: 100vh; overflow-y: auto; }
+.kb-search { margin-bottom: 12px; }
+.kb-search .inp { height: 40px; border-radius: 10px; border-width: 1.5px; background: var(--panel); font-size: 15px; padding-left: 38px; }
+.kb-search .ic { left: 12px; }
+.kb-home, .kb-cat, .kb-art { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: none; text-align: left; color: var(--text); border-radius: 10px; }
+.kb-home { height: 40px; padding: 0 12px; font-size: 14.5px; font-weight: 500; margin-bottom: 12px; }
+.kb-home.on, .kb-cat.on, .kb-art.on { background: var(--panel3); }
+.kb-cat { min-height: 38px; padding: 6px 12px; font-size: 14.5px; font-weight: 500; margin-top: 8px; }
+.kb-cat .ic { color: var(--muted); }
+.kb-art { padding: 7px 12px 7px 42px; font-size: 14px; color: var(--muted); line-height: 1.4; }
+.kb-art:hover, .kb-cat:hover, .kb-home:hover { background: var(--panel3); color: var(--text); }
+.kb-content { padding: 56px 48px 64px; max-width: 900px; min-width: 0; }
+.kb-h1 { margin: 0 0 32px; font-size: 32px; font-weight: 700; letter-spacing: -0.02em; color: var(--text); text-wrap: balance; }
+.kb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 24px; max-width: 680px; }
+.kb-card { position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; min-height: 162px; padding: 24px 24px 22px; border: 1.5px solid var(--line2); border-radius: 16px; background: var(--panel); text-align: left; color: var(--text); transition: border-color var(--t), transform var(--t); }
+.kb-card:hover { border-color: var(--accent-line); transform: translateY(-2px); }
+.kb-card b { font-size: 19px; font-weight: 600; line-height: 1.25; }
+.kb-card-ic { width: 46px; height: 46px; display: grid; place-items: center; border-radius: 10px; background: var(--panel3); color: var(--text); }
+.kb-card-m .mascot { width: 48px; height: 48px; }
+.kb-card--hi { border: 2px solid var(--accent); background: linear-gradient(180deg, var(--panel) 45%, var(--accent-soft) 100%); }
+.kb-crumbs { display: flex; gap: 6px; align-items: center; margin-bottom: 14px; color: var(--faint); font-size: 13px; }
+.kb-crumbs button { border: 0; background: none; padding: 0; color: var(--muted); font-size: 13px; }
+.kb-crumbs button:hover { color: var(--accent); }
+.kb-body { display: flex; flex-direction: column; gap: 14px; font-size: 16px; line-height: 1.65; color: var(--text); max-width: 68ch; }
+.kb-body p, .kb-body ul, .kb-body ol { margin: 0; }
+.kb-body ul, .kb-body ol { padding-left: 22px; display: flex; flex-direction: column; gap: 6px; }
+.kb-body h2 { margin: 14px 0 0; font-size: 21px; font-weight: 700; }
+.kb-body code { padding: 1px 6px; border-radius: 5px; background: var(--panel3); font-family: var(--font-m); font-size: 0.86em; }
+.kb-body a { color: var(--accent); }
+.kb-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+.kb-actions .btn { height: 42px; padding: 0 16px; border-radius: 10px; font-size: 14px; }
+.kb-more { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line); }
+.kb-more h3 { margin: 0 0 10px; font-size: 15px; color: var(--muted); }
+.kb-link { display: flex; align-items: center; gap: 8px; padding: 8px 0; border: 0; background: none; color: var(--accent); font-size: 15px; text-align: left; }
+.kb-list { display: flex; flex-direction: column; gap: 10px; max-width: 720px; }
+.kb-row { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border: 1.5px solid var(--line2); border-radius: 14px; background: var(--panel); text-align: left; color: var(--text); }
+.kb-row:hover { border-color: var(--accent-line); }
+.kb-row > span:nth-child(2) { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.kb-row b { font-size: 16px; }
+.kb-row small { color: var(--muted); font-size: 13px; line-height: 1.4; }
+.kb-row-ic { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 10px; background: var(--panel3); flex: none; }
+@media (max-width: 860px) {
+  .kb-wrap { grid-template-columns: 1fr; }
+  .kb-nav { position: static; max-height: none; border-right: 0; border-bottom: 1px solid var(--line); }
+  .kb-nav .kb-art { display: none; }
+  .kb-content { padding: 24px 16px 40px; }
+  .kb-h1 { font-size: 26px; margin-bottom: 20px; }
+  .kb-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .kb-card { min-height: 130px; padding: 16px; }
+  .kb-card b { font-size: 16px; }
+}
+
+/* ================================================================
+   PUZZLO AI — окно слева (как «Puzzlo Vibe House» в PuzzleBot)
+   ================================================================ */
+.pz-root { position: fixed; left: 18px; bottom: 18px; z-index: 80; font-family: var(--font); }
+.pz-root.in-editor:not(.open) { bottom: 18px; }
+.pz-mascot { display: block; padding: 0; border: 0; background: none; cursor: pointer; transition: transform .2s; -webkit-tap-highlight-color: transparent; }
+.pz-mascot:hover { transform: translateY(-3px) scale(1.04); }
+.pz-mascot:focus-visible { outline: 2px solid #4b8df8; outline-offset: 4px; border-radius: 12px; }
+.pz-mascot .mascot { width: 72px; height: 72px; }
+.pz-panel { position: relative; width: 400px; height: min(690px, calc(100vh - 36px)); display: flex; flex-direction: column; border-radius: 18px; background: linear-gradient(180deg, #2d6de0 0%, #3a84f0 55%, #4b93f4 100%); box-shadow: 0 24px 60px -16px rgba(20, 40, 90, .45); overflow: visible; animation: pzIn .22s cubic-bezier(.2,.8,.2,1); }
+@keyframes pzIn { from { opacity: 0; transform: translateY(14px) scale(.98); } }
+.pz-top { display: flex; flex-direction: column; gap: 10px; padding: 0 14px 14px; overflow-y: auto; flex: 1; min-height: 0; scrollbar-width: none; }
+.pz-head { display: flex; align-items: center; justify-content: space-between; height: 56px; flex: none; color: #fff; }
+.pz-head b { font-size: 17px; font-weight: 700; }
+.pz-x { width: 34px; height: 34px; display: grid; place-items: center; border: 0; border-radius: 8px; background: transparent; color: rgba(255,255,255,.9); }
+.pz-x:hover { background: rgba(255,255,255,.14); }
+.pz-card { display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; border: 0; border-radius: 12px; background: #fff; color: #23262d; text-align: left; font-size: 14.5px; flex: none; }
+.pz-row { display: flex; align-items: center; gap: 10px; }
+.pz-row .grow { flex: 1; }
+.pz-dia { width: 14px; height: 14px; transform: rotate(45deg); border-radius: 2px; background: linear-gradient(135deg, #5fc7ff, #3a8df0); margin: 0 4px; }
+.pz-gray { height: 34px; border: 0; border-radius: 8px; background: #ececec; color: #2b2f36; font-weight: 600; font-size: 14px; }
+.pz-gray:hover { background: #e2e2e2; }
+.pz-gray.sm { align-self: flex-start; padding: 0 14px; position: relative; z-index: 1; }
+.pz-promo { position: relative; overflow: hidden; gap: 4px; background: linear-gradient(115deg, #ffffff 30%, #dbe9ff 100%); }
+.pz-promo b { font-size: 15px; } .pz-promo > span { font-size: 13px; color: #545b66; margin-bottom: 8px; position: relative; z-index: 1; }
+.pz-cloud { position: absolute; right: -20px; bottom: -26px; width: 170px; height: 110px; border-radius: 60px 60px 10px 10px; background: radial-gradient(circle at 30% 60%, #fff 0 34px, transparent 35px), radial-gradient(circle at 60% 45%, #f6f9ff 0 44px, transparent 45px), radial-gradient(circle at 85% 70%, #fff 0 30px, transparent 31px); filter: drop-shadow(0 4px 8px rgba(60,120,220,.25)); }
+.pz-task { flex-direction: row; align-items: center; gap: 12px; cursor: pointer; }
+.pz-task .grow { flex: 1; }
+.pz-cb { width: 22px; height: 22px; flex: none; display: grid; place-items: center; border: 2px solid #8b929c; border-radius: 4px; color: #fff; }
+.pz-task.done .pz-cb { background: #4b8df8; border-color: #4b8df8; }
+.pz-task.done .grow { color: #8b929c; text-decoration: line-through; }
+.pz-pts { font-size: 13px; color: #6b7280; }
+.pz-chat { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 300px; display: flex; flex-direction: column; border: 2px solid #b8a3f6; border-radius: 18px; background: #fff; color: #23262d; transition: height .25s cubic-bezier(.2,.8,.2,1); }
+.pz-chat.expanded { height: calc(100% - 56px); }
+.pz-chat > .pz-mascot { position: absolute; right: 64px; top: -60px; z-index: 2; }
+.pz-chat > .pz-mascot .mascot { width: 76px; height: 76px; }
+.pz-chat-h { display: flex; align-items: center; gap: 8px; height: 52px; padding: 0 10px; flex: none; }
+.pz-chat-h b { flex: 1; font-size: 18px; font-weight: 500; }
+.pz-ic { width: 34px; height: 34px; display: grid; place-items: center; border: 0; border-radius: 8px; background: none; color: #5d6470; }
+.pz-ic:hover, .pz-ic.on { background: #f1f2f5; color: #23262d; }
+.pz-msgs { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 16px 10px; display: flex; flex-direction: column; gap: 12px; }
+.pz-day { display: flex; justify-content: center; }
+.pz-day span { padding: 3px 10px; border-radius: 999px; background: #bdbdbd; color: #fff; font-size: 12px; }
+.pz-u { align-self: flex-end; max-width: 82%; padding: 8px 12px; border-radius: 12px 12px 4px 12px; background: #e3f6dc; font-size: 14.5px; line-height: 1.4; white-space: pre-wrap; overflow-wrap: anywhere; }
+.pz-a { align-self: stretch; font-size: 14.5px; line-height: 1.5; }
+.pz-a-t { display: flex; flex-direction: column; gap: 8px; }
+.pz-a-t p { margin: 0; white-space: pre-wrap; }
+.pz-a-t ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.pz-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.pz-btns button { height: 30px; padding: 0 12px; border: 1px solid #c9d8f7; border-radius: 8px; background: #f2f7ff; color: #2d6de0; font-weight: 600; font-size: 13px; }
+.pz-tools { display: flex; gap: 2px; margin-top: 6px; }
+.pz-tools button { width: 26px; height: 26px; display: grid; place-items: center; border: 0; border-radius: 6px; background: none; color: #8b929c; }
+.pz-tools button:hover, .pz-tools button.on { color: #2d6de0; background: #eef3fe; }
+.pz-empty { margin: auto 0; display: flex; flex-direction: column; gap: 12px; color: #545b66; font-size: 14.5px; }
+.pz-empty p { margin: 0; }
+.pz-sugs { display: flex; flex-direction: column; gap: 6px; }
+.pz-sugs button { align-self: flex-start; padding: 7px 12px; border: 1px solid #e1e4ea; border-radius: 10px; background: #f7f8fa; color: #23262d; font-size: 13.5px; text-align: left; }
+.pz-sugs button:hover { border-color: #b8a3f6; }
+.pz-hist-t { font-weight: 600; color: #545b66; }
+.pz-hist { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border: 1px solid #e6e8ec; border-radius: 10px; background: #fff; text-align: left; }
+.pz-hist.on { border-color: #4b8df8; background: #f2f7ff; }
+.pz-hist small { color: #8b929c; }
+.pz-input { margin: 0 12px 12px; border: 1.5px solid #d7dae0; border-radius: 12px; background: #fff; flex: none; }
+.pz-input:focus-within { border-color: #4b8df8; }
+.pz-input textarea { display: block; width: 100%; min-height: 40px; max-height: 120px; padding: 10px 12px 2px; border: 0; outline: none; resize: none; background: none; color: #23262d; font: inherit; font-size: 14.5px; }
+.pz-input-b { display: flex; align-items: center; justify-content: space-between; padding: 0 6px 6px; }
+.pz-send { width: 38px; height: 32px; display: grid; place-items: center; border: 0; border-radius: 8px; background: #4b8df8; color: #fff; }
+.pz-send[disabled] { background: #cfd2d8; }
+@media (max-width: 860px) {
+  .pz-root:not(.open) { left: 10px; bottom: calc(var(--bnav-h) + env(safe-area-inset-bottom, 0px) + 8px); }
+  .pz-root:not(.open) .pz-mascot .mascot { width: 54px; height: 54px; }
+  .pz-root.in-editor:not(.open) { bottom: calc(var(--bnav-h) + env(safe-area-inset-bottom, 0px) + 66px); }
+  .pz-root.open { left: 0; right: 0; top: 0; bottom: 0; z-index: 150; }
+  .pz-panel { width: 100%; height: 100%; border-radius: 0; padding-top: env(safe-area-inset-top, 0px); }
+  .pz-chat { border-radius: 18px 18px 0 0; }
+}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid2>*{min-width:0}
+
 </style>
 </head>
 <body>
@@ -545,6 +714,9 @@ body { font-size: 13.5px; }
 <script>
 (function () {
 "use strict";
+/* ===== 00-assets (сгенерировано build.py) ===== */
+const MASCOT = {"logo": "https://i.postimg.cc/4x5MGhjw/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADZJ4AAoaqa-Eo.gif", "error": "https://i.postimg.cc/pXvqdLfS/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADQ7AAAjexa-Uo.gif", "heart": "https://i.postimg.cc/zXDKMbSY/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADCqs-AAh-QAAWl-K.gif", "like": "https://i.postimg.cc/dQ6T8QMS/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADa-Ks-AAr87YEo.gif", "wave": "https://i.postimg.cc/nr9bccqz/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADt-LQAAvlka-Eo.gif"};
+const MASCOT_EMBEDDED = [];
 /* ===== 01-util.js ===== */
 /* ============================================================
    01 · УТИЛИТЫ: DOM, ID, экранирование, проверка URL и CSS
@@ -873,6 +1045,17 @@ function ic(name, size = 18) {
   return s;
 }
 
+/* Маскот Puzzlo. Картинка без рамок, теней и подложек.
+   Если картинка не загрузилась (нет сети или сайт запретил показ), показываем запасной значок. */
+function mascotImg(kind = 'logo', size = 40) {
+  const img = h('img', { class: 'mascot', src: MASCOT[kind] || MASCOT.logo, alt: '', width: size, height: size, draggable: 'false', referrerpolicy: 'no-referrer' });
+  img.addEventListener('error', () => {
+    const fb = h('span', { class: 'mascot mascot-fb', style: { width: size + 'px', height: size + 'px' }, html: iconSvg('logo', Math.round(size * 0.55)) });
+    img.replaceWith(fb);
+  }, { once: true });
+  return img;
+}
+
 /* ===== 03-vars-themes.js ===== */
 /* ============================================================
    03 · ПЕРЕМЕННЫЕ PUZZLEBOT, ШРИФТЫ, ТЕМЫ
@@ -1021,7 +1204,9 @@ function rich(src, ctx) {
   }).join('');
 }
 function at(n, ctx, cls, extra = '') {
-  let a = `class="${cls} ps-${n.id}${ctx.mode !== 'edit' && n.anim && n.anim.in && n.anim.in !== 'none' ? ' ps-anim-' + n.anim.in : ''}"`;
+  const os = n.adv && n.adv.os;
+  const osCls = os === 'ios' ? ' block_android block-android' : os === 'android' ? ' block_ios block-ios' : '';
+  let a = `class="${cls} ps-${n.id}${osCls}${ctx.mode !== 'edit' && n.anim && n.anim.in && n.anim.in !== 'none' ? ' ps-anim-' + n.anim.in : ''}"`;
   if (n.anchor && /^[a-z0-9_-]+$/i.test(n.anchor)) a += ` id="ps-${n.anchor}"`;
   if (ctx.mode === 'edit') a += ` data-psid="${n.id}"`;
   return a + extra;
@@ -1794,7 +1979,7 @@ const ACTION_DEFS = [
   { id: 'none', g: 0, label: 'Нет действия' },
   { id: 'url', g: 0, label: 'Обычная ссылка', link: true, params: [{ k: 'value', label: 'Адрес', type: 'url', ph: 'https://example.com', req: true }, { k: 'newTab', label: 'Открывать во внешнем браузере', type: 'toggle', def: true }],
     info: 'Внутри Telegram откроется через openLink. Ссылки https://t.me/… открываются внутри Telegram.' },
-  { id: 'goto', g: 0, label: 'Страница Mini App PuzzleBot (goto_web_page)', link: true, params: [{ k: 'value', label: 'Ссылка на страницу Mini App или её ID', type: 'text', ph: 'https://t.me/BrootsBot?startapp=623ec549b7791482', req: true }],
+  { id: 'goto', g: 0, label: 'Страница Mini App PuzzleBot (goto_web_page)', link: true, params: [{ k: 'value', label: 'Ссылка на страницу Mini App или её ID', type: 'text', ph: 'https://t.me/BrootsBot?startapp=623ec549b7791482', req: true }, { k: 'win', label: 'Открыть в новом окне (gotoWebPage)', type: 'toggle', def: false }],
     info: 'Переход между страницами мини-приложения PuzzleBot: <a goto_web_page="ID">. Его обрабатывает сам PuzzleBot, поэтому он работает только внутри мини-приложения PuzzleBot. ID — всё, что после «startapp=».' },
   { id: 'anchor', g: 0, label: 'Прокрутить к блоку на странице', link: true, params: [{ k: 'value', label: 'К какому блоку', type: 'anchor', req: true }] },
   { id: 'tg', g: 0, label: 'Канал, группа или профиль', link: true, params: [{ k: 'value', label: '@username или https://t.me/…', type: 'text', ph: '@BrootsBot', req: true }] },
@@ -1910,11 +2095,11 @@ function actionParts(act, ctx) {
   let extra = '';
   const hp = CSS.pick(a.haptic, HAPTIC_KEYS);
   if (hp) extra += ` data-ps-h="${hp}"`;
-  if (a.confirm && a.type !== 'goto' && a.type !== 'none') extra += ` data-ps-confirm="${TA(a.confirm, ctx)}"`;
+  if (a.confirm && a.type !== 'none') extra += ` data-ps-confirm="${TA(a.confirm, ctx)}"`;
   if (a.type === 'goto') {
     const id = parseGoto(a.value);
     if (!id) return { tag: 'button', attrs: ' type="button"' + extra };
-    return { tag: 'a', attrs: ` goto_web_page="${escAttr(id)}" role="button" tabindex="0"` + extra };
+    return { tag: 'a', attrs: ` goto_web_page="${escAttr(id)}" role="button" tabindex="0"${a.win ? ' data-ps-gw="1"' : ''}` + extra };
   }
   if (a.type === 'anchor') {
     const an = String(a.value || '').replace(/^#/, '');
@@ -2100,9 +2285,52 @@ function styleDecls(st, node, tokens) {
   if (st.italic) d['font-style'] = 'italic';
   if (st.td) { const v = CSS.pick(st.td, ['none', 'underline', 'line-through']); if (v) d['text-decoration'] = v; }
   if (st.clamp && parseInt(st.clamp) > 0) { d.display = '-webkit-box'; d['-webkit-line-clamp'] = clamp(parseInt(st.clamp), 1, 20); d['-webkit-box-orient'] = 'vertical'; d.overflow = 'hidden'; }
+  // Дополнительно
+  const ad = node.adv || {};
+  const tf = [];
+  if (ad.rot != null && ad.rot !== '' && parseFloat(ad.rot)) tf.push(`rotate(${clamp(parseFloat(ad.rot), -180, 180)}deg)`);
+  if (ad.tx || ad.ty) tf.push(`translate(${clamp(parseInt(ad.tx) || 0, -400, 400)}px, ${clamp(parseInt(ad.ty) || 0, -400, 400)}px)`);
+  if (tf.length) d.transform = tf.join(' ');
+  if (ad.z != null && ad.z !== '') { d['z-index'] = clamp(parseInt(ad.z) || 0, -10, 100); if (!ad.pos) d.position = 'relative'; }
+  const pos = CSS.pick(ad.pos, ['sticky', 'relative']);
+  if (pos) { d.position = pos; if (pos === 'sticky') { d.top = (clamp(parseInt(ad.top) || 0, 0, 200)) + 'px'; d['z-index'] = d['z-index'] ?? 5; } }
+  const ovf = CSS.pick(ad.ovf, ['hidden', 'auto', 'visible']);
+  if (ovf) { d.overflow = ovf; if (ovf === 'auto') d['-webkit-overflow-scrolling'] = 'touch'; }
+  const ar = CSS.pick(ad.ar, ['1 / 1', '4 / 3', '3 / 4', '16 / 9', '9 / 16', '3 / 2', '2 / 1']);
+  if (ar) d['aspect-ratio'] = ar;
+  const ts = { soft: '0 1px 2px rgba(0,0,0,.25)', strong: '0 2px 8px rgba(0,0,0,.55)', glow: '0 0 12px var(--ps-primary)' }[ad.tsh];
+  if (ts) d['text-shadow'] = ts;
+  if (ad.blend) { const v = CSS.pick(ad.blend, ['multiply', 'screen', 'overlay', 'luminosity']); if (v) d['mix-blend-mode'] = v; }
+  if (ad.nosel) { d['-webkit-user-select'] = 'none'; d['user-select'] = 'none'; }
+  if (ad.css) Object.assign(d, safeCustomCss(ad.css));
   // Изображения
   if (node.type === 'icon' && bgc && node.props.shape === 'none') { /* фон без подложки не нужен */ }
   return d;
+}
+
+/* Свой CSS блока: только «свойство: значение;», без селекторов, url(), @-правил и выражений */
+const CUSTOM_CSS_BAN = /(url\s*\(|expression|javascript:|@import|behavior|-moz-binding|[<>{}\\]|\/\*)/i;
+function safeCustomCss(src) {
+  const out = {};
+  for (const part of String(src || '').split(';')) {
+    const i = part.indexOf(':'); if (i < 1) continue;
+    const k = part.slice(0, i).trim().toLowerCase(), v = part.slice(i + 1).trim();
+    if (!/^-?[a-z][a-z0-9-]{0,40}$/.test(k) || !v || v.length > 300 || CUSTOM_CSS_BAN.test(v)) continue;
+    if (k === 'position' && /fixed/i.test(v)) continue; // fixed ломает блок внутри PuzzleBot
+    out[k] = v.replace(/!important/gi, '').trim();
+  }
+  return out;
+}
+function customCssIssues(src) {
+  const bad = [];
+  for (const part of String(src || '').split(';')) {
+    const t = part.trim(); if (!t) continue;
+    const i = t.indexOf(':');
+    if (i < 1) { bad.push(t); continue; }
+    const k = t.slice(0, i).trim().toLowerCase(), v = t.slice(i + 1).trim();
+    if (!/^-?[a-z][a-z0-9-]{0,40}$/.test(k) || !v || v.length > 300 || CUSTOM_CSS_BAN.test(v) || (k === 'position' && /fixed/i.test(v))) bad.push(t);
+  }
+  return bad;
 }
 
 function declStr(d, ind = '  ') {
@@ -2543,7 +2771,7 @@ function scanFeatures(root) {
       if (d && d.link && t !== 'goto' && t !== 'anchor') { f.links = true; f.js = true; f.acts.add('link'); }
       if (t === 'anchor' && a.confirm) f.acts.add('anchor');
       if (!JS_FREE_ACTIONS.has(t)) { f.js = true; f.acts.add(t); }
-      if (a.confirm || a.haptic) f.js = true;
+      if (a.confirm || a.haptic || (t === 'goto' && a.win)) f.js = true;
     }
     if (n.type === 'button' || n.type === 'navmenu' || n.type === 'bottomnav' || n.type === 'accordion' || n.type === 'tabs') f.tapables = true;
     if (n.type === 'tguser') { f.js = true; f.tg = true; }
@@ -2640,7 +2868,17 @@ function runtimeJs(pid, feat, opt = {}) {
     var el = e.target.closest ? e.target.closest('[data-ps-act], [goto_web_page]') : null;
     if (el && root.contains(el)) {
       var hh = el.getAttribute('data-ps-h'); hap(hh === null ? DEFH : hh);
-      if (el.hasAttribute('goto_web_page')) { if (PREVIEW) { e.preventDefault(); say('Переход на страницу мини-приложения PuzzleBot: ' + el.getAttribute('goto_web_page')); } return; }
+      if (el.hasAttribute('goto_web_page')) {
+        var gid = el.getAttribute('goto_web_page'), gw = el.hasAttribute('data-ps-gw'), gc = el.getAttribute('data-ps-confirm');
+        if (PREVIEW) { e.preventDefault(); say('Переход на страницу мини-приложения PuzzleBot: ' + gid + (gw ? ' (новое окно)' : '')); return; }
+        /* gotoWebPage(ID, новое_окно) — функция PuzzleBot; без неё оставляем обычную обработку goto_web_page */
+        if ((gw || gc) && typeof window.gotoWebPage === 'function') {
+          e.preventDefault(); e.stopPropagation();
+          var gg = function () { try { window.gotoWebPage(gid, gw); } catch (er) {} };
+          if (gc) { if (can('6.2') && tg.showConfirm) tg.showConfirm(gc, function (ok) { if (ok) gg(); }); else if (window.confirm(gc)) gg(); } else gg();
+        } else if (gc && !window.confirm(gc)) { e.preventDefault(); e.stopPropagation(); }
+        return;
+      }
       var a = el.getAttribute('data-ps-act'), p = {}, cf = el.getAttribute('data-ps-confirm');
       try { p = JSON.parse(el.getAttribute('data-ps-p') || '{}'); } catch (er) {}
       if (a === 'link' && !tg && !cf) return; /* вне Telegram — обычный переход по ссылке */
@@ -2878,7 +3116,7 @@ function validateImport(raw) {
     const props = sanitizeValue(n.props || {}) || {};
     out.props = { ...clone(dp), ...props };
     out.style = sanitizeValue(n.style || {}) || {};
-    for (const k of ['hover', 'press', 'anim', 'hide', 'action']) if (n[k] && typeof n[k] === 'object') out[k] = sanitizeValue(n[k]);
+    for (const k of ['hover', 'press', 'anim', 'hide', 'action', 'adv']) if (n[k] && typeof n[k] === 'object') out[k] = sanitizeValue(n[k]);
     if (n.bp && typeof n.bp === 'object') { out.bp = {}; for (const b of ['tablet', 'desktop']) if (n.bp[b]) out.bp[b] = sanitizeValue(n.bp[b]); }
     if (typeof n.name === 'string') out.name = n.name.slice(0, 80);
     if (typeof n.anchor === 'string' && /^[a-z0-9_-]{1,40}$/i.test(n.anchor)) out.anchor = n.anchor;
@@ -3013,6 +3251,7 @@ function lintProject(project, opts = {}) {
    ============================================================ */
 const EXPORT_MODES = [
   { id: 'puzzlebot', short: 'D', label: 'PuzzleBot: один блок', desc: 'Стили, разметка и скрипт в одном куске кода. Для поля, куда вставляется HTML целиком.' },
+  { id: 'pbhead', short: 'H', label: 'PuzzleBot: head + блок', desc: 'Стили и скрипт — в поле «HTML в head» настроек мини-приложения, в блок «HTML код» — только разметка. Блок короче, стили общие для всех страниц.' },
   { id: 'split', short: 'B', label: 'HTML + CSS + JS', desc: 'Три отдельные части. Для конструкторов, где стили и скрипты вставляются в разные поля.' },
   { id: 'fragment', short: 'A', label: 'Только HTML', desc: 'Разметка без стилей. Подходит, только если CSS уже подключён отдельно.' },
   { id: 'document', short: 'C', label: 'Полный документ', desc: 'Готовая страница index.html. Для размещения на хостинге и открытия как Mini App по ссылке.' },
@@ -3033,6 +3272,16 @@ function buildExport(project, o = {}) {
     parts.push({ tab: 'HTML', lang: 'html', code: g.html, file: 'page.html' });
     notes.push('В этом режиме нет стилей. Без CSS страница будет выглядеть как обычный текст. CSS можно взять в режиме «HTML + CSS + JS».');
     if (g.js) notes.push('Интерактивные элементы (копирование, таймер, формы) без JavaScript работают в упрощённом виде.');
+  } else if (mode === 'pbhead') {
+    // Скрипт в head выполняется до появления блока — ждём DOMContentLoaded
+    const jsHead = g.js ? `(function (f) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', f); else f(); })(function () {\n${g.js}\n});` : '';
+    const headCode = `<!-- Puzzle Studio · стили и скрипт для «HTML в head» -->\n<style>\n${css}\n</style>${jsHead ? `\n<script>\n${jsHead}\n<\/script>` : ''}`;
+    parts.push({ tab: 'HTML в head', lang: 'html', code: headCode, file: 'puzzlebot-head.html' });
+    parts.push({ tab: 'Блок «HTML код»', lang: 'html', code: `${head}\n${g.html}`, file: 'puzzlebot-block.html' });
+    single = `${headCode}\n${head}\n${g.html}`;
+    notes.push('Код из первой вкладки вставьте один раз в настройках мини-приложения (поле HTML в head), разметку — в блок «HTML код» нужной страницы.');
+    notes.push('Если в «HTML в head» уже есть код другой страницы Puzzle Studio, добавьте новый ниже: стили каждого проекта начинаются со своего .ps-p-' + project.pid + ' и не конфликтуют.');
+    notes.push('Если PuzzleBot подгружает страницы без перезагрузки, скрипт из head может не увидеть новый блок. Тогда используйте режим «PuzzleBot: один блок».');
   } else if (mode === 'split') {
     parts.push({ tab: 'HTML', lang: 'html', code: g.html, file: 'page.html' });
     parts.push({ tab: 'CSS', lang: 'css', code: css, file: 'style.css' });
@@ -3080,6 +3329,12 @@ const EXPORT_GUIDE = {
     'Во вкладке «Настройки» мини-приложения включите «Задать фон» и «Задать цвет шапки» и укажите цвет, показанный выше.',
     'Сохраните и откройте мини-приложение в Telegram на телефоне. Проверьте кнопки и переменные.',
     'Если рядом остаётся чужой фон — пришлите скриншот «Диагностики» (кнопка ниже), по нему видно, как PuzzleBot выводит блок.',
+  ],
+  pbhead: [
+    'Скопируйте вкладку «HTML в head».',
+    'PuzzleBot → Конструктор → мини-приложение → «Настройки» → поле для HTML в head (или глобальный HTML в head). Вставьте код и сохраните.',
+    'Скопируйте вкладку «Блок HTML код» и вставьте её в блок «HTML код» на нужной странице.',
+    'Откройте мини-приложение в Telegram и проверьте. Если стили не применились — PuzzleBot не сохранил head-код, используйте режим «Один блок».',
   ],
   split: [
     'Скопируйте HTML, CSS и JS по отдельности.',
@@ -3716,7 +3971,7 @@ const UI = {
   toast(text, opts = {}) {
     let host = $('.toasts');
     if (!host) { host = h('div', { class: 'toasts', role: 'status', 'aria-live': 'polite' }); document.body.append(host); }
-    const t = h('div', { class: 'toast' + (opts.err ? ' err' : '') }, opts.icon ? ic(opts.icon, 16) : null, h('span', null, text),
+    const t = h('div', { class: 'toast' + (opts.err ? ' err' : '') }, opts.err ? mascotImg('error', 30) : opts.icon === 'check' ? mascotImg('like', 30) : opts.icon === 'heart' ? mascotImg('heart', 30) : opts.icon ? ic(opts.icon, 16) : null, h('span', null, text),
       opts.action ? h('button', { onclick: () => { opts.action.fn(); t.remove(); } }, opts.action.label) : null);
     host.append(t);
     setTimeout(() => t.remove(), opts.ms || (opts.action ? 5000 : 2600));
@@ -4370,7 +4625,7 @@ const S = {
   project: null, sel: null, device: 'mobile', leftTab: 'add', mpane: null, compQuery: '', varQuery: '',
   clip: null, dragNew: null, layerDrag: null, collapsed: new Set(), openSecs: { content: true, action: true },
   settings: { ui: 'light', varMode: 'raw', showBoxes: false, v: 2 },
-  save: 'saved', projects: [], favTpl: [], myComps: [], media: [],
+  save: 'saved', flags: {}, rtab: 'add', projects: [], favTpl: [], myComps: [], media: [],
 };
 const isMobile = () => window.matchMedia('(max-width: 860px)').matches;
 
@@ -4409,6 +4664,7 @@ const Editor = {
     Store.kvSet('lastOpen', project.id);
     this.saveNow();
     App.syncTelegramBack();
+    Puzzlo.render();
   },
   async close() {
     await this.saveNow();
@@ -4500,6 +4756,7 @@ const Editor = {
     S.sel = node.id;
     this.renderLayers();
     Inspector.render();
+    if (!isMobile() && S.rtab !== 'props') this.setRtab('props'); // как в PuzzleBot: после добавления открываются настройки блока
     setTimeout(() => Canvas.select(node.id, true), 80);
     if (isMobile()) { this.setMpane(null); UI.toast('Добавлено: ' + nodeLabel(node), { icon: 'check' }); }
   },
@@ -4642,6 +4899,7 @@ const Editor = {
     S.sel = id;
     if (!opts.fromCanvas) Canvas.select(id, opts.scroll !== false);
     else Canvas.select(id, false);
+    if (opts.fromCanvas && !isMobile() && S.rtab !== 'props') this.setRtab('props');
     Inspector.render();
     this.highlightLayer();
     this.updateChip();
@@ -4701,7 +4959,7 @@ const Editor = {
     ], { align: 'end' }));
     const top = h('header', { class: 'top' },
       h('button', { class: 'btn icon ghost', title: 'К проектам', 'aria-label': 'К проектам', onclick: () => this.close() }, ic('arrow-left')),
-      h('span', { class: 'logo hide-sm' }, h('span', { class: 'logo-mark', html: iconSvg('logo', 16) }), h('span', { class: 'logo-text hide-md' }, 'Puzzle Studio'), h('span', { class: 'logo-sl hide-md' }, '://')),
+      h('span', { class: 'logo hide-sm' }, mascotImg('logo', 30), h('span', { class: 'logo-text hide-md' }, 'Puzzle Studio'), h('span', { class: 'logo-sl hide-md' }, '://')),
       h('button', { class: 'crumb hide-sm', onclick: () => this.close() }, 'Мои проекты'), h('span', { class: 'crumb-sep hide-sm' }, '/'),
       E.name, E.save,
       h('div', { class: 'top-mid' }, E.undo, E.redo, h('span', { class: 'sep hide-sm' }), h('div', { class: 'hide-sm' }, E.dev)),
@@ -4728,13 +4986,29 @@ const Editor = {
       mBtn('props', 'sliders', 'Свойства', () => this.setMpane(S.mpane === 'props' ? null : 'props')),
       mBtn('preview', 'play', 'Просмотр', () => this.preview()),
       mBtn('export', 'code', 'Экспорт', () => ExportUI.open()));
-    app.append(h('div', { class: 'ed' }, top, h('div', { class: 'ed-main' }, E.left, stage, E.right), E.chip, E.scrim, mnav));
+    E.rswitch = h('div', { class: 'rswitch', role: 'tablist', 'aria-label': 'Панель' });
+    E.rcol = h('div', { class: 'rcol' }, E.rswitch, E.left, E.right);
+    app.append(h('div', { class: 'ed' }, top, h('div', { class: 'ed-main' }, stage, E.rcol), E.chip, E.scrim, mnav));
+    this.setRtab(S.rtab || 'add');
     Canvas.mount(stage);
     this.renderLeft();
     Inspector.render();
     this.setSave(Store.mode === 'memory' ? 'mem' : 'saved');
     this.updateUndo();
     this.updateChip();
+  },
+  /* Правая колонка (как панель настроек PuzzleBot): Добавить / Слои / Свойства */
+  setRtab(t) {
+    S.rtab = t;
+    const E = this.els;
+    if (!E.rcol) return;
+    E.rcol.dataset.t = t;
+    E.rswitch.innerHTML = '';
+    for (const [id, label, icn] of [['add', 'Добавить', 'plus'], ['layers', 'Слои', 'layers'], ['props', 'Свойства', 'sliders']]) {
+      E.rswitch.append(h('button', { class: t === id ? 'on' : '', role: 'tab', 'aria-selected': String(t === id), onclick: () => this.setRtab(id) }, ic(icn, 15), label));
+    }
+    if (t === 'layers' && S.leftTab !== 'layers') { S.leftTab = 'layers'; this.renderLeft(); }
+    else if (t === 'add' && S.leftTab === 'layers') { S.leftTab = 'add'; this.renderLeft(); }
   },
   setDevice(d) {
     S.device = d;
@@ -4777,7 +5051,8 @@ const Editor = {
     const tabsDef = [['add', 'Блоки', 'plus'], ['sections', 'Секции', 'stack'], ['layers', 'Слои', 'layers'], ['mine', 'Мои', 'bookmark'], ['media', 'Медиа', 'image'], ['vars', 'Переменные', 'variable']];
     const tabs = h('div', { class: 'tabs', role: 'tablist' });
     for (const [id, label] of tabsDef) {
-      tabs.append(h('button', { class: S.leftTab === id ? 'on' : '', role: 'tab', 'aria-selected': String(S.leftTab === id), onclick: () => { S.leftTab = id; this.renderLeft(); } }, label));
+      if (id === 'layers' && !isMobile()) continue; // на ПК слои — отдельная вкладка правой колонки
+      tabs.append(h('button', { class: S.leftTab === id ? 'on' : '', role: 'tab', 'aria-selected': String(S.leftTab === id), onclick: () => { S.leftTab = id; this.renderLeft(); if (!isMobile()) { if (id === 'layers' && S.rtab !== 'layers') this.setRtab('layers'); else if (id !== 'layers' && S.rtab !== 'add') this.setRtab('add'); } } }, label));
     }
     const body = h('div', { class: 'pane-body' });
     L.append(h('div', { class: 'grabber' }), tabs, body);
@@ -5440,6 +5715,7 @@ const Inspector = {
       body.append(this.sec('type', 'Текст', this.typeCtl(n)));
       body.append(this.sec('look', 'Фон, рамка, тень', this.lookCtl(n)));
       body.append(this.sec('resp', 'Адаптивность', this.respCtl(n)));
+      body.append(this.sec('adv', 'Дополнительно', this.advCtl(n)));
     } else {
       if (def.action) body.append(this.sec('action', 'Действие при нажатии', this.actionEditor(n), { open: true }));
       else body.append(h('div', { class: 'empty-tab' }, 'У этого блока нет действия при нажатии. Действия есть у кнопок, ссылок и картинок.'));
@@ -5577,6 +5853,35 @@ const Inspector = {
       h('div', { class: 'btn-row' },
         h('button', { class: 'btn sm', disabled: !(n.bp && n.bp.tablet), onclick: () => resetBp('tablet') }, 'Сбросить для планшета'),
         h('button', { class: 'btn sm', disabled: !(n.bp && n.bp.desktop), onclick: () => resetBp('desktop') }, 'Сбросить для ПК')),
+    ];
+  },
+  advCtl(n) {
+    const ad = n.adv || {};
+    const A = k => ({ get: () => (Editor.node(n.id).adv || {})[k], set: (v, key) => Editor.setProp(n.id, ['adv', k], v, key) });
+    const seg = (k, opts, def = '') => segmented(opts, ad[k] || def, v => Editor.setProp(n.id, ['adv', k], v === def ? '' : v, null, { panel: true }));
+    const sel = (k, opts) => selectEl(opts, ad[k] || '', v => Editor.setProp(n.id, ['adv', k], v));
+    const css = h('textarea', { class: 'inp mono', rows: 4, spellcheck: 'false', 'data-novar': '1', placeholder: 'letter-spacing: 2px;\nbackground: linear-gradient(90deg, #ff7a59, #ffb347);', value: ad.css || '' });
+    const st = h('div', { class: 'status-line' });
+    const chk = () => { const bad = customCssIssues(css.value); st.className = 'status-line ' + (bad.length ? 'warn' : (css.value.trim() ? 'ok' : '')); st.textContent = bad.length ? 'Будет пропущено: ' + bad.slice(0, 3).join('; ') : (css.value.trim() ? 'CSS применён к этому блоку' : ''); };
+    css.value = ad.css || ''; chk();
+    css.addEventListener('input', () => { chk(); Editor.setProp(n.id, ['adv', 'css'], css.value, n.id + ':css'); });
+    return [
+      field('Показывать на', seg('os', [['', 'Везде'], ['ios', 'Только iOS'], ['android', 'Только Android']]),
+        { hint: 'PuzzleBot сам скрывает блоки с классами block_ios / block_android на нужной платформе. В конструкторе блок виден всегда.' }),
+      field('Поворот', this.range(A('rot'), { min: -180, max: 180, unit: '°' })),
+      h('div', { class: 'grid2' },
+        field('Сдвиг X', this.num(A('tx'), { min: -400, max: 400 })),
+        field('Сдвиг Y', this.num(A('ty'), { min: -400, max: 400 }))),
+      h('div', { class: 'grid2' },
+        field('Слой (z-index)', this.num(A('z'), { min: -10, max: 100, unit: '' })),
+        field('Пропорции', sel('ar', [['', 'Свободно'], ['1 / 1', '1:1'], ['4 / 3', '4:3'], ['3 / 4', '3:4'], ['16 / 9', '16:9'], ['9 / 16', '9:16'], ['3 / 2', '3:2'], ['2 / 1', '2:1']]))),
+      field('Закрепление', seg('pos', [['', 'Нет'], ['sticky', 'Прилипает при прокрутке']])),
+      ...(ad.pos === 'sticky' ? [field('Отступ сверху', this.num(A('top'), { min: 0, max: 200 }))] : []),
+      field('Содержимое за краями', seg('ovf', [['', 'Авто'], ['hidden', 'Обрезать'], ['auto', 'Прокрутка']])),
+      field('Тень текста', seg('tsh', [['', 'Нет'], ['soft', 'Мягкая'], ['strong', 'Сильная'], ['glow', 'Свечение']])),
+      field('Наложение', sel('blend', [['', 'Обычное'], ['multiply', 'Умножение'], ['screen', 'Экран'], ['overlay', 'Перекрытие'], ['luminosity', 'Яркость']])),
+      toggle('Запретить выделение текста', !!ad.nosel, v => Editor.setProp(n.id, ['adv', 'nosel'], v ? 1 : '')),
+      field('Свой CSS для блока', h('div', { class: 'fld' }, css, st), { hint: 'Только пары «свойство: значение;». url(), @import, селекторы и position: fixed отбрасываются — так блок не сломает страницу PuzzleBot.' }),
     ];
   },
   moreCtl(n) {
@@ -5767,18 +6072,19 @@ const Home = {
   render() {
     const app = $('#app');
     app.innerHTML = '';
-    const tabs = [['projects', 'Мои проекты', 'folder'], ['templates', 'Шаблоны', 'grid'], ['mine', 'Мои компоненты', 'bookmark'], ['media', 'Медиатека', 'image'], ['settings', 'Настройки', 'settings']];
+    const tabs = [['projects', 'Мои проекты', 'folder'], ['templates', 'Шаблоны', 'grid'], ['kb', 'База знаний', 'book'], ['mine', 'Мои компоненты', 'bookmark'], ['media', 'Медиатека', 'image'], ['settings', 'Настройки', 'settings']];
     const side = h('nav', { class: 'side scroll', 'aria-label': 'Разделы' },
-      h('div', { class: 'logo' }, h('span', { class: 'logo-mark', html: iconSvg('logo', 16) }), h('span', { class: 'logo-text' }, 'Puzzle Studio'), h('span', { class: 'logo-sl' }, '://')),
+      h('div', { class: 'logo' }, mascotImg('logo', 34), h('span', { class: 'logo-text' }, 'Puzzle Studio'), h('span', { class: 'logo-sl' }, '://')),
       h('button', { class: 'btn primary', style: { marginBottom: '10px' }, onclick: () => this.newBlank() }, ic('plus', 16), 'Создать страницу'),
       tabs.map(([id, l, icn]) => h('button', { class: 'side-btn' + (S.homeTab === id ? ' on' : ''), onclick: () => { S.homeTab = id; this.render(); } }, ic(icn, 17), l)),
       h('div', { class: 'side-foot' },
         h('span', { class: 'badge-local' }, h('i'), Store.mode === 'memory' ? 'Без сохранения' : 'Локальный режим'),
         h('span', null, Store.mode === 'memory' ? 'Хранилище браузера недоступно. Проекты исчезнут после закрытия — скачивайте JSON.' : 'Проекты хранятся только в этом браузере. Облачной синхронизации нет.')));
     const main = h('main', { class: 'home-main' });
-    const mnav = h('nav', { class: 'mnav', 'aria-label': 'Разделы' }, tabs.map(([id, l, icn]) => h('button', { class: S.homeTab === id ? 'on' : '', onclick: () => { S.homeTab = id; this.render(); } }, ic(icn, 20), l.replace('Мои компоненты', 'Мои').replace('Мои проекты', 'Проекты'))));
-    app.append(h('div', { class: 'home' }, side, main), mnav);
-    ({ projects: () => this.projects(main), templates: () => this.templates(main), mine: () => this.mine(main), media: () => this.mediaPage(main), settings: () => this.settings(main) })[S.homeTab]();
+    const mnav = h('nav', { class: 'mnav', 'aria-label': 'Разделы' }, tabs.map(([id, l, icn]) => h('button', { class: S.homeTab === id ? 'on' : '', onclick: () => { S.homeTab = id; this.render(); } }, ic(icn, 20), l.replace('Мои компоненты', 'Мои').replace('Мои проекты', 'Проекты').replace('База знаний', 'Помощь').replace('Медиатека', 'Медиа'))));
+    app.append(h('div', { class: 'home' }, main, side), mnav);
+    ({ projects: () => this.projects(main), templates: () => this.templates(main), mine: () => this.mine(main), media: () => this.mediaPage(main), settings: () => this.settings(main), kb: () => KBView.render(main) })[S.homeTab]();
+    Puzzlo.render();
   },
 
   head(title, sub, right) {
@@ -5826,7 +6132,7 @@ const Home = {
       else list.sort((a, b) => S.homeSort === 'name' ? a.name.localeCompare(b.name, 'ru') : S.homeSort === 'created' ? b.createdAt - a.createdAt : b.updatedAt - a.updatedAt);
       if (!S.projects.length) {
         grid.style.display = 'block';
-        grid.append(h('div', { class: 'empty' }, ic('sparkles', 26), h('h3', null, 'Здесь появятся ваши страницы'), h('p', null, 'Начните с шаблона — так быстрее. Любой шаблон можно полностью изменить.'), h('div', { class: 'btn-row' }, h('button', { class: 'btn primary', onclick: () => { S.homeTab = 'templates'; this.render(); } }, ic('grid', 15), 'Выбрать шаблон'), h('button', { class: 'btn', onclick: () => this.newBlank() }, 'Пустая страница'))));
+        grid.append(h('div', { class: 'empty' }, mascotImg('wave', 96), h('h3', null, 'Здесь появятся ваши страницы'), h('p', null, 'Начните с шаблона — так быстрее. Любой шаблон можно полностью изменить.'), h('div', { class: 'btn-row' }, h('button', { class: 'btn primary', onclick: () => { S.homeTab = 'templates'; this.render(); } }, ic('grid', 15), 'Выбрать шаблон'), h('button', { class: 'btn', onclick: () => this.newBlank() }, 'Пустая страница'))));
         return;
       }
       grid.style.display = '';
@@ -6109,6 +6415,7 @@ const PBUI = {
         st, out,
       ],
       foot: [
+        PB.token ? h('button', { class: 'btn', onclick: () => { d.close(); PBUI.mcpDialog(); } }, 'MCP') : h('span'),
         PB.token ? h('button', { class: 'btn danger', onclick: () => { PB.forget(); d.close(); UI.toast('PuzzleBot отключён, токен удалён из браузера'); if (onDone) onDone(); } }, 'Отключить') : h('span'),
         h('button', { class: 'btn', onclick: () => d.close() }, 'Закрыть'),
         h('button', { class: 'btn primary', onclick: test }, 'Проверить и подключить'),
@@ -6166,6 +6473,787 @@ const PBUI = {
   },
 };
 
+/* ============================================================
+   MCP-сервер PuzzleBot: https://cp.puzzlebot.top/mcp
+   Документация: help.puzzle.bot (раздел «MCP»). Авторизация — Bearer <API-токен>.
+   Протокол — MCP Streamable HTTP (JSON-RPC 2.0, ответ JSON или SSE).
+   Схемы инструментов берём из tools/list, а не угадываем.
+   ============================================================ */
+const PBMCP = {
+  url: 'https://cp.puzzlebot.top/mcp', sid: '', tools: null, seq: 1,
+  parse(text, ctype) {
+    if (/event-stream/.test(ctype || '') || /^\s*(event|data):/m.test(text)) {
+      const msgs = [];
+      for (const block of text.split(/\r?\n\r?\n/)) {
+        const data = block.split(/\r?\n/).filter(l => l.startsWith('data:')).map(l => l.slice(5).trim()).join('\n');
+        if (data) try { msgs.push(JSON.parse(data)); } catch (e) {}
+      }
+      return msgs.find(m => m && (m.result !== undefined || m.error)) || msgs[msgs.length - 1] || null;
+    }
+    try { return JSON.parse(text); } catch (e) { return null; }
+  },
+  async rpc(method, params, notify = false) {
+    if (!PB.token) throw { code: 'no_token', message: 'Сначала укажите API-токен PuzzleBot' };
+    const body = { jsonrpc: '2.0', method };
+    if (params !== undefined) body.params = params;
+    if (!notify) body.id = this.seq++;
+    const headers = { 'Content-Type': 'application/json', Accept: 'application/json, text/event-stream', Authorization: 'Bearer ' + PB.token };
+    if (this.sid) headers['Mcp-Session-Id'] = this.sid;
+    let r;
+    try { r = await fetch(this.url, { method: 'POST', headers, body: JSON.stringify(body) }); }
+    catch (e) { throw { code: 'network', message: 'Нет связи с cp.puzzlebot.top/mcp. Скорее всего сервер не разрешает запросы со сторонних страниц (CORS) — тогда подключайте MCP из Claude, Cursor или другого MCP-клиента. Также возможно: нет интернета или окно редактора блокирует сеть.' }; }
+    const s = r.headers.get('Mcp-Session-Id'); if (s) this.sid = s;
+    if (r.status === 401 || r.status === 403) throw { code: r.status, message: 'MCP отклонил токен (HTTP ' + r.status + '). Проверьте API-токен и что MCP включён в PuzzleBot.' };
+    if (notify) return null;
+    const txt = await r.text();
+    const j = this.parse(txt, r.headers.get('Content-Type'));
+    if (!r.ok && !j) throw { code: r.status, message: 'MCP ответил HTTP ' + r.status };
+    if (!j) throw { code: 'bad', message: 'Не удалось разобрать ответ MCP' };
+    if (j.error) throw { code: j.error.code, message: 'MCP: ' + (j.error.message || 'ошибка') };
+    return j.result;
+  },
+  async connect() {
+    this.sid = ''; this.tools = null;
+    const init = await this.rpc('initialize', { protocolVersion: '2025-03-26', capabilities: {}, clientInfo: { name: 'puzzle-studio', version: '1.0' } });
+    try { await this.rpc('notifications/initialized', undefined, true); } catch (e) {}
+    const tl = await this.rpc('tools/list', {});
+    this.tools = (tl && tl.tools) || [];
+    return { server: (init && init.serverInfo) || {}, tools: this.tools };
+  },
+  tool(name) { return (this.tools || []).find(t => t.name === name); },
+  /* Подбираем аргументы по inputSchema: известные значения + первый обязательный текстовый параметр для text */
+  args(name, known = {}, text) {
+    const t = this.tool(name); const sc = (t && t.inputSchema) || {};
+    const props = sc.properties || {}, req = sc.required || [];
+    const a = {};
+    for (const [k, v] of Object.entries(known)) if (props[k] || !Object.keys(props).length) a[k] = v;
+    if (text !== undefined) {
+      const names = Object.keys(props);
+      const pref = ['message', 'prompt', 'task', 'query', 'text', 'instruction', 'request', 'content'];
+      const key = pref.find(p => props[p]) || req.find(k => (props[k] || {}).type === 'string' && !(k in a)) || names.find(k => (props[k] || {}).type === 'string' && !(k in a)) || 'message';
+      a[key] = text;
+    }
+    const missing = req.filter(k => !(k in a));
+    return { a, missing, schema: sc };
+  },
+  async call(name, known, text) {
+    if (!this.tools) await this.connect();
+    if (!this.tool(name)) throw { code: 'no_tool', message: `На сервере нет инструмента ${name}. Доступно: ${(this.tools || []).map(t => t.name).join(', ') || '—'}` };
+    const { a, missing } = this.args(name, known, text);
+    if (missing.length) throw { code: 'args', message: `Инструменту ${name} нужны параметры: ${missing.join(', ')}` };
+    const r = await this.rpc('tools/call', { name, arguments: a });
+    const txt = ((r && r.content) || []).filter(c => c.type === 'text').map(c => c.text).join('\n');
+    if (r && r.isError) throw { code: 'tool', message: txt || 'Инструмент вернул ошибку' };
+    let data = r && r.structuredContent; if (!data) try { data = JSON.parse(txt); } catch (e) {}
+    return { text: txt, data, raw: r };
+  },
+};
+function pbFindKey(o, re, depth = 0) {
+  if (!o || typeof o !== 'object' || depth > 4) return undefined;
+  for (const [k, v] of Object.entries(o)) { if (re.test(k) && (typeof v === 'string' || typeof v === 'number')) return v; }
+  for (const v of Object.values(o)) { const r = pbFindKey(v, re, depth + 1); if (r !== undefined) return r; }
+  return undefined;
+}
+function pbVarList(data, text) {
+  const arr = Array.isArray(data) ? data : (pbExtractItems(data) || []);
+  const out = [];
+  for (const it of arr) {
+    const key = typeof it === 'string' ? it : (it.name || it.key || it.variable || it.title);
+    if (key && /^[A-Za-z0-9_]{1,40}$/.test(String(key))) out.push({ key: String(key), desc: String((it && (it.description || it.desc || it.type)) || 'Переменная проекта PuzzleBot').slice(0, 120), sample: String((it && (it.value ?? it.default ?? '')) || '').slice(0, 200) });
+  }
+  if (!out.length && text) for (const m of text.matchAll(/\{\{\s*([A-Za-z0-9_]{1,40})\s*\}\}|^[\s\-•*]*([A-Za-z][A-Za-z0-9_]{1,39})\b/gm)) { const k = m[1] || m[2]; if (k && !out.some(x => x.key === k)) out.push({ key: k, desc: 'Переменная проекта PuzzleBot', sample: '' }); }
+  return out;
+}
+
+Object.assign(PBUI, {
+  mcpDialog() {
+    if (!PB.token) { this.dialog(() => this.mcpDialog()); return; }
+    const st = h('div', { class: 'status-line' }, PBMCP.tools ? `Подключено · инструментов: ${PBMCP.tools.length}` : 'Не подключено');
+    const log = h('pre', { class: 'code', style: { maxHeight: '220px', whiteSpace: 'pre-wrap' }, hidden: true });
+    const show = (t, bad) => { st.className = 'status-line ' + (bad ? 'bad' : 'ok'); st.textContent = t; };
+    const out = t => { log.hidden = false; log.textContent = String(t).slice(0, 6000); };
+    const busy = async (label, fn) => { st.className = 'status-line'; st.textContent = label; try { await fn(); } catch (e) { show(e.message || String(e), true); Puzzlo.mood && Puzzlo.mood('error'); } };
+    const pageSel = h('input', { class: 'inp', placeholder: 'Ссылка на страницу Mini App или её ID (необязательно)', 'data-novar': '' });
+    const mode = { v: 'block' };
+    const d = UI.dialog({
+      title: 'PuzzleBot MCP', cls: 'mid',
+      body: [
+        h('p', { class: 'hint' }, 'MCP — официальный сервер PuzzleBot для ИИ-агентов (cp.puzzlebot.top/mcp). Через него Puzzle Studio может прочитать переменные и товары проекта и передать страницу агенту PuzzleBot, который вносит изменения в бота как черновик.'),
+        h('div', { class: 'btn-row' },
+          h('button', { class: 'btn sm', onclick: () => busy('Подключаюсь…', async () => { const r = await PBMCP.connect(); show(`✓ ${r.server.name || 'PuzzleBot MCP'} · инструментов: ${r.tools.length}`); out(r.tools.map(t => '• ' + t.name + (t.description ? ' — ' + t.description.split('\n')[0].slice(0, 90) : '')).join('\n')); }) }, ic('link', 14), 'Подключиться'),
+          h('button', { class: 'btn sm', onclick: () => busy('Загружаю переменные…', async () => {
+            const r = await PBMCP.call('list_variables', {});
+            const vars = pbVarList(r.data, r.text);
+            if (!vars.length) { show('Ответ получен, но переменные не распознаны', true); out(r.text || JSON.stringify(r.raw, null, 2)); return; }
+            if (S.project) { Editor.act('Переменные из PuzzleBot', pr => { const list = pr.page.customVars = pr.page.customVars || []; for (const v of vars) if (!list.some(x => x.key === v.key) && list.length < 100) list.push(v); }, { struct: false }); if (S.leftTab === 'vars') Editor.renderLeft(); }
+            show(`✓ Переменных: ${vars.length}${S.project ? ' — добавлены в «Мои переменные» проекта' : ' — откройте проект, чтобы добавить их'}`); out(vars.map(v => '{{' + v.key + '}} — ' + v.desc).join('\n'));
+          }) }, ic('variable', 14), 'Переменные проекта'),
+          h('button', { class: 'btn sm', onclick: () => busy('Ищу в базе знаний…', async () => { const r = await PBMCP.call('help_search', {}, 'HTML код мини-приложение'); show('✓ Ответ базы знаний PuzzleBot'); out(r.text || JSON.stringify(r.data, null, 2)); }) }, ic('book', 14), 'Справка PuzzleBot')),
+        h('div', { class: 'grp-t' }, 'Отправить страницу агенту PuzzleBot'),
+        field('Куда', segmented([['block', 'Новый блок «HTML код»'], ['head', 'Стили в head + блок']], mode.v, v => { mode.v = v; })),
+        field('Страница мини-приложения', pageSel, { hint: 'Если пусто — агент спросит или создаст новую страницу. Изменения агент сохраняет как черновик: проверьте и опубликуйте их в PuzzleBot сами.' }),
+        h('div', { class: 'hint box warn' }, 'Агент PuzzleBot работает с вашим ботом по-настоящему. Перед публикацией черновика просмотрите изменения в конструкторе PuzzleBot.'),
+        st, log,
+      ],
+      foot: [
+        h('button', { class: 'btn', onclick: () => d.close() }, 'Закрыть'),
+        h('button', { class: 'btn primary', disabled: !S.project, onclick: () => busy('Отправляю агенту…', async () => {
+          const ex = buildExport(S.project, { mode: mode.v === 'head' ? 'pbhead' : 'puzzlebot', js: true });
+          const code = mode.v === 'head' ? ex.parts.map(p => `--- ${p.tab} ---\n${p.code}`).join('\n\n') : ex.single;
+          if (code.length > 900000) throw { message: 'Код больше 900 КБ — агент PuzzleBot принимает вёрстку до 1 МБ. Уменьшите картинки (загрузите их по ссылке).' };
+          const gid = parseGoto(pageSel.value);
+          const task = `Добавь в мини-приложение${gid ? ` на страницу с ID ${gid}` : ''} ${mode.v === 'head' ? 'код из первой части в поле «HTML в head» настроек мини-приложения, а разметку из второй части — новым блоком «HTML код»' : 'новый блок «HTML код» с кодом ниже, без изменений'}. Переменные вида {{ИМЯ}} оставь как есть. Сохрани как черновик и ничего не публикуй.\n\nСтраница: «${S.project.name}» (сделано в Puzzle Studio).\n\n${code}`;
+          const r = await PBMCP.call('puzzlebot_agent', {}, task);
+          const turn = pbFindKey(r.data, /turn|task_?id|job/i);
+          out(r.text || JSON.stringify(r.data, null, 2));
+          if (!turn || !PBMCP.tool('get_turn_status')) { show('✓ Отправлено агенту PuzzleBot'); return; }
+          for (let i = 0; i < 40; i++) {
+            show(`Агент работает… (${i * 3} с)`);
+            await new Promise(res => setTimeout(res, 3000));
+            const k = Object.keys((PBMCP.tool('get_turn_status').inputSchema || {}).properties || {})[0] || 'turn_id';
+            const s = await PBMCP.call('get_turn_status', { [k]: turn });
+            const status = String(pbFindKey(s.data, /^status$|state/i) || '');
+            out(s.text || JSON.stringify(s.data, null, 2));
+            if (/done|complete|finish|success|ready|error|fail/i.test(status)) { const ok = !/error|fail/i.test(status); show(ok ? '✓ Агент закончил — черновик в PuzzleBot' : 'Агент сообщил об ошибке', !ok); if (ok) Puzzlo.mood && Puzzlo.mood('like'); return; }
+          }
+          show('Агент ещё работает — проверьте результат в PuzzleBot позже');
+        }) }, ic('send', 14), 'Отправить в PuzzleBot'),
+      ],
+    });
+  },
+});
+
+/* ===== 14b-kb.js ===== */
+/* ============================================================
+   14b · БАЗА ЗНАНИЙ PUZZLE STUDIO
+   Разметка статей: «## » заголовок, «- » список, «1. » шаги,
+   **жирный**, `код`, [текст](kb:id) — ссылка на статью,
+   [[Текст кнопки|маршрут]] — кнопка-переход в нужный раздел.
+   ============================================================ */
+const KB_CATS = [
+  { id: 'start', title: 'Начало работы', icon: 'rocket', mascot: true },
+  { id: 'editor', title: 'Редактор', icon: 'grid' },
+  { id: 'telegram', title: 'Кнопки и Telegram', icon: 'send' },
+  { id: 'vars', title: 'Переменные', icon: 'variable' },
+  { id: 'puzzlebot', title: 'Размещение в PuzzleBot', icon: 'bot' },
+  { id: 'integr', title: 'Интеграции', icon: 'link' },
+  { id: 'ai', title: 'Puzzlo AI', icon: 'sparkles' },
+  { id: 'projects', title: 'Проекты и файлы', icon: 'folder' },
+  { id: 'help', title: 'Проблемы и решения', icon: 'help' },
+];
+
+const KB = [
+  { id: 'what', cat: 'start', title: 'Что такое Puzzle Studio', body: `Puzzle Studio — визуальный конструктор страниц для мини-приложений PuzzleBot. Вы собираете страницу из блоков, а редактор выдаёт готовый HTML-код для блока «HTML код» в PuzzleBot.
+
+## Как это работает
+1. Выберите шаблон или создайте пустую страницу.
+2. Измените тексты, картинки и цвета прямо на холсте.
+3. Настройте кнопки: переходы, Telegram-функции, вибрацию.
+4. Нажмите «Экспорт» и вставьте код в PuzzleBot.
+
+Проекты хранятся в вашем браузере. Облачной синхронизации нет — делайте резервные копии.
+
+[[Выбрать шаблон|templates]] [[Пустая страница|new]] [[Спросить Puzzlo AI|ai]]` },
+  { id: 'first', cat: 'start', title: 'Первая страница за 5 минут', body: `## Шаг 1. Шаблон
+Откройте «Шаблоны» и нажмите «Использовать» у подходящего. Создаётся независимая копия — оригинал не меняется.
+
+## Шаг 2. Тексты
+Нажмите на заголовок на холсте — справа откроются свойства. Двойной клик по тексту позволяет печатать прямо на холсте.
+
+## Шаг 3. Переменные
+Начните вводить \`{{\` в любом поле — появится список переменных PuzzleBot. Например, \`{{FIRST_NAME_TEXT}}\` подставит имя пользователя.
+
+## Шаг 4. Кнопки
+Выберите кнопку → вкладка «Действия». Например, «Страница Mini App PuzzleBot» — переход на другую страницу вашего мини-приложения.
+
+## Шаг 5. Код
+«Экспорт» → «Копировать код» → в PuzzleBot добавьте блок «HTML код» и вставьте.
+
+[[Выбрать шаблон|templates]] [[Как вставить в PuzzleBot|kb:export]]` },
+  { id: 'mobile', cat: 'start', title: 'Работа с телефона', body: `Редактор подстраивается под телефон:
+- внизу — режимы «Добавить», «Слои», «Свойства», «Просмотр», «Экспорт»;
+- при выборе блока появляется плашка с кнопками ↑ ↓, копией и удалением;
+- блок можно перетаскивать за «ручку» ⠿ на холсте пальцем.
+
+Если редактор открыт внутри Telegram, кнопка «Назад» Telegram возвращает к проектам.
+
+[[Мои проекты|projects]]` },
+
+  { id: 'editor-ui', cat: 'editor', title: 'Как устроен редактор', body: `## Холст
+В центре — страница в рамке телефона. Нажмите на блок, чтобы выбрать его. Над выбранным блоком появляется панель: перетащить, выбрать родителя, выше, ниже, копия, удалить.
+
+## Правая панель
+- **Добавить** — блоки, готовые секции, ваши компоненты, медиа и переменные.
+- **Слои** — дерево страницы: порядок, вложенность, скрытие и блокировка.
+- **Свойства** — вкладки «Контент», «Настройки», «Действия» выбранного блока.
+
+## Горячие клавиши
+- Ctrl+Z / Ctrl+Y — отменить и повторить
+- Ctrl+C / Ctrl+V / Ctrl+D — копировать, вставить, дублировать
+- Delete — удалить, Esc — выбрать родителя
+
+[[Открыть проекты|projects]]` },
+  { id: 'blocks', cat: 'editor', title: 'Блоки и секции', body: `**Блоки** — отдельные элементы: заголовок, текст, кнопка, картинка, список, таймер, форма и т. д.
+
+**Секции** — готовые наборы блоков: первый экран, каталог, тарифы, профиль, FAQ, контакты.
+
+**Мои компоненты** — любой блок можно сохранить и вставлять в другие проекты: вкладка «Действия» → «В „Мои“».
+
+Нажмите на блок в каталоге — он добавится после выбранного. На компьютере блок можно перетащить на холст.
+
+[[Мои компоненты|mine]]` },
+  { id: 'layers', cat: 'editor', title: 'Слои, перемещение, блокировка', body: `- Перетаскивайте строки в «Слоях», чтобы менять порядок и вкладывать блоки в контейнеры.
+- Значок глаза скрывает блок: скрытый блок не попадает в итоговый код.
+- Замок защищает блок от случайных правок и удаления.
+- «Переместить в…» — перенести блок в любой контейнер без перетаскивания.` },
+  { id: 'styles', cat: 'editor', title: 'Оформление блока', body: `Вкладка «Настройки» выбранного блока:
+- **Раскладка** — столбик, строка, сетка; расстояния и выравнивание.
+- **Размер и отступы** — ширина, высота, внутренние и внешние отступы.
+- **Текст** — шрифт, размер, жирность, цвет, регистр.
+- **Фон, рамка, тень** — цвет, градиент, картинка, скругление, тень, размытие.
+- **Дополнительно** — поворот, тень текста, слой, «липкий» блок, пропорции, свой CSS, показ только на iOS или Android.
+- **Адаптивность** — переключите устройство вверху: правки сохранятся только для планшета или компьютера.
+
+Цвета «Тема: …» берутся из темы страницы — при смене темы блок перекрасится сам.` },
+
+  { id: 'actions', cat: 'telegram', title: 'Действия кнопок', body: `Вкладка «Действия» у кнопки, ссылки, картинки. Всего 43 действия в 7 группах:
+- **Переходы** — ссылка, страница Mini App, якорь, канал, бот, «Поделиться», стикеры, Premium.
+- **Окно Mini App** — закрыть, полный экран, свайпы, ориентация, экран «Домой».
+- **Сообщения и оплата** — sendData, inline-режим, Stories, файлы, счёт, эмодзи-статус.
+- **Разрешения** — телефон, сообщения от бота, QR, геолокация, Face ID.
+- **Хранилища** — CloudStorage, DeviceStorage, SecureStorage.
+- **Окна и вибрация**, **Другое** — сообщения, подтверждения, копирование.
+
+У каждого действия можно задать вибрацию и подтверждение. Если у пользователя старый Telegram, он увидит просьбу обновиться.
+
+[[Переходы между страницами|kb:goto]]` },
+  { id: 'goto', cat: 'telegram', title: 'Переходы между страницами', body: `PuzzleBot поддерживает переходы внутри мини-приложения:
+- атрибут \`goto_web_page\` у ссылки: \`<a goto_web_page="ID">Кнопка</a>\`;
+- функция \`gotoWebPage("ID", true)\` — второй аргумент открывает в новом окне.
+
+## Где взять ID
+В PuzzleBot у мини-приложения есть ссылка вида \`https://t.me/BrootsBot?startapp=623ec549b7791482\`. ID — всё, что после \`startapp=\`.
+
+## В Puzzle Studio
+Кнопка → «Действия» → «Страница Mini App PuzzleBot» → вставьте ссылку целиком. Редактор сам выделит ID. В пунктах меню и нижней навигации есть поле «Страница Mini App».
+
+Переход выполняет сам PuzzleBot, поэтому проверяйте его внутри мини-приложения.` },
+  { id: 'tgtheme', cat: 'telegram', title: 'Цвета под тему Telegram', body: `Тема **«Telegram (авто)»** берёт цвета из Telegram пользователя: светлая или тёмная тема, фирменный цвет кнопок. При смене темы в Telegram страница перекрашивается сама.
+
+Тема **«Авто: светлая / тёмная»** переключается по настройке телефона.
+
+Совет: с темой «Telegram (авто)» в PuzzleBot не включайте «Задать фон» — фон совпадёт автоматически.
+
+[[Настройки страницы|page]]` },
+
+  { id: 'vars-how', cat: 'vars', title: 'Переменные PuzzleBot', body: `Переменные пишутся в двойных фигурных скобках: \`{{FIRST_NAME_TEXT}}\`. PuzzleBot подставляет значения, когда показывает страницу.
+
+- Начните вводить \`{{\` в любом поле или прямо на холсте — появится подсказка.
+- Варианты с пометкой «ссылкой» PuzzleBot может подставить как ссылку. Для текста берите варианты \`_TEXT\`.
+- Свои переменные (например, \`{{BALANCE}}\`) сначала создайте в PuzzleBot → «Переменные», затем добавьте в справочник редактора.
+
+[[Справочник переменных|vars]]` },
+
+  { id: 'export', cat: 'puzzlebot', title: 'Как вставить страницу в PuzzleBot', body: `1. В Puzzle Studio нажмите «Экспорт» → режим «PuzzleBot: один блок» → «Копировать код».
+2. В PuzzleBot: Конструктор → мини-приложение → «Контент» → «Добавить новый блок» → **«HTML код»**.
+3. Вставьте код и сохраните.
+4. Откройте мини-приложение в Telegram на телефоне.
+
+## Если страниц много
+Режим **«PuzzleBot: head + блок»**: стили и скрипт вставьте один раз в настройках мини-приложения (HTML в head), а в блоки «HTML код» — только разметку. Код блока станет короче.
+
+## Переход на другую страницу
+Действие «Страница Mini App PuzzleBot» делает \`<a goto_web_page="ID">\`. Включите «Открыть в новом окне» — тогда используется функция PuzzleBot \`gotoWebPage("ID", true)\`.
+
+PuzzleBot вставляет код блока внутрь \`<body>\` своей страницы — поэтому все стили Puzzle Studio изолированы классом \`.ps-p-…\`.
+
+[[Открыть экспорт|export]] [[Фон и белые поля|kb:bg]]` },
+  { id: 'bg', cat: 'puzzlebot', title: 'Фон и белые поля вокруг блока', body: `У страницы PuzzleBot свой фон и отступы. Чтобы не было «острова» на белом фоне, выберите режим в «Странице» → «Размещение в PuzzleBot»:
+- **Без фона** — блок прозрачный. В PuzzleBot включите «Задать фон» и вставьте цвет, который покажет редактор.
+- **Фон у блока** — блок как карточка.
+- **На весь экран** — блок перекрашивает страницу PuzzleBot и шапку Telegram.
+
+С темой «Telegram (авто)» фон обычно совпадает без настроек.
+
+[[Настройки страницы|page]]` },
+  { id: 'platforms', cat: 'puzzlebot', title: 'Отдельно для iOS и Android', body: `PuzzleBot умеет показывать элементы только на одной платформе с помощью классов \`block_ios\` и \`block_android\`.
+
+В Puzzle Studio: блок → «Настройки» → «Дополнительно» → «Показывать на». Редактор добавит нужный класс: блок «Только iOS» получит \`block_android\` (скрыть на Android), и наоборот.
+
+## Ещё в «Дополнительно»
+- поворот и сдвиг, слой (z-index), пропорции;
+- «прилипание» при прокрутке, обрезка или прокрутка содержимого;
+- тень текста, режим наложения, запрет выделения;
+- свой CSS для блока — только пары «свойство: значение».` },
+
+  { id: 'connect', cat: 'integr', title: 'Подключение к PuzzleBot: API и MCP', body: `Подключение по желанию: страницы делаются и без него.
+
+## Что даёт
+- переменные проекта и товары магазина в редакторе;
+- отправка готовой страницы агенту PuzzleBot — он создаёт черновик в боте;
+- значения переменных для предпросмотра.
+
+## Токен
+PuzzleBot → Настройки → Интеграции → «Входящие запросы» → сгенерировать API-ключ. Если ключ уже используется, не генерируйте новый — старые интеграции перестанут работать.
+
+Токен хранится только в браузере и никогда не попадает в код страницы.
+
+## MCP
+PuzzleBot даёт MCP-сервер \`cp.puzzlebot.top/mcp\` с тем же токеном. Puzzle Studio через него:
+1. загружает переменные проекта (\`list_variables\`) в «Мои переменные»;
+2. ищет ответы в справке PuzzleBot (\`help_search\`);
+3. передаёт страницу агенту PuzzleBot (\`puzzlebot_agent\`) — он сохраняет изменения **как черновик**.
+
+Если браузер не пускает запрос (CORS), подключите тот же MCP в Claude или Cursor и передайте агенту код из экспорта.
+
+[[Подключить PuzzleBot|pb]] [[PuzzleBot MCP|mcp]]` },
+  { id: 'forms', cat: 'integr', title: 'Формы и вебхуки', body: `Блок «Форма» умеет:
+- показать сообщение «Спасибо»;
+- отправить данные на ваш вебхук (POST JSON) — поля формы, данные пользователя Telegram и initData;
+- передать данные боту через sendData (только если Mini App открыт кнопкой клавиатуры).
+
+Проверяйте initData на своём сервере: данные из браузера можно подделать.` },
+
+  { id: 'ai-how', cat: 'ai', title: 'Что умеет Puzzlo AI', body: `Puzzlo — помощник внутри редактора. Он работает **без интернета и без нейросети**: понимает запросы по ключевым словам и собирает страницы из шаблонов и секций.
+
+## Примеры запросов
+- «Создай магазин с товарами в тёмном стиле»
+- «Сделай страницу тарифов с FAQ и отзывами»
+- «Добавь таймер и кнопку поделиться»
+- «Сделай зелёным», «Поменяй тему на Telegram»
+- «Добавь товары: Футболка 999 ₽, Кружка 490 ₽»
+- «Удали FAQ», «Назови страницу Акция»
+
+Каждое действие можно отменить кнопкой «Отменить» или Ctrl+Z.
+
+[[Открыть Puzzlo AI|ai]]` },
+
+  { id: 'storage', cat: 'projects', title: 'Где хранятся проекты', body: `Проекты, медиатека и компоненты хранятся в IndexedDB этого браузера. На другом устройстве их не будет.
+
+- «Скачать исходный проект» — файл .puzzle.json, его можно открыть через «Импорт».
+- «Настройки → Резервная копия» — все проекты одним файлом.
+
+[[Настройки|settings]] [[Мои проекты|projects]]` },
+  { id: 'media', cat: 'projects', title: 'Картинки и медиатека', body: `Загруженные картинки встраиваются прямо в код страницы, поэтому большие фото уменьшаются до 1600 px. Для быстрой загрузки в Telegram держите крупные фото на хостинге и указывайте ссылку https://.
+
+[[Медиатека|media]]` },
+
+  { id: 'diag', cat: 'help', title: 'Диагностика HTML-блока', body: `Если что-то выглядит не так в PuzzleBot:
+1. «Настройки» → «Диагностика HTML-блока» → «Скопировать».
+2. Вставьте код в блок «HTML код» в PuzzleBot.
+3. Откройте мини-приложение на телефоне и сделайте скриншот.
+
+Диагностика покажет: работают ли скрипты, есть ли Telegram.WebApp, какие обёртки и отступы вокруг блока.
+
+[[Настройки|settings]]` },
+  { id: 'faq', cat: 'help', title: 'Частые проблемы', body: `## Вместо имени видно {{FIRST_NAME}}
+Переменная не существует в боте или написана с ошибкой. Проверьте имя в PuzzleBot → «Переменные».
+
+## Белые поля вокруг страницы
+См. [Фон и белые поля](kb:bg).
+
+## Кнопка ничего не делает
+Откройте страницу внутри Telegram: многие действия работают только там. Проверка при экспорте подскажет, что не заполнено.
+
+## Картинка не загрузилась
+Нужна ссылка https:// на сам файл. Некоторые сайты запрещают показ своих картинок на чужих страницах — загрузите файл в медиатеку.` },
+];
+
+const KBView = {
+  cat: null, art: null, q: '',
+  open(id) {
+    const a = KB.find(x => x.id === id);
+    if (a) { this.art = a.id; this.cat = a.cat; }
+    S.homeTab = 'kb';
+    if (S.view !== 'home') { Editor.close().then(() => Home.render()); } else Home.render();
+  },
+  renderBody(src) {
+    const wrap = h('div', { class: 'kb-body' });
+    const inline = s => {
+      const frag = [];
+      const re = /\*\*(.+?)\*\*|`([^`]+)`|\[([^\]]+)\]\(kb:([a-z0-9-]+)\)/g;
+      let last = 0, m;
+      while ((m = re.exec(s))) {
+        if (m.index > last) frag.push(s.slice(last, m.index));
+        if (m[1]) frag.push(h('strong', null, m[1]));
+        else if (m[2]) frag.push(h('code', null, m[2]));
+        else frag.push(h('a', { href: '#', onclick: e => { e.preventDefault(); this.art = m[4]; Home.render(); } }, m[3]));
+        last = re.lastIndex;
+      }
+      if (last < s.length) frag.push(s.slice(last));
+      return frag;
+    };
+    let list = null, listTag = '';
+    for (const raw of src.split('\n')) {
+      const line = raw.trimEnd();
+      const btns = [...line.matchAll(/\[\[([^|\]]+)\|([^\]]+)\]\]/g)];
+      if (btns.length) {
+        list = null;
+        wrap.append(h('div', { class: 'kb-actions' }, btns.map(b => h('button', { class: 'btn ' + (b[2].startsWith('kb:') ? '' : 'primary'), onclick: () => App.go(b[2]) }, b[2].startsWith('kb:') ? ic('book', 15) : ic('arrow-right', 15), b[1]))));
+        continue;
+      }
+      if (!line.trim()) { list = null; continue; }
+      if (line.startsWith('## ')) { list = null; wrap.append(h('h2', null, inline(line.slice(3)))); continue; }
+      const li = line.match(/^(- |\d+\. )(.*)$/);
+      if (li) {
+        const tag = li[1] === '- ' ? 'ul' : 'ol';
+        if (!list || listTag !== tag) { list = h(tag); listTag = tag; wrap.append(list); }
+        list.append(h('li', null, inline(li[2])));
+        continue;
+      }
+      list = null;
+      wrap.append(h('p', null, inline(line)));
+    }
+    return wrap;
+  },
+  render(main) {
+    main.classList.add('kb-main');
+    const q = h('input', { class: 'inp', placeholder: 'Поиск', value: this.q, 'data-novar': '', 'aria-label': 'Поиск по базе знаний' });
+    const nav = h('nav', { class: 'kb-nav scroll', 'aria-label': 'Разделы базы знаний' });
+    const drawNav = () => {
+      nav.innerHTML = '';
+      nav.append(h('div', { class: 'search kb-search' }, ic('search', 16), q),
+        h('button', { class: 'kb-home' + (!this.cat && !this.art ? ' on' : ''), onclick: () => { this.cat = null; this.art = null; Home.render(); } }, ic('book', 16), 'База знаний'));
+      const qq = this.q.trim().toLowerCase();
+      for (const c of KB_CATS) {
+        const arts = KB.filter(a => a.cat === c.id && (!qq || (a.title + ' ' + a.body).toLowerCase().includes(qq)));
+        if (!arts.length) continue;
+        nav.append(h('button', { class: 'kb-cat' + (this.cat === c.id && !this.art ? ' on' : ''), onclick: () => { this.cat = c.id; this.art = null; Home.render(); } }, ic(c.icon, 16), c.title));
+        for (const a of arts) nav.append(h('button', { class: 'kb-art' + (this.art === a.id ? ' on' : ''), onclick: () => { this.art = a.id; this.cat = a.cat; Home.render(); } }, a.title));
+      }
+    };
+    q.addEventListener('input', () => { this.q = q.value; drawNav(); const f = nav.querySelector('input'); if (f) { f.focus(); f.setSelectionRange(f.value.length, f.value.length); } });
+    drawNav();
+    const content = h('div', { class: 'kb-content' });
+    if (this.art) {
+      const a = KB.find(x => x.id === this.art);
+      const c = KB_CATS.find(x => x.id === a.cat);
+      content.append(h('div', { class: 'kb-crumbs' }, h('button', { onclick: () => { this.cat = null; this.art = null; Home.render(); } }, 'База знаний'), ' / ', h('button', { onclick: () => { this.art = null; Home.render(); } }, c.title)),
+        h('h1', { class: 'kb-h1' }, a.title), this.renderBody(a.body));
+      const same = KB.filter(x => x.cat === a.cat && x.id !== a.id);
+      if (same.length) content.append(h('div', { class: 'kb-more' }, h('h3', null, 'Ещё в разделе'), same.map(x => h('button', { class: 'kb-link', onclick: () => { this.art = x.id; Home.render(); } }, ic('file', 15), x.title))));
+    } else if (this.cat) {
+      const c = KB_CATS.find(x => x.id === this.cat);
+      content.append(h('div', { class: 'kb-crumbs' }, h('button', { onclick: () => { this.cat = null; Home.render(); } }, 'База знаний')), h('h1', { class: 'kb-h1' }, c.title),
+        h('div', { class: 'kb-list' }, KB.filter(a => a.cat === c.id).map(a => h('button', { class: 'kb-row', onclick: () => { this.art = a.id; Home.render(); } }, h('span', { class: 'kb-row-ic' }, ic('file', 18)), h('span', null, h('b', null, a.title), h('small', null, a.body.replace(/\[\[[^\]]+\]\]|[#*`]/g, '').slice(0, 110) + '…')), ic('chevron-right', 16)))));
+    } else {
+      content.append(h('h1', { class: 'kb-h1' }, 'База знаний'));
+      const grid = h('div', { class: 'kb-grid' });
+      KB_CATS.forEach((c, i) => grid.append(h('button', { class: 'kb-card' + (i === 0 ? ' kb-card--hi' : ''), onclick: () => { this.cat = c.id; Home.render(); } },
+        c.mascot ? h('span', { class: 'kb-card-m' }, mascotImg('wave', 44)) : h('span', { class: 'kb-card-ic' }, ic(c.icon, 20)),
+        h('b', null, c.title))));
+      content.append(grid);
+    }
+    main.append(h('div', { class: 'kb-wrap' }, nav, content));
+  },
+};
+
+/* ===== 14c-puzzlo.js ===== */
+/* ============================================================
+   14c · PUZZLO AI — помощник без внешнего API
+   Понимает запросы по ключевым словам и собирает страницы из шаблонов
+   и секций. Честно: это правила, а не нейросеть.
+   ============================================================ */
+const PZ_THEMES = [
+  [/т[её]мн|ночн|черн(ый|ом) стил/, 'dark', 'тёмная'], [/светл|бел(ый|ом) стил/, 'light', 'светлая'], [/неон|киберпанк/, 'neon', 'неон'],
+  [/стекл|glass|прозрачн/, 'glass', 'стекло'], [/градиент|ярк/, 'gradient', 'градиент'], [/\bios\b|айос|эппл|apple/, 'ios', 'iOS'],
+  [/material|материал|андроид/, 'material', 'Material'], [/игров|гейм|game/, 'gaming', 'игровая'], [/премиум|люкс|золот|дорог/, 'premium', 'премиум'],
+  [/минимал|простой стил|строг/, 'minimal', 'минимализм'], [/телеграм|telegram|под тему (устройств|телефон)/, 'telegram', 'Telegram (авто)'], [/авто(матич)?\b|по (настройк|тем[еы]) телефон/, 'auto', 'авто'],
+];
+const PZ_COLORS = [
+  [/синий|синего|синим|синюю/, '#2f6bff', '#5b8cff'], [/голуб/, '#1fa2ff', '#12d8fa'], [/зел[её]н/, '#16a34a', '#4ade80'], [/красн/, '#e53935', '#ff7043'],
+  [/оранж/, '#ff7a1a', '#ffb347'], [/ж[её]лт/, '#f5b301', '#ffd54f'], [/фиолет|сиренев/, '#7c4dff', '#b388ff'], [/розов/, '#ff4d8d', '#ff8fb8'],
+  [/бирюз|мятн/, '#14b8a6', '#5eead4'], [/ч[её]рн/, '#111111', '#444444'], [/сер(ый|ым|ого)/, '#6b7280', '#9ca3af'], [/золот/, '#d4af6a', '#f0d48a'],
+];
+const PZ_TOPICS = [
+  [/магазин|товар|каталог|shop|продаж/, 'digital-shop'], [/тариф|подписк|прайс|цен[аы] на/, 'pricing'], [/кабинет|профил/, 'cabinet'],
+  [/реферал|пригласи|партн[её]р/, 'referral'], [/игр/, 'game'], [/курс|обучени|урок|школ/, 'course'], [/барбер|салон|услуг|запис|мастер/, 'barber'],
+  [/портфолио|визитк|резюме/, 'portfolio'], [/faq|вопрос|помощ|поддержк/, 'faq'], [/заявк|форм|анкет|консультац/, 'lead-form'],
+  [/финанс|кошел|бюджет|расход/, 'finance'], [/клуб|сообществ|комьюнити/, 'club'], [/лендинг|landing|сервис|стартап/, 'landing'],
+  [/акци|скидк|распродаж|ч[её]рн(ая|ую) пятниц|промо/, 'promo'], [/меню|навигац|разделы/, 'bot-menu'], [/гайд|pdf|чек-?лист|электронн/, 'guide'],
+  [/приветств|стартов|welcome|главн(ая|ую) страниц/, 'welcome'],
+];
+const PZ_SECTIONS = [
+  [/первый экран|hero|шапк/, 's-hero', 'первый экран'], [/баннер/, 's-banner', 'баннер'], [/каталог|карточк[иа] товар|товар/, 's-catalog', 'каталог'],
+  [/тариф|цен[ыа]|прайс/, 's-prices', 'тарифы'], [/профил/, 's-profile', 'профиль'], [/баланс/, 's-balance', 'баланс'], [/статистик/, 's-stats', 'статистика'],
+  [/подписк/, 's-sub', 'подписка'], [/реферал|пригласи/, 's-ref', 'рефералы'], [/форм|заявк|обратн(ая|ую) связ/, 's-form', 'форма'],
+  [/faq|вопрос/, 's-faq', 'FAQ'], [/контакт|адрес/, 's-contacts', 'контакты'], [/отзыв/, 's-reviews', 'отзывы'], [/соцсет|социальн/, 's-social', 'соцсети'],
+  [/кнопк[иа] телеграм|telegram-кнопк|телеграм-кнопк/, 's-tg', 'Telegram-кнопки'], [/правил|услови|оферт/, 's-terms', 'условия'],
+  [/призыв|cta/, 's-cta', 'призыв к действию'], [/нижн(ее|юю|яя) (меню|навигац)/, 's-bnav', 'нижняя навигация'],
+];
+const PZ_BLOCKS = [
+  [/таймер|обратн(ый|ого) отсч/, 'timer', 'таймер'], [/подели/, 'shareBtn', 'кнопка «Поделиться»'], [/\bqr\b|кьюар/, 'qrBtn', 'сканер QR'],
+  [/геолок|местополож/, 'locBtn', 'геолокация'], [/face ?id|биометр|отпечат/, 'bioBtn', 'Face ID'], [/галере/, 'gallery', 'галерея'],
+  [/видео/, 'video', 'видео'], [/аккордеон/, 'accordion', 'аккордеон'], [/вкладк/, 'tabs', 'вкладки'], [/прогресс/, 'progress', 'прогресс'],
+  [/stories|сторис/, 'storyBtn', 'кнопка Stories'], [/экран.{0,6}домой/, 'homeBtn', 'кнопка «На экран Домой»'], [/пользовател[ья] telegram|карточк[ау] пользовател/, 'tguser', 'пользователь Telegram'],
+];
+
+const PuzzloAI = {
+  norm(t) { return String(t || '').toLowerCase().replace(/ё/g, 'е'); },
+  quoted(t) { const m = t.match(/[«"“„]([^»"”]{1,80})[»"”]/); return m ? m[1].trim() : ''; },
+  products(t) {
+    const out = [];
+    const re = /([A-Za-zА-Яа-яЁё0-9][A-Za-zА-Яа-яЁё0-9 .\-«»"]{1,40}?)\s*[—\-:–,]?\s*(\d[\d\s]{0,8})\s*(₽|руб\.?|р\.|rub|\$|€|звезд|stars)/gi;
+    let m;
+    while ((m = re.exec(t))) {
+      const name = m[1].replace(/^(товар[ыа]?|добавь|добавить|с|и)\s+/i, '').replace(/[«»"]/g, '').trim();
+      if (name && !/^(за|по|от|до)$/i.test(name)) out.push({ name: name.charAt(0).toUpperCase() + name.slice(1), price: m[2].replace(/\s+/g, ' ').trim() + ' ' + (/\$|€/.test(m[3]) ? m[3] : /звезд|stars/i.test(m[3]) ? '⭐' : '₽') });
+    }
+    return out.slice(0, 24);
+  },
+  /* «магазин кроссовок», «школа английского» → заголовок страницы */
+  subject(text) {
+    const m = String(text).match(/(магазин|школ[аыу]|салон|клуб|курс|студи[яю]|кофейн[яю]|ресторан|бар|сервис|канал|бот|академи[яю]|центр|агентств[оа]|кабинет|лендинг|страниц[ау])\s+((?:[A-Za-zА-Яа-яЁё0-9-]+\s?){1,4})/i);
+    if (!m) return '';
+    const stop = /^(в|во|с|со|на|для|и|из|тёмн|темн|светл|зел|син|красн|фиолет|оранж|товар|тема|теме|цвет|с)$/i;
+    const words = m[2].trim().split(/\s+/); const keep = [];
+    for (const w of words) { if (stop.test(w) || /^(т[её]мн|светл|зел[её]н|син|красн|фиолет|оранж|розов|ж[её]лт)/i.test(w)) break; keep.push(w); }
+    if (!keep.length) return '';
+    const head = m[1].toLowerCase().replace(/[ыу]$/, 'а').replace(/ю$/, 'я').replace(/^страниц[ау]$/, '');
+    return cap((head ? head + ' ' : '') + keep.join(' ')).trim();
+  },
+  findAll(list, t) { const r = []; for (const it of list) { const m = t.match(it[0]); if (m) r.push({ it, pos: m.index }); } return r.sort((a, b) => a.pos - b.pos).map(x => x.it); },
+  productGrid(items) {
+    const pal = [['#5b7cfa', '#8a5cf6', '#1d2340'], ['#22d3a5', '#5b7cfa', '#10302a'], ['#ffb84d', '#ff6a5c', '#3a1a10'], ['#5cc8ff', '#8a5cf6', '#0f2550']];
+    return B.box({ gap: 12 }, [B.h('Каталог', 3), B.grid(2, { gap: 10 }, items.map((p, i) => productCard(p.name, p.price, '', 5 + i * 7, pal[i % pal.length])))], { name: 'Каталог', anchor: 'catalog' });
+  },
+  applyLook(p, t, done) {
+    const th = this.findAll(PZ_THEMES, t)[0];
+    if (th) { p.page.themeId = th[1]; p.page.tokens = {}; done.push('тема «' + th[2] + '»'); }
+    const col = this.findAll(PZ_COLORS, t)[0];
+    if (col) { p.page.tokens = { ...(p.page.tokens || {}), primary: col[1], primary2: col[2] }; done.push('основной цвет ' + col[1]); }
+  },
+
+  /* создать новую страницу по описанию */
+  create(text) {
+    const t = this.norm(text), done = [];
+    const title = this.quoted(text);
+    const secs = this.findAll(PZ_SECTIONS, t);
+    const blocks = this.findAll(PZ_BLOCKS, t);
+    const prods = this.products(text);
+    const topic = this.findAll(PZ_TOPICS, t)[0];
+    let p;
+    if (topic && secs.length < 3) {
+      const tpl = TEMPLATES.find(x => x.id === topic[1]);
+      p = buildTemplateProject(tpl);
+      done.push('взял шаблон «' + tpl.name + '»');
+      for (const s of secs) {
+        const sec = SECTIONS.find(x => x.id === s[1]);
+        const has = JSON.stringify(p.root).includes('"name":"' + (sec.make().name || '@@'));
+        if (!has && !(s[1] === 's-catalog' && topic[1] === 'digital-shop')) { p.root.children.push(sec.make()); done.push('добавил «' + s[2] + '»'); }
+      }
+    } else {
+      const kids = [B.h(title || (topic ? 'Новая страница' : 'Добро пожаловать'), 1), B.muted('Собрано Puzzlo AI. Нажмите на любой блок, чтобы изменить его.')];
+      const order = secs.length ? secs : [PZ_SECTIONS[0], PZ_SECTIONS[2], PZ_SECTIONS[10]];
+      for (const s of order) { const sec = SECTIONS.find(x => x.id === s[1]); if (sec) kids.push(sec.make()); }
+      p = newProject({ name: title || 'Страница от Puzzlo', themeId: 'telegram', root: newRoot(kids) });
+      done.push('собрал страницу из секций: ' + order.map(s => s[2]).join(', '));
+    }
+    if (prods.length) {
+      const old = p.root.children.findIndex(n => n.anchor === 'catalog' || n.name === 'Каталог');
+      const grid = this.productGrid(prods);
+      if (old >= 0) p.root.children.splice(old, 1, grid); else p.root.children.splice(Math.min(2, p.root.children.length), 0, grid);
+      done.push('товаров: ' + prods.length);
+    } else {
+      const cnt = t.match(/(\d{1,2})\s*(товар|карточ|позици)/);
+      if (cnt) { const n = clamp(+cnt[1], 1, 24); p.root.children.push(this.productGrid(Array.from({ length: n }, (_, i) => ({ name: 'Товар ' + (i + 1), price: (290 + i * 200) + ' ₽' })))); done.push('сетка из ' + n + ' товаров'); }
+    }
+    for (const b of blocks) { const it = catalogFind(b[1]); if (it) { p.root.children.push(it.make()); done.push('добавил ' + b[2]); } }
+    this.applyLook(p, t, done);
+    const name = title || this.subject(text);
+    if (name) {
+      p.name = name;
+      let hd = null; walk(p.root, n => { if (!hd && n.type === 'heading' && !String(n.props.text || '').includes('{{')) hd = n; });
+      if (hd) { hd.props.text = name; if (!title) done.push('заголовок «' + name + '»'); }
+    }
+    return { project: p, done };
+  },
+
+  /* изменить открытый проект */
+  modify(text) {
+    const t = this.norm(text), done = [];
+    const prods = this.products(text);
+    const title = this.quoted(text);
+    if (/удали|убери|скрой/.test(t)) {
+      const targets = this.findAll(PZ_SECTIONS, t).concat(this.findAll(PZ_BLOCKS, t));
+      const word = targets.length ? targets[0][2] : (t.match(/(?:удали|убери|скрой)\s+([а-яa-z0-9]+)/) || [])[1];
+      if (!word) return { done, msg: 'Уточните, что удалить: например, «удали FAQ».' };
+      let found = null;
+      walk(S.project.root, n => { if (!found && n.type !== 'page' && this.norm(nodeLabel(n) + ' ' + (n.name || '') + ' ' + n.type).includes(this.norm(word).slice(0, 5))) found = n; });
+      if (!found && /faq|вопрос/.test(t)) walk(S.project.root, n => { if (!found && n.type === 'accordion') found = n; });
+      if (!found) return { done, msg: 'Не нашёл на странице блок «' + word + '». Откройте «Слои», чтобы посмотреть, что есть на странице.', mood: 'error' };
+      Editor.remove(found.id);
+      done.push('удалил «' + nodeLabel(found) + '»');
+      return { done };
+    }
+    const look = [];
+    const th = this.findAll(PZ_THEMES, t)[0], col = this.findAll(PZ_COLORS, t)[0];
+    if (th || col) {
+      Editor.act('Puzzlo: оформление', pr => this.applyLook(pr, t, look), { panel: true, struct: false });
+      done.push(...look);
+    }
+    if (/назови|название|переименуй/.test(t) && title) { Editor.act('Puzzlo: название', pr => { pr.name = title; }, { struct: false }); if (Editor.els.name) Editor.els.name.value = title; done.push('назвал проект «' + title + '»'); }
+    else if (/заголов/.test(t) && title) {
+      const hd = (() => { let r = null; walk(S.project.root, n => { if (!r && n.type === 'heading') r = n; }); return r; })();
+      if (hd) { Editor.setProp(hd.id, ['props', 'text'], title, null, { panel: true }); done.push('поменял главный заголовок'); }
+    }
+    if (prods.length) { Editor.insert(this.productGrid(prods), { parent: 'page', index: null }); done.push('добавил каталог: ' + prods.map(p => p.name).join(', ')); }
+    if (/добав|встав|постав|нужн|сделай/.test(t)) {
+      for (const s of this.findAll(PZ_SECTIONS, t)) {
+        if (prods.length && s[1] === 's-catalog') continue;
+        const sec = SECTIONS.find(x => x.id === s[1]);
+        if (sec) { Editor.insert(sec.make(), { parent: 'page', index: null }); done.push('добавил «' + s[2] + '»'); }
+      }
+      for (const b of this.findAll(PZ_BLOCKS, t)) { const it = catalogFind(b[1]); if (it) { Editor.insert(it.make(), { parent: 'page', index: null }); done.push('добавил ' + b[2]); } }
+    }
+    return { done };
+  },
+
+  answer(text) {
+    const t = this.norm(text);
+    if (!t.trim()) return { text: 'Напишите, что сделать.' };
+    if (/^(привет|здравствуй|хай|добр)/.test(t) && t.length < 25) return { text: 'Привет! Я Puzzlo. Опишите страницу, которую нужно собрать, — например, «магазин с товарами в тёмном стиле».', mood: 'wave' };
+    if (/что ты умеешь|помощ|help|команды|как пользоват/.test(t)) return {
+      text: 'Могу помочь собрать страницу:\n- создать страницу по описанию: магазин, тарифы, профиль, игра, курс, FAQ, заявка, промо и другие;\n- добавить секции: баннер, каталог, тарифы, отзывы, контакты, форму, таймер, кнопку «Поделиться»;\n- добавить товары списком: «Футболка 999 ₽, Кружка 490 ₽»;\n- сменить тему и цвет: «сделай тёмным», «зелёный цвет», «тема Telegram»;\n- удалить блок, переименовать проект, открыть экспорт или просмотр.\n\nЯ работаю на правилах, без интернета и нейросети: понимаю простые фразы. Любое действие можно отменить.',
+      btns: [['Открыть базу знаний', 'kb:ai-how']], mood: 'wave',
+    };
+    if (/отмени|верни как было|undo/.test(t)) { if (S.view === 'editor') { Editor.undo(); return { text: 'Отменил последнее действие.', mood: 'like' }; } return { text: 'Сейчас нечего отменять: проект не открыт.' }; }
+    if (/экспорт|дай код|скопир.* код|html.?код/.test(t)) { if (S.view === 'editor') { ExportUI.open(); return { text: 'Открыл экспорт. Режим «PuzzleBot: один блок» подходит для блока «HTML код».', mood: 'like' }; } return { text: 'Сначала откройте проект — тогда покажу код.', btns: [['Мои проекты', 'projects']] }; }
+    if (/просмотр|предпросмотр|покажи как/.test(t) && S.view === 'editor') { Editor.preview(); return { text: 'Открыл просмотр. Закрыть — кнопка «Редактор» или Esc.' }; }
+    if (/переменн/.test(t) && !/добав/.test(t)) return { text: 'Переменные пишутся так: {{FIRST_NAME_TEXT}}. Начните вводить {{ в любом поле — я подскажу варианты.', btns: [['Справочник переменных', 'vars'], ['Статья о переменных', 'kb:vars-how']] };
+    if (/вставить в puzzle|в пазлбот|в puzzlebot|разместить/.test(t)) return { text: 'Экспорт → «Копировать код» → в PuzzleBot добавьте блок «HTML код» и вставьте. Подробности — в статье.', btns: [['Как вставить в PuzzleBot', 'kb:export']] };
+
+    const wantsNew = /созда|собери|сгенер|нов(ую|ая|ый) (страниц|проект)|с нуля/.test(t) || (S.view !== 'editor' && /сделай|нужн|хочу/.test(t));
+    if (wantsNew || S.view !== 'editor') {
+      const r = this.create(text);
+      Home.persist(r.project).then(() => Editor.open(r.project));
+      return { text: 'Готово! ' + cap(r.done.join(', ')) + '.\n\nТеперь можно менять тексты на холсте или попросить меня: «добавь отзывы», «сделай зелёным», «удали FAQ».', mood: 'like', btns: [['Открыть экспорт', 'export'], ['Просмотр', 'preview']] };
+    }
+    const r = this.modify(text);
+    if (r.msg) return { text: r.msg, mood: r.mood || 'error' };
+    if (r.done.length) return { text: 'Сделал: ' + r.done.join(', ') + '. Если что-то не так — нажмите «Отменить».', mood: 'like', btns: [['Отменить', 'undo']] };
+    return { text: 'Не совсем понял. Попробуйте так:\n- «добавь отзывы и контакты»\n- «сделай тёмным» или «зелёный цвет»\n- «создай страницу тарифов»\n- «добавь товары: Футболка 999 ₽, Кружка 490 ₽»', mood: 'error' };
+  },
+};
+function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+
+/* ---------- Окно Puzzlo слева ---------- */
+const Puzzlo = {
+  open: false, expanded: false, history: false, chats: [], cur: null, el: null,
+  async load() {
+    const c = await Store.kvGet('puzzloChats', []);
+    this.chats = Array.isArray(c) ? c : [];
+    this.cur = this.chats[0] || null;
+  },
+  save() { Store.kvSet('puzzloChats', this.chats.slice(0, 20)); },
+  newChat() { this.cur = { id: 'c' + uid(8), title: 'Новый чат', ts: Date.now(), msgs: [] }; this.chats.unshift(this.cur); this.history = false; this.save(); this.render(); },
+  mount() {
+    if (this.el) this.el.remove();
+    this.el = h('div', { class: 'pz-root' });
+    document.body.append(this.el);
+    this.render();
+  },
+  toggle(v) { this.open = v === undefined ? !this.open : v; if (this.open) this.mood('wave', 2600); this.render(); if (this.open) setTimeout(() => { const i = this.el.querySelector('.pz-input textarea'); if (i && !isMobile()) i.focus(); }, 60); },
+  moodTimer: 0, curMood: 'logo',
+  mood(m, ms) {
+    this.curMood = m;
+    $$('.pz-mascot img', this.el || document).forEach(i => { i.src = MASCOT[m] || MASCOT.logo; });
+    clearTimeout(this.moodTimer);
+    if (ms) this.moodTimer = setTimeout(() => this.mood('logo'), ms);
+  },
+  tasks() {
+    return [
+      { done: S.projects.length > 0, text: 'Создать первую страницу', route: 'templates' },
+      { done: !!S.flags.exported, text: 'Скопировать код для PuzzleBot', route: 'kb:export' },
+      { done: !!PB.token, text: 'Подключить PuzzleBot', route: 'pb' },
+    ];
+  },
+  render() {
+    if (!this.el) return;
+    const el = this.el;
+    el.innerHTML = '';
+    el.classList.toggle('open', this.open);
+    el.classList.toggle('in-editor', S.view === 'editor');
+    const mascot = h('button', { class: 'pz-mascot', 'aria-label': this.open ? 'Скрыть Puzzlo AI' : 'Открыть Puzzlo AI', title: 'Puzzlo AI', onclick: () => this.toggle() }, mascotImg(this.curMood, 72));
+    if (!this.open) { el.append(mascot); return; }
+    // верхняя часть: шапка и карточки
+    const top = h('div', { class: 'pz-top' },
+      h('div', { class: 'pz-head' }, h('b', null, 'Puzzlo Studio House'), h('button', { class: 'pz-x', 'aria-label': 'Закрыть', onclick: () => this.toggle(false) }, ic('x', 20))),
+      h('div', { class: 'pz-card' }, h('div', { class: 'pz-row' }, h('span', { class: 'pz-dia' }), h('span', { class: 'grow' }, 'Шаблоны'), h('b', null, TEMPLATES.length + ' шт.')), h('button', { class: 'pz-gray', onclick: () => App.go('templates') }, 'Подробнее')),
+      h('div', { class: 'pz-card pz-promo' }, h('b', null, 'База знаний'), h('span', null, 'Ответы о редакторе и PuzzleBot'), h('button', { class: 'pz-gray sm', onclick: () => App.go('kb') }, 'Открыть'), h('i', { class: 'pz-cloud', 'aria-hidden': 'true' })),
+      ...this.tasks().map(tk => h('button', { class: 'pz-card pz-task' + (tk.done ? ' done' : ''), onclick: () => App.go(tk.route) }, h('span', { class: 'pz-cb' }, tk.done ? ic('check', 14) : null), h('span', { class: 'grow' }, tk.text), h('span', { class: 'pz-pts' }, tk.done ? 'готово' : '→'))));
+    // чат
+    if (!this.cur) { this.cur = { id: 'c' + uid(8), title: 'Новый чат', ts: Date.now(), msgs: [] }; this.chats.unshift(this.cur); }
+    const msgs = h('div', { class: 'pz-msgs scroll' });
+    if (this.history) {
+      msgs.append(h('div', { class: 'pz-hist-t' }, 'История чатов'));
+      for (const c of this.chats) msgs.append(h('button', { class: 'pz-hist' + (c === this.cur ? ' on' : ''), onclick: () => { this.cur = c; this.history = false; this.render(); } }, h('b', null, c.title), h('small', null, fmtDate(c.ts) + ' · ' + c.msgs.length + ' сообщ.')));
+    } else {
+      if (!this.cur.msgs.length) msgs.append(h('div', { class: 'pz-empty' }, h('p', null, 'Напишите, что хотите создать или изменить — соберу это в редакторе.'), h('div', { class: 'pz-sugs' }, ['Создай магазин с товарами', 'Что ты умеешь?', 'Сделай страницу тарифов с FAQ'].map(s => h('button', { onclick: () => this.send(s) }, s)))));
+      else msgs.append(h('div', { class: 'pz-day' }, h('span', null, 'Сегодня')));
+      for (const m of this.cur.msgs) {
+        if (m.role === 'user') msgs.append(h('div', { class: 'pz-u' }, m.text));
+        else {
+          const body = h('div', { class: 'pz-a-t' });
+          let list = null;
+          for (const line of m.text.split('\n')) {
+            if (/^- /.test(line)) { if (!list) { list = h('ul'); body.append(list); } list.append(h('li', null, line.slice(2))); }
+            else { list = null; if (line.trim()) body.append(h('p', null, line)); }
+          }
+          const btns = (m.btns || []).length ? h('div', { class: 'pz-btns' }, m.btns.map(([l, r]) => h('button', { onclick: () => App.go(r) }, l))) : null;
+          msgs.append(h('div', { class: 'pz-a' }, body, btns, h('div', { class: 'pz-tools' },
+            h('button', { 'aria-label': 'Копировать', title: 'Копировать', onclick: () => UI.copy(m.text) }, ic('copy', 15)),
+            h('button', { 'aria-label': 'Не понравилось', title: 'Не понравилось', class: m.rate === -1 ? 'on' : '', onclick: () => { m.rate = -1; this.save(); this.mood('error', 2500); this.render(); } }, ic('arrow-down', 15)),
+            h('button', { 'aria-label': 'Понравилось', title: 'Понравилось', class: m.rate === 1 ? 'on' : '', onclick: () => { m.rate = 1; this.save(); this.mood('heart', 2800); this.render(); } }, ic('heart', 15)))));
+        }
+      }
+    }
+    const ta = h('textarea', { rows: 1, placeholder: 'Введите сообщение...', 'aria-label': 'Сообщение для Puzzlo', 'data-novar': '' });
+    const sendBtn = h('button', { class: 'pz-send', 'aria-label': 'Отправить', disabled: true, onclick: () => { this.send(ta.value); } }, ic('send', 18));
+    ta.addEventListener('input', () => { sendBtn.disabled = !ta.value.trim(); ta.style.height = 'auto'; ta.style.height = Math.min(120, ta.scrollHeight) + 'px'; });
+    ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (ta.value.trim()) this.send(ta.value); } });
+    const file = h('input', { type: 'file', accept: '.json,image/*', hidden: true });
+    file.addEventListener('change', async () => {
+      const f = file.files[0]; if (!f) return;
+      if (/json/.test(f.type) || /\.json$/i.test(f.name)) { const v = validateImport(await f.text()); if (v.ok) { await Home.persist(v.project); Editor.open(v.project); this.push('assistant', 'Открыл проект из файла «' + f.name + '».', null, 'like'); } else this.push('assistant', 'Не смог открыть файл: ' + v.errors.join('; '), null, 'error'); }
+      else { const m = await Media.add(f); if (m) { if (S.view === 'editor') { Editor.insert(mk('image', { src: m.dataUrl, alt: m.name })); this.push('assistant', 'Добавил картинку на страницу и в медиатеку.', null, 'like'); } else this.push('assistant', 'Сохранил картинку в медиатеку.', null, 'like'); } }
+      file.value = '';
+    });
+    const chat = h('div', { class: 'pz-chat' + (this.expanded ? ' expanded' : '') },
+      h('div', { class: 'pz-chat-h' },
+        h('button', { class: 'pz-ic', 'aria-label': this.expanded ? 'Свернуть чат' : 'Развернуть чат', onclick: () => { this.expanded = !this.expanded; this.render(); } }, ic(this.expanded ? 'chevron-down' : 'chevron-up', 20)),
+        h('b', null, 'Puzzlo AI'),
+        h('button', { class: 'pz-ic', 'aria-label': 'Новый чат', title: 'Новый чат', onclick: () => this.newChat() }, ic('plus', 19)),
+        h('button', { class: 'pz-ic' + (this.history ? ' on' : ''), 'aria-label': 'История чатов', title: 'История чатов', onclick: () => { this.history = !this.history; this.render(); } }, ic('clock', 19))),
+      msgs,
+      h('div', { class: 'pz-input' }, ta, h('div', { class: 'pz-input-b' }, h('button', { class: 'pz-ic', 'aria-label': 'Прикрепить файл', title: 'Картинка или проект .json', onclick: () => file.click() }, ic('link', 17)), sendBtn), file));
+    if (!this.expanded) chat.append(mascot);
+    const panel = h('section', { class: 'pz-panel', role: 'dialog', 'aria-label': 'Puzzlo AI' }, top, chat);
+    el.append(panel);
+    msgs.scrollTop = msgs.scrollHeight;
+  },
+  push(role, text, btns, mood) {
+    if (!this.cur) this.newChat();
+    this.cur.msgs.push({ role, text, btns: btns || null, ts: Date.now() });
+    if (role === 'user' && this.cur.title === 'Новый чат') this.cur.title = text.slice(0, 40);
+    this.cur.ts = Date.now();
+    this.save();
+    if (mood) this.mood(mood, 2800);
+    this.render();
+  },
+  send(text) {
+    text = String(text || '').trim();
+    if (!text) return;
+    this.expanded = true;
+    this.push('user', text);
+    setTimeout(() => {
+      let r;
+      try { r = PuzzloAI.answer(text); } catch (e) { console.error(e); r = { text: 'Что-то пошло не так. Попробуйте сформулировать иначе.', mood: 'error' }; }
+      this.push('assistant', r.text, r.btns, r.mood);
+    }, 250);
+  },
+};
+
 /* ===== 15-export-ui.js ===== */
 /* ============================================================
    15 · ОКНА: экспорт кода, импорт JSON, AI-генерация
@@ -6197,7 +7285,7 @@ const ExportUI = {
       const size = new Blob([part.code]).size;
       codeBar.append(tabs, h('span', { class: 'muted', style: { fontSize: '12px' } }, fmtBytes(size)),
         h('button', { class: 'btn sm', onclick: () => this.download(part.code, part.file, 'text/' + (part.lang === 'js' ? 'javascript' : part.lang)) }, ic('download', 14), 'Файл'),
-        h('button', { class: 'btn sm primary', onclick: () => UI.copy(part.code, 'Код скопирован в буфер обмена') }, ic('copy', 14), current.parts.length > 1 ? 'Копировать ' + part.tab : 'Копировать код'));
+        h('button', { class: 'btn sm primary', onclick: () => { S.flags.exported = true; Store.kvSet('flags', S.flags); UI.copy(part.code, 'Код скопирован в буфер обмена'); } }, ic('copy', 14), current.parts.length > 1 ? 'Копировать ' + part.tab : 'Копировать код'));
       pre.innerHTML = part.code.length > 400000 ? escHtml(part.code) : highlight(part.code, part.lang);
       pre.scrollTop = 0;
     };
@@ -6207,7 +7295,8 @@ const ExportUI = {
       for (const m of EXPORT_MODES) {
         side.append(h('button', { class: 'mode-opt' + (o.mode === m.id ? ' on' : ''), 'aria-pressed': String(o.mode === m.id), onclick: () => { o.mode = m.id; tab = 0; rebuild(); } }, h('b', null, h('i', null, m.short), m.label), h('span', null, m.desc)));
       }
-      if (o.mode === 'puzzlebot' || o.mode === 'split' || o.mode === 'fragment') side.append(h('div', { class: 'grp-t' }, 'Фон в PuzzleBot'), ...Inspector.embedCtl(() => rebuild()));
+      if (o.mode === 'puzzlebot' || o.mode === 'pbhead' || o.mode === 'split' || o.mode === 'fragment') side.append(h('div', { class: 'grp-t' }, 'Фон в PuzzleBot'), ...Inspector.embedCtl(() => rebuild()));
+      side.append(h('button', { class: 'btn sm block', onclick: () => PBUI.mcpDialog() }, ic('send', 14), 'Отправить в PuzzleBot (MCP)'));
       side.append(h('div', { class: 'grp-t' }, 'Параметры'),
         toggle('JavaScript для интерактива', o.js, v => { o.js = v; rebuild(); }),
         toggle('Минифицировать', o.minify, v => { o.minify = v; rebuild(); }),
@@ -6364,6 +7453,33 @@ const App = {
   toggleUi() { S.settings.ui = this.resolveUi() === 'light' ? 'dark' : 'light'; this.applyUi(); this.saveSettings(); },
   saveSettings() { Store.kvSet('settings', S.settings); },
 
+  /* Переходы из статей базы знаний, чата Puzzlo и подсказок */
+  go(route) {
+    const r = String(route || '');
+    const home = tab => { S.homeTab = tab; if (S.view === 'editor') Editor.close().then(() => Home.render()); else Home.render(); };
+    const needProject = fn => {
+      if (S.view === 'editor' && S.project) return fn();
+      const last = S.projects.slice().sort((a, b) => (b.openedAt || 0) - (a.openedAt || 0))[0];
+      if (last) { Editor.open(last); setTimeout(fn, 150); return; }
+      UI.toast('Сначала создайте или откройте страницу');
+      home('templates');
+    };
+    if (r.startsWith('kb:')) return KBView.open(r.slice(3));
+    switch (r) {
+      case 'kb': KBView.art = null; KBView.cat = null; return home('kb');
+      case 'templates': case 'projects': case 'mine': case 'media': case 'settings': return home(r);
+      case 'new': return Home.newBlank();
+      case 'mcp': return PBUI.mcpDialog();
+      case 'pb': return PBUI.dialog(() => { if (S.view === 'home') Home.render(); Puzzlo.render(); });
+      case 'ai': return Puzzlo.toggle(true);
+      case 'export': return needProject(() => ExportUI.open());
+      case 'preview': return needProject(() => Editor.preview());
+      case 'undo': return S.view === 'editor' ? Editor.undo() : null;
+      case 'vars': return needProject(() => { Editor.setRtab('add'); S.leftTab = 'vars'; Editor.renderLeft(); if (isMobile()) Editor.setMpane('add'); });
+      case 'page': return needProject(() => { Editor.select(null); Editor.setRtab('props'); if (isMobile()) Editor.setMpane('props'); });
+      default: UI.toast('Раздел не найден: ' + r);
+    }
+  },
   syncTelegramBack() {
     const bb = this.tg && this.tg.BackButton;
     if (!bb) return;
@@ -6399,6 +7515,9 @@ const App = {
     this.applyUi();
     if (window.matchMedia) window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => { if (S.settings.ui === 'system') this.applyUi(); });
     if (Store.mode === 'memory') UI.toast('Хранилище браузера недоступно — проекты не сохранятся после закрытия. Скачивайте JSON.', { err: true, ms: 7000 });
+    S.flags = (await Store.kvGet('flags', {})) || {};
+    await Puzzlo.load();
+    Puzzlo.mount();
     if (!S.projects.length) S.homeTab = 'templates';
     Home.render();
     document.addEventListener('keydown', e => Editor.key(e));
