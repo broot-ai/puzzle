@@ -535,6 +535,8 @@ body { font-size: 13.5px; }
 .hex-sw { width: 26px; height: 26px; border-radius: 4px; border: 1px solid var(--line2); flex: none; }
 .hex-row code { flex: 1; font-family: var(--font-m); font-size: 13px; font-weight: 600; }
 .empty-tab { padding: 18px 14px; color: var(--muted); font-size: 13px; text-align: center; }
+.usage { font-size: 12px; line-height: 1.45; color: var(--muted); padding: 8px 10px; border-radius: var(--r-sm); background: var(--panel2); }
+.usage b { color: var(--text); font-weight: 600; }
 
 </style>
 </head>
@@ -948,6 +950,24 @@ const THEMES = {
   premium: { label: 'Premium', primary: '#d4af6a', primary2: '#9c7a3c', accent: '#e8d5b0', bg: '#0d0c0a', surface: '#171512', surface2: '#201d18', text: '#f3ece0', muted: '#a39a8a', border: '#2e2a22', onPrimary: '#1a140a', success: '#8fbf7f', danger: '#e07a6a', radius: 6, btnRadius: 4, gap: 16, shadow: 'none', font: 'manrope', headingFont: 'playfair', contentWidth: 480, pageBg: null },
 };
 
+/* Адаптивные темы: цвета меняются вместе с темой устройства / Telegram.
+   telegram — берёт цвета самого Telegram (CSS-переменные --tg-theme-*), если их нет — запасные светлые/тёмные
+   auto     — светлая или тёмная палитра по настройке устройства (prefers-color-scheme) */
+const TG_LIGHT = { primary: '#2481cc', primary2: '#2481cc', accent: '#2481cc', bg: '#ffffff', surface: '#f1f1f4', surface2: '#e6e6eb', text: '#000000', muted: '#8e8e93', border: '#e3e3e8', onPrimary: '#ffffff', success: '#31b545', danger: '#e53935' };
+const TG_DARK = { primary: '#5288c1', primary2: '#6ab3f3', accent: '#6ab3f3', bg: '#17212b', surface: '#232e3c', surface2: '#2c3a4b', text: '#f5f5f5', muted: '#708499', border: '#101921', onPrimary: '#ffffff', success: '#4fbf67', danger: '#ec3942' };
+const TG_MAP = { bg: '--tg-theme-bg-color', surface: '--tg-theme-secondary-bg-color', text: '--tg-theme-text-color', muted: '--tg-theme-hint-color', primary: '--tg-theme-button-color', onPrimary: '--tg-theme-button-text-color', accent: '--tg-theme-accent-text-color', primary2: '--tg-theme-link-color', border: '--tg-theme-section-separator-color', danger: '--tg-theme-destructive-text-color' };
+const colorsOf = t => Object.fromEntries(TOKEN_COLORS.map(([k]) => [k, t[k]]));
+const ADAPTIVE_THEMES = {
+  telegram: { label: 'Telegram (авто)', adaptive: 'tg', light: TG_LIGHT, dark: TG_DARK, ...TG_LIGHT, radius: 12, btnRadius: 10, gap: 12, shadow: 'none', font: 'system', headingFont: 'system', contentWidth: 480, pageBg: null },
+  auto: { label: 'Авто: светлая / тёмная', adaptive: 'scheme', light: colorsOf(THEMES.light), dark: colorsOf(THEMES.dark), ...colorsOf(THEMES.light), radius: 16, btnRadius: 12, gap: 14, shadow: 'sm', font: 'manrope', headingFont: 'manrope', contentWidth: 480, pageBg: null },
+};
+for (const k of Object.keys(THEMES)) { const t = THEMES[k]; delete THEMES[k]; THEMES[k] = t; }
+Object.assign(THEMES, ADAPTIVE_THEMES);
+// адаптивные темы — первыми в списке
+const _rest = Object.entries(THEMES).filter(([k]) => !ADAPTIVE_THEMES[k]);
+for (const [k] of _rest) delete THEMES[k];
+for (const [k, t] of _rest) THEMES[k] = t;
+
 function themeTokens(page) {
   const base = THEMES[page.themeId] || THEMES.dark;
   return { ...base, ...(page.tokens || {}) };
@@ -1016,68 +1036,6 @@ function renderNode(n, ctx) {
 }
 function svgI(name, size) { return iconSvg(name, size || 18, 'class="ps-ic"'); }
 
-/* ---------- Действия кнопок и ссылок ---------- */
-const ACTIONS = [
-  ['none', 'Нет действия'],
-  ['url', 'Открыть ссылку'],
-  ['tg', 'Ссылка Telegram (t.me)'],
-  ['bot', 'Запустить бота с параметром'],
-  ['anchor', 'Прокрутить к блоку'],
-  ['copy', 'Скопировать текст'],
-  ['submit', 'Отправить форму'],
-  ['close', 'Закрыть Mini App (Telegram)'],
-  ['senddata', 'Передать данные боту (Telegram)'],
-];
-const ACTION_INFO = {
-  url: 'Внутри Telegram ссылка откроется во внешнем браузере через Telegram.WebApp.openLink, если страница открыта как Mini App. Иначе — обычный переход.',
-  tg: 'Ссылка вида https://t.me/имя. Внутри Mini App откроется через openTelegramLink.',
-  bot: 'Создаёт ссылку https://t.me/БОТ?start=ПАРАМЕТР. Как бот PuzzleBot обработает параметр, нужно настроить в самом боте (команда /start с параметром). Это не проверено автоматически.',
-  anchor: 'Прокручивает страницу к блоку, у которого задан «Якорь» (вкладка «Ещё»).',
-  copy: 'Копирует текст в буфер обмена. Нужен JavaScript: если поле PuzzleBot не принимает <script>, кнопка не сработает.',
-  submit: 'Работает только внутри блока «Форма».',
-  close: 'Вызывает Telegram.WebApp.close(). Работает только если страница открыта как Telegram Mini App и подключён telegram-web-app.js.',
-  senddata: 'Вызывает Telegram.WebApp.sendData(). По документации Telegram работает, только если Mini App открыт через кнопку обычной клавиатуры бота. Поддержку в PuzzleBot нужно проверить.',
-};
-
-function actionParts(act, ctx) {
-  // → { tag, attrs, js } для кнопки/ссылки
-  const a = act || { type: 'none' };
-  const v = String(a.value ?? '');
-  switch (a.type) {
-    case 'url': {
-      const c = checkUrl(v, { allowAnchor: false });
-      if (!c.ok || !c.url) return { tag: 'button', attrs: ' type="button"' };
-      const tgJs = ctx.js ? ' data-ps-act="link"' : '';
-      return { tag: 'a', attrs: ` href="${escAttr(c.url)}"${a.newTab === false ? '' : ' target="_blank" rel="noopener noreferrer"'}${tgJs}`, js: !!ctx.js };
-    }
-    case 'tg': {
-      let u = v.trim();
-      if (/^@?[A-Za-z0-9_]{4,64}$/.test(u)) u = 'https://t.me/' + u.replace('@', '');
-      const c = checkUrl(u, { allowAnchor: false });
-      if (!c.ok || !c.url) return { tag: 'button', attrs: ' type="button"' };
-      return { tag: 'a', attrs: ` href="${escAttr(c.url)}" target="_blank" rel="noopener noreferrer"${ctx.js ? ' data-ps-act="tglink"' : ''}`, js: !!ctx.js };
-    }
-    case 'bot': {
-      const bot = String(a.bot || '').replace('@', '').trim();
-      const p = String(a.value || '').trim();
-      if (!/^[A-Za-z0-9_]{4,64}$/.test(bot)) return { tag: 'button', attrs: ' type="button"' };
-      const okP = /^[A-Za-z0-9_{}-]{0,64}$/.test(p);
-      const url = 'https://t.me/' + bot + (p && okP ? '?start=' + p : '');
-      return { tag: 'a', attrs: ` href="${escAttr(url)}" target="_blank" rel="noopener noreferrer"${ctx.js ? ' data-ps-act="tglink"' : ''}`, js: !!ctx.js };
-    }
-    case 'anchor': {
-      const an = String(a.value || '').replace(/^#/, '');
-      if (!/^[a-z0-9_-]+$/i.test(an)) return { tag: 'button', attrs: ' type="button"' };
-      return { tag: 'a', attrs: ` href="#ps-${an}"` };
-    }
-    case 'copy': return { tag: 'button', attrs: ` type="button" data-ps-act="copy" data-ps-val="${TA(v, ctx)}"`, js: true };
-    case 'close': return { tag: 'button', attrs: ' type="button" data-ps-act="close"', js: true };
-    case 'senddata': return { tag: 'button', attrs: ` type="button" data-ps-act="senddata" data-ps-val="${TA(v, ctx)}"`, js: true };
-    case 'submit': return { tag: 'button', attrs: ' type="submit"' };
-    default: return { tag: 'button', attrs: ' type="button"' };
-  }
-}
-
 /* ---------- Списки опций для панели ---------- */
 const O = {
   level: [[1, 'H1'], [2, 'H2'], [3, 'H3'], [4, 'H4'], [5, 'H5'], [6, 'H6']],
@@ -1099,7 +1057,7 @@ const NET_LABEL = Object.fromEntries(O.net);
 const COMP = {
   page: {
     label: 'Страница', icon: 'file', container: true, root: true,
-    render: (n, ctx) => `<div class="ps-root ps-p-${ctx.pid}"${ctx.mode === 'edit' ? ` data-psid="${n.id}" data-pscont="column"` : ''}><div class="ps-page ps-${n.id}">${kids(n, ctx)}</div></div>`,
+    render: (n, ctx) => `<div class="ps-root ps-p-${ctx.pid}"${ctx.scheme ? ` data-ps-scheme="${ctx.scheme}"` : ''}${ctx.mode === 'edit' ? ` data-psid="${n.id}" data-pscont="column"` : ''}><div class="ps-page ps-${n.id}">${kids(n, ctx)}</div></div>`,
   },
 
   container: {
@@ -1486,7 +1444,7 @@ const COMP = {
   navmenu: {
     label: 'Меню', icon: 'grid',
     fields: [
-      { k: 'items', label: 'Пункты меню', type: 'items', itemLabel: 'text', fields: [{ k: 'icon', label: 'Иконка', type: 'icon', allowNone: true }, { k: 'text', label: 'Название', type: 'text', vars: true }, { k: 'sub', label: 'Подпись', type: 'text', vars: true }, { k: 'url', label: 'Ссылка (https://, t.me или #якорь)', type: 'url' }], add: { icon: 'star', text: 'Раздел', sub: '', url: '' } },
+      { k: 'items', label: 'Пункты меню', type: 'items', itemLabel: 'text', fields: [{ k: 'icon', label: 'Иконка', type: 'icon', allowNone: true }, { k: 'text', label: 'Название', type: 'text', vars: true }, { k: 'sub', label: 'Подпись', type: 'text', vars: true }, { k: 'page', label: 'Страница Mini App PuzzleBot (goto_web_page)', type: 'text', placeholder: 'https://t.me/BrootsBot?startapp=623ec549b7791482' }, { k: 'url', label: 'Или обычная ссылка (https://, t.me, #якорь)', type: 'url' }], add: { icon: 'star', text: 'Раздел', sub: '', page: '', url: '' } },
       { k: 'variant', label: 'Вид', type: 'seg', options: [['tiles', 'Плитки'], ['list', 'Список'], ['pills', 'Таблетки']] },
       { k: 'cols', label: 'Колонок (для плиток)', type: 'number', min: 1, max: 4 },
     ],
@@ -1494,7 +1452,7 @@ const COMP = {
     render(n, ctx) {
       const v = CSS.pick(n.props.variant, ['tiles', 'list', 'pills']) || 'tiles';
       const items = (n.props.items || []).map(it => {
-        const ap = it.url ? actionParts({ type: /^#/.test(it.url) ? 'anchor' : /t\.me\//.test(it.url) ? 'tg' : 'url', value: it.url }, ctx) : { tag: 'span', attrs: '' };
+        const ia = itemAction(it); const ap = ia ? actionParts(ia, ctx) : { tag: 'span', attrs: '' };
         const tag = ap.tag === 'button' ? 'span' : ap.tag;
         return `<${tag} class="ps-nav-i"${tag === 'span' ? '' : ap.attrs}>${it.icon ? `<span class="ps-nav-ic">${svgI(it.icon, 20)}</span>` : ''}<span class="ps-nav-tx"><span class="ps-nav-t">${T(it.text, ctx)}</span>${it.sub ? `<span class="ps-nav-s">${T(it.sub, ctx)}</span>` : ''}</span>${v === 'list' ? svgI('chevron-right', 16) : ''}</${tag}>`;
       }).join('');
@@ -1505,7 +1463,7 @@ const COMP = {
   bottomnav: {
     label: 'Нижняя навигация', icon: 'nav',
     fields: [
-      { k: 'items', label: 'Пункты', type: 'items', itemLabel: 'text', fields: [{ k: 'icon', label: 'Иконка', type: 'icon' }, { k: 'text', label: 'Название', type: 'text' }, { k: 'url', label: 'Ссылка или #якорь', type: 'url' }], add: { icon: 'star', text: 'Пункт', url: '' } },
+      { k: 'items', label: 'Пункты', type: 'items', itemLabel: 'text', fields: [{ k: 'icon', label: 'Иконка', type: 'icon' }, { k: 'text', label: 'Название', type: 'text' }, { k: 'page', label: 'Страница Mini App PuzzleBot (goto_web_page)', type: 'text', placeholder: 'https://t.me/BrootsBot?startapp=…' }, { k: 'url', label: 'Или ссылка / #якорь', type: 'url' }], add: { icon: 'star', text: 'Пункт', page: '', url: '' } },
       { k: 'active', label: 'Активный пункт №', type: 'number', min: 1, max: 6 },
       { k: 'sticky', label: 'Прилипает к низу экрана', type: 'toggle' },
     ],
@@ -1513,7 +1471,7 @@ const COMP = {
     render(n, ctx) {
       const act = (parseInt(n.props.active) || 1) - 1;
       const items = (n.props.items || []).map((it, i) => {
-        const ap = it.url ? actionParts({ type: /^#/.test(it.url) ? 'anchor' : /t\.me\//.test(it.url) ? 'tg' : 'url', value: it.url }, ctx) : { tag: 'span', attrs: '' };
+        const ia = itemAction(it); const ap = ia ? actionParts(ia, ctx) : { tag: 'span', attrs: '' };
         const tag = ap.tag === 'button' ? 'span' : ap.tag;
         return `<${tag} class="ps-bnav-i${i === act ? ' is-active' : ''}"${tag === 'span' ? '' : ap.attrs}${i === act ? ' aria-current="page"' : ''}>${svgI(it.icon || 'star', 22)}<span>${T(it.text, ctx)}</span></${tag}>`;
       }).join('');
@@ -1619,6 +1577,23 @@ const COMP = {
     },
   },
 
+  tguser: {
+    label: 'Пользователь Telegram', icon: 'avatar',
+    usage: 'Показывает фото, имя и юзернейм того, кто открыл мини-приложение. Данные берутся прямо из Telegram, а если их нет — из переменных PuzzleBot.',
+    fields: [
+      { k: 'subtitle', label: 'Подпись под именем', type: 'text', vars: true },
+      { k: 'size', label: 'Размер фото', type: 'range', min: 32, max: 120, unit: 'px' },
+      { k: 'showUsername', label: 'Показывать @юзернейм', type: 'toggle' },
+    ],
+    info: 'Фото и имя подставит скрипт из Telegram.WebApp.initDataUnsafe.user. Без Telegram покажутся значения переменных {{FIRST_NAME_TEXT}} и {{USERNAME_TEXT}}.',
+    defaults: { props: { subtitle: 'Добро пожаловать!', size: 56, showUsername: true } },
+    render(n, ctx) {
+      const s = clamp(parseInt(n.props.size) || 56, 32, 160);
+      const first = T('{{FIRST_NAME_TEXT}}', ctx);
+      return `<div ${at(n, ctx, 'ps-tguser')}><span class="ps-avatar ps-avatar--ring" style="--ps-as:${s}px"><img data-ps-tg="photo_url" alt="" hidden><span data-ps-tg="initial">${ctx.varMode === 'sample' ? escHtml(varSample(ctx.project, 'FIRST_NAME_TEXT').slice(0, 1)) : '👤'}</span></span><div class="ps-tguser-tx"><div class="ps-tguser-n" data-ps-tg="name">${first}</div>${n.props.showUsername ? `<div class="ps-tguser-u" data-ps-tg="username">@${T('{{USERNAME_TEXT}}', ctx)}</div>` : ''}${n.props.subtitle ? `<div class="ps-tguser-s">${T(n.props.subtitle, ctx)}</div>` : ''}</div></div>`;
+    },
+  },
+
   stars: {
     label: 'Рейтинг', icon: 'star',
     fields: [{ k: 'value', label: 'Оценка', type: 'range', min: 0, max: 5, step: 0.5 }, { k: 'caption', label: 'Подпись', type: 'text' }],
@@ -1630,6 +1605,44 @@ const COMP = {
     },
   },
 };
+
+/* «Для чего» — подсказка в панели свойств: как и зачем использовать блок */
+const USAGE = {
+  container: 'Основа композиции: собирает блоки вместе, задаёт фон, отступы, колонки. Карточка товара или тарифа — это контейнер с блоками внутри.',
+  form: 'Сбор заявок и ответов: поля + кнопка с действием «Отправить форму». Данные можно отправить на вебхук или боту.',
+  heading: 'Название экрана или раздела. H1 — один на страницу, H2–H3 — для разделов.',
+  text: 'Обычный абзац: пояснение, описание. Переменные {{…}} подставит PuzzleBot.',
+  richtext: 'Текст с жирным, курсивом, списками и ссылками: правила, условия, описание товара.',
+  image: 'Баннер, фото товара, обложка. Во вкладке «Действия» можно сделать картинку ссылкой.',
+  video: 'Короткое видео по прямой ссылке на файл .mp4 или .webm.',
+  icon: 'Значок-акцент для карточек, преимуществ и пунктов меню.',
+  button: 'Главное действие пользователя: купить, открыть, поделиться, связаться. Что делает кнопка — во вкладке «Действия»: там все возможности Telegram.',
+  link: 'Второстепенный переход: «Подробнее», «Все товары», «Правила».',
+  divider: 'Тонкая линия между смысловыми частями.',
+  spacer: 'Дополнительное пустое место между блоками.',
+  badge: 'Короткая метка: «Новинка», «−30%», «Популярный», статус подписки.',
+  avatar: 'Фото или инициалы человека: профиль, отзыв, команда.',
+  stat: 'Цифра с подписью: баланс, бонусы, заказы. Удобно с переменными PuzzleBot.',
+  progress: 'Прогресс курса, уровня, накопления на цель.',
+  accordion: 'Вопросы и ответы, правила, этапы — раскрываются по нажатию. Работает даже без JavaScript.',
+  tabs: 'Несколько описаний на одном месте: «О товаре / Доставка / Отзывы». Работает без JavaScript.',
+  modal: 'Окно поверх страницы: условия акции, подробности, предупреждение.',
+  notice: 'Заметное сообщение: подсказка, предупреждение, успешное действие.',
+  timer: 'Обратный отсчёт до конца акции, старта события или окончания скидки.',
+  gallery: 'Несколько фото лентой (листаются пальцем) или сеткой.',
+  list: 'Преимущества, шаги, история операций — со значением справа.',
+  table: 'Сравнение тарифов, прайс-лист, расписание.',
+  navmenu: 'Главное меню мини-приложения: плитки или список разделов со ссылками.',
+  bottomnav: 'Нижняя панель как в приложениях. Пункты ведут к якорям или другим мини-приложениям.',
+  input: 'Поле для имени, телефона, email внутри формы.',
+  textareaField: 'Поле для длинного ответа: комментарий, описание задачи.',
+  selectField: 'Выбор одного варианта из списка: услуга, тариф, город.',
+  checkbox: 'Согласие с условиями или выбор «да / нет».',
+  copyfield: 'Промокод, реферальная ссылка или реквизиты с кнопкой «Копировать».',
+  socials: 'Ссылки на канал, чат, сайт, соцсети.',
+  stars: 'Оценка звёздами: отзывы, рейтинг товара.',
+};
+for (const [k, v] of Object.entries(USAGE)) if (COMP[k]) COMP[k].usage = v;
 
 /* ---------- Создание узлов ---------- */
 function mk(type, props = {}, style = {}, children, extra = {}) {
@@ -1714,6 +1727,18 @@ const CATALOG = [
     { id: 'botbtn', label: 'Кнопка «Запустить бота»', icon: 'bot', make: () => mk('button', { text: 'Открыть в боте', variant: 'primary', icon: 'bot', iconPos: 'left' }, {}, null, { action: { type: 'bot', bot: 'your_bot', value: 'menu' } }) },
     { id: 'closebtn', label: 'Кнопка «Закрыть»', icon: 'x', make: () => mk('button', { text: 'Вернуться в чат', variant: 'ghost' }, {}, null, { action: { type: 'close' } }) },
     { id: 'varText', label: 'Текст с переменной', icon: 'variable', make: () => mk('text', { text: 'Привет, {{FIRST_NAME_TEXT}}!' }) },
+    { id: 'tguser', label: 'Пользователь Telegram', icon: 'avatar', make: () => mk('tguser') },
+    { id: 'shareBtn', label: 'Поделиться в чат', icon: 'share', make: () => mk('button', { text: 'Пригласить друга', variant: 'gradient', icon: 'share', iconPos: 'left' }, {}, null, { action: { type: 'share', value: '{{REF_LINK}}', v2: 'Присоединяйся!' } }) },
+    { id: 'gotoBtn', label: 'Переход на страницу Mini App', icon: 'grid', make: () => mk('button', { text: 'Открыть каталог', variant: 'secondary', icon: 'arrow-right' }, {}, null, { action: { type: 'goto', value: '' } }) },
+    { id: 'storyBtn', label: 'Опубликовать в Stories', icon: 'camera', make: () => mk('button', { text: 'Поделиться в Stories', variant: 'gradient', icon: 'sparkles', iconPos: 'left' }, {}, null, { action: { type: 'story', value: '', text: '' } }) },
+    { id: 'homeBtn', label: 'На экран «Домой»', icon: 'home', make: () => mk('button', { text: 'Добавить на главный экран', variant: 'secondary', icon: 'home', iconPos: 'left' }, {}, null, { action: { type: 'home' } }) },
+    { id: 'cloudBtn', label: 'Сохранить в облако Telegram', icon: 'bookmark', make: () => mk('button', { text: 'В избранное', variant: 'outline', icon: 'heart', iconPos: 'left' }, {}, null, { action: { type: 'storage', store: 'CloudStorage', op: 'set', key: 'favorite', value: 'yes', haptic: 'success' } }) },
+    { id: 'bioBtn', label: 'Подтверждение Face ID', icon: 'shield', make: () => mk('button', { text: 'Подтвердить', variant: 'primary', icon: 'shield', iconPos: 'left' }, {}, null, { action: { type: 'bio', value: 'Подтвердите действие' } }) },
+    { id: 'locBtn', label: 'Геолокация', icon: 'map-pin', make: () => mk('button', { text: 'Показать, где я', variant: 'secondary', icon: 'map-pin', iconPos: 'left' }, {}, null, { action: { type: 'location', then: 'map' } }) },
+    { id: 'qrBtn', label: 'Сканер QR', icon: 'camera', make: () => mk('button', { text: 'Сканировать QR-код', variant: 'outline', icon: 'camera', iconPos: 'left' }, {}, null, { action: { type: 'qr', value: 'Наведите камеру на QR-код', then: 'open' } }) },
+    { id: 'contactBtn', label: 'Запросить телефон', icon: 'phone', make: () => mk('button', { text: 'Поделиться номером', variant: 'secondary', icon: 'phone', iconPos: 'left' }, {}, null, { action: { type: 'contact' } }) },
+    { id: 'popupBtn', label: 'Кнопка-сообщение', icon: 'message', make: () => mk('button', { text: 'Как это работает?', variant: 'ghost', icon: 'help', iconPos: 'left' }, {}, null, { action: { type: 'popup', value: 'Нажмите «Купить» — бот пришлёт инструкцию в чат.', v2: 'Подсказка' } }) },
+    { id: 'fullBtn', label: 'Полный экран', icon: 'monitor', make: () => mk('button', { text: 'Развернуть', variant: 'icon', icon: 'move' }, {}, null, { action: { type: 'fullscreen', value: 'toggle' } }) },
     { id: 'socials', label: 'Соцсети', icon: 'share', make: () => mk('socials') },
   ]},
 ];
@@ -1752,6 +1777,211 @@ function artImage(seed, colors, kind = 'blobs') {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient><filter id="f" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="40"/></filter></defs><rect width="400" height="300" fill="url(#g)"/>${shapes}</svg>`;
   return 'data:image/svg+xml;base64,' + btoa(svg);
 }
+
+/* ===== 04a-actions.js ===== */
+/* ============================================================
+   04a · ДЕЙСТВИЯ КНОПОК: переходы + Telegram Mini Apps API
+   Версии Bot API — по https://core.telegram.org/bots/webapps
+   Системные кнопки Telegram (MainButton, SecondaryButton, BackButton,
+   SettingsButton) сознательно не используются.
+   ============================================================ */
+const ACT_GROUPS = ['Переходы', 'Окно Mini App', 'Сообщения, оплата, Stories', 'Разрешения и устройство', 'Хранилища Telegram', 'Окна и вибрация', 'Другое'];
+const HAPTIC_OPTS = [['', 'Как на странице'], ['none', 'Без вибрации'], ['light', 'Лёгкая'], ['medium', 'Средняя'], ['heavy', 'Сильная'], ['rigid', 'Жёсткая'], ['soft', 'Мягкая'], ['success', 'Успех'], ['warning', 'Предупреждение'], ['error', 'Ошибка'], ['selection', 'Выбор']];
+const HAPTIC_KEYS = HAPTIC_OPTS.map(x => x[0]).filter(Boolean);
+const ONOFF = [['on', 'Включить'], ['off', 'Выключить']];
+
+const ACTION_DEFS = [
+  { id: 'none', g: 0, label: 'Нет действия' },
+  { id: 'url', g: 0, label: 'Обычная ссылка', link: true, params: [{ k: 'value', label: 'Адрес', type: 'url', ph: 'https://example.com', req: true }, { k: 'newTab', label: 'Открывать во внешнем браузере', type: 'toggle', def: true }],
+    info: 'Внутри Telegram откроется через openLink. Ссылки https://t.me/… открываются внутри Telegram.' },
+  { id: 'goto', g: 0, label: 'Страница Mini App PuzzleBot (goto_web_page)', link: true, params: [{ k: 'value', label: 'Ссылка на страницу Mini App или её ID', type: 'text', ph: 'https://t.me/BrootsBot?startapp=623ec549b7791482', req: true }],
+    info: 'Переход между страницами мини-приложения PuzzleBot: <a goto_web_page="ID">. Его обрабатывает сам PuzzleBot, поэтому он работает только внутри мини-приложения PuzzleBot. ID — всё, что после «startapp=».' },
+  { id: 'anchor', g: 0, label: 'Прокрутить к блоку на странице', link: true, params: [{ k: 'value', label: 'К какому блоку', type: 'anchor', req: true }] },
+  { id: 'tg', g: 0, label: 'Канал, группа или профиль', link: true, params: [{ k: 'value', label: '@username или https://t.me/…', type: 'text', ph: '@BrootsBot', req: true }] },
+  { id: 'bot', g: 0, label: 'Бот с параметром /start', link: true, params: [{ k: 'bot', label: 'Юзернейм бота', type: 'text', ph: 'BrootsBot', req: true }, { k: 'value', label: 'Параметр start', type: 'text', ph: 'menu' }],
+    info: 'Открывает чат с ботом. Значение параметра в PuzzleBot попадёт в переменную {{START_PAYLOAD}}.' },
+  { id: 'app', g: 0, label: 'Другая Mini App', link: true, params: [{ k: 'bot', label: 'Юзернейм бота', type: 'text', ph: 'BrootsBot', req: true }, { k: 'app', label: 'Короткое имя Mini App (если есть)', type: 'text', ph: 'shop' }, { k: 'value', label: 'Параметр startapp', type: 'text', ph: 'home' }],
+    info: 'Ссылка https://t.me/бот/приложение?startapp=… Параметр в PuzzleBot попадёт в {{WEB_PAGES_START_PAYLOAD}}.' },
+  { id: 'share', g: 0, label: 'Поделиться ссылкой в чат', link: true, params: [{ k: 'value', label: 'Ссылка', type: 'text', ph: 'https://t.me/BrootsBot', req: true }, { k: 'text', label: 'Текст сообщения', type: 'text' }],
+    info: 'Telegram откроет выбор чата (t.me/share/url). Переменные {{…}} в ссылке сохраняются.' },
+  { id: 'addset', g: 0, label: 'Стикеры, эмодзи, тема, папка чатов', link: true, params: [{ k: 'kind', label: 'Что открыть', type: 'select', options: [['addstickers', 'Набор стикеров'], ['addemoji', 'Набор эмодзи'], ['addtheme', 'Тема Telegram'], ['addlist', 'Папка чатов'], ['addvoice', 'Набор голосов']], def: 'addstickers' }, { k: 'value', label: 'Имя набора (из ссылки t.me/add…/ИМЯ)', type: 'text', req: true }] },
+  { id: 'tgpage', g: 0, label: 'Telegram Premium или Stars', link: true, params: [{ k: 'value', label: 'Что открыть', type: 'select', options: [['premium', 'Telegram Premium'], ['stars', 'Telegram Stars']], def: 'premium' }] },
+
+  { id: 'close', g: 1, label: 'Закрыть Mini App' },
+  { id: 'expand', g: 1, label: 'Развернуть окно по высоте' },
+  { id: 'fullscreen', g: 1, label: 'Полноэкранный режим', min: '8.0', params: [{ k: 'value', label: 'Режим', type: 'select', options: [['toggle', 'Переключить'], ['on', 'Включить'], ['off', 'Выключить']], def: 'toggle' }] },
+  { id: 'swipes', g: 1, label: 'Закрытие свайпом вниз', min: '7.7', params: [{ k: 'value', label: 'Свайп вниз', type: 'select', options: [['off', 'Отключить'], ['on', 'Включить']], def: 'off' }], info: 'Отключите, если на странице есть прокрутка, карусели или игры — тогда окно не закроется случайно.' },
+  { id: 'closeconfirm', g: 1, label: 'Спрашивать перед закрытием', min: '6.2', params: [{ k: 'value', label: 'Подтверждение', type: 'select', options: ONOFF, def: 'on' }], info: 'Полезно для форм: пользователь не потеряет введённые данные.' },
+  { id: 'orientation', g: 1, label: 'Ориентация экрана', min: '8.0', params: [{ k: 'value', label: 'Ориентация', type: 'select', options: [['lock', 'Зафиксировать текущую'], ['unlock', 'Разблокировать']], def: 'lock' }] },
+  { id: 'home', g: 1, label: 'Добавить на экран «Домой»', min: '8.0', info: 'Работает на Android и части iOS-устройств. Telegram сам покажет окно подтверждения.' },
+  { id: 'homestatus', g: 1, label: 'Проверить ярлык на экране «Домой»', min: '8.0' },
+  { id: 'hidekb', g: 1, label: 'Скрыть клавиатуру', min: '9.1' },
+
+  { id: 'senddata', g: 2, label: 'Отправить данные боту (sendData)', params: [{ k: 'value', label: 'Данные (текст или JSON)', type: 'text', req: true }], info: 'По правилам Telegram работает, только если Mini App открыт кнопкой обычной клавиатуры бота. После отправки окно закрывается.' },
+  { id: 'inline', g: 2, label: 'Inline-режим бота', min: '6.7', params: [{ k: 'value', label: 'Текст запроса', type: 'text' }, { k: 'types', label: 'Где выбрать чат', type: 'select', options: [['', 'Текущий чат'], ['users', 'Пользователи'], ['groups', 'Группы'], ['channels', 'Каналы'], ['all', 'Любой чат']], def: '' }], info: 'Нужен включённый inline-режим у бота (@BotFather → /setinline).' },
+  { id: 'sharemsg', g: 2, label: 'Поделиться подготовленным сообщением', min: '8.0', params: [{ k: 'value', label: 'ID сообщения', type: 'text', req: true }], info: 'ID создаёт сервер методом Bot API savePreparedInlineMessage, он действует ограниченное время. Без своего сервера не работает.' },
+  { id: 'story', g: 2, label: 'Опубликовать в Stories', min: '7.8', params: [{ k: 'value', label: 'HTTPS-ссылка на фото или видео', type: 'url', req: true }, { k: 'text', label: 'Подпись (до 200 символов)', type: 'text' }, { k: 'wurl', label: 'Ссылка-виджет (видна только с Premium)', type: 'url' }, { k: 'wname', label: 'Название виджета (до 48 символов)', type: 'text' }] },
+  { id: 'download', g: 2, label: 'Скачать файл', min: '8.0', params: [{ k: 'value', label: 'HTTPS-ссылка на файл', type: 'url', req: true }, { k: 'name', label: 'Имя файла', type: 'text', ph: 'price.pdf', req: true }], info: 'Сервер файла должен отдавать заголовки Content-Disposition и Access-Control-Allow-Origin, иначе Telegram откажет.' },
+  { id: 'invoice', g: 2, label: 'Открыть счёт на оплату', min: '6.1', params: [{ k: 'value', label: 'Ссылка на счёт (https://t.me/$…)', type: 'url', req: true }], info: 'Ссылку создаёт сервер методом createInvoiceLink. Обычную оплату в PuzzleBot проще настроить в разделе «Магазин».' },
+  { id: 'requestchat', g: 2, label: 'Выбрать чат (requestChat)', min: '9.6', params: [{ k: 'value', label: 'ID запроса от сервера', type: 'text', req: true }], info: 'ID готовит сервер бота. Случайное значение не сработает.' },
+  { id: 'emoji', g: 2, label: 'Установить эмодзи-статус', min: '8.0', params: [{ k: 'value', label: 'custom_emoji_id', type: 'text', req: true }, { k: 'duration', label: 'На сколько', type: 'select', options: [['', 'Без срока'], ['3600', '1 час'], ['28800', '8 часов'], ['86400', '24 часа'], ['604800', '7 дней']], def: '' }], info: 'Telegram покажет окно подтверждения. Статус могут поставить только пользователи с Premium.' },
+  { id: 'emojiaccess', g: 2, label: 'Разрешить боту менять эмодзи-статус', min: '8.0', info: 'После разрешения бот сможет менять статус сам через Bot API (setUserEmojiStatus).' },
+
+  { id: 'contact', g: 3, label: 'Запросить номер телефона', min: '6.9', info: 'Номер получает бот (в PuzzleBot — как контакт пользователя), страница его не видит.' },
+  { id: 'writeaccess', g: 3, label: 'Разрешить сообщения от бота', min: '6.9' },
+  { id: 'qr', g: 3, label: 'Сканер QR-кода', min: '6.4', params: [{ k: 'value', label: 'Подсказка в сканере', type: 'text', ph: 'Наведите камеру на QR-код' }, { k: 'then', label: 'Что сделать с результатом', type: 'select', options: [['open', 'Открыть, если это ссылка'], ['copy', 'Скопировать'], ['show', 'Показать']], def: 'open' }] },
+  { id: 'location', g: 3, label: 'Геолокация', min: '8.0', params: [{ k: 'then', label: 'Что сделать', type: 'select', options: [['map', 'Открыть на карте'], ['show', 'Показать координаты']], def: 'map' }], info: 'Координаты видит только эта страница. Чтобы получить их в боте, нужен свой сервер.' },
+  { id: 'bio', g: 3, label: 'Подтвердить по Face ID / отпечатку', min: '7.2', params: [{ k: 'value', label: 'Причина (видна пользователю)', type: 'text', ph: 'Подтвердите покупку' }, { k: 'url', label: 'Куда перейти после успеха', type: 'url' }], info: 'Проверка на устройстве. Это удобство, а не защита: результату нельзя доверять на сервере.' },
+  { id: 'biosettings', g: 3, label: 'Настройки биометрии Telegram', min: '7.2' },
+  { id: 'camera', g: 3, label: 'Проверить доступ к камере', info: 'Браузерная проверка getUserMedia. В некоторых клиентах Telegram камера недоступна.' },
+  { id: 'sensor', g: 3, label: 'Показания датчика', min: '8.0', params: [{ k: 'value', label: 'Датчик', type: 'select', options: [['Accelerometer', 'Акселерометр'], ['Gyroscope', 'Гироскоп'], ['DeviceOrientation', 'Ориентация устройства']], def: 'Accelerometer' }], info: 'Показывает текущие значения в окне. Для игр нужен свой код.' },
+
+  { id: 'storage', g: 4, label: 'Сохранить, прочитать или удалить значение', min: '6.9', params: [{ k: 'store', label: 'Хранилище', type: 'select', options: [['CloudStorage', 'Облако Telegram (CloudStorage)'], ['DeviceStorage', 'Устройство (DeviceStorage, 9.0+)'], ['SecureStorage', 'Защищённое (SecureStorage, 9.0+)']], def: 'CloudStorage' }, { k: 'op', label: 'Действие', type: 'select', options: [['set', 'Сохранить'], ['get', 'Прочитать и показать'], ['remove', 'Удалить']], def: 'set' }, { k: 'key', label: 'Ключ (латиница, цифры, _ и -)', type: 'text', req: true }, { k: 'value', label: 'Значение (для «Сохранить»)', type: 'text' }],
+    info: 'CloudStorage привязано к пользователю и боту и доступно на всех его устройствах. Подходит для настроек и избранного, но не для денег и секретов.' },
+
+  { id: 'alert', g: 5, label: 'Показать сообщение', min: '6.2', params: [{ k: 'value', label: 'Текст', type: 'text', req: true }] },
+  { id: 'popup', g: 5, label: 'Окно с выбором и переходом', min: '6.2', params: [{ k: 'title', label: 'Заголовок', type: 'text' }, { k: 'value', label: 'Текст (до 256 символов)', type: 'text', req: true }, { k: 'ok', label: 'Текст кнопки', type: 'text', ph: 'Продолжить' }, { k: 'url', label: 'Куда перейти при согласии', type: 'url' }] },
+  { id: 'haptic', g: 5, label: 'Только вибрация', min: '6.1', params: [{ k: 'value', label: 'Тип вибрации', type: 'select', options: HAPTIC_OPTS.slice(2), def: 'medium' }] },
+
+  { id: 'copy', g: 6, label: 'Скопировать текст', params: [{ k: 'value', label: 'Что копировать', type: 'text', req: true }] },
+  { id: 'info', g: 6, label: 'Показать данные Telegram (отладка)', params: [{ k: 'value', label: 'Что показать', type: 'select', options: [['user', 'Пользователь'], ['theme', 'Параметры темы'], ['version', 'Версия и платформа'], ['viewport', 'Размеры окна'], ['chat', 'Текущий чат']], def: 'version' }] },
+  { id: 'submit', g: 6, label: 'Отправить форму', info: 'Работает только внутри блока «Форма».' },
+];
+const ACT = Object.fromEntries(ACTION_DEFS.map(d => [d.id, d]));
+const LINK_ONLY_GROUPS = [0];
+
+/* ID страницы Mini App из ссылки вида https://t.me/BrootsBot?startapp=623ec549b7791482 */
+function parseGoto(v) {
+  const s = String(v || '').trim();
+  const m = s.match(/startapp=([A-Za-z0-9_-]{1,64})/);
+  if (m) return m[1];
+  return /^[A-Za-z0-9_-]{4,64}$/.test(s) ? s : '';
+}
+function encKeepVars(s) {
+  return String(s || '').split(/(\{\{[A-Za-z0-9_]+\}\})/).map((part, i) => (i % 2 ? part : encodeURIComponent(part))).join('');
+}
+const BOT_RE = /^[A-Za-z0-9_]{4,64}$/;
+
+/* Итоговый адрес для действий-переходов. null — данные неполные или некорректные */
+function actionHref(a) {
+  const v = String(a.value ?? '').trim();
+  switch (a.type) {
+    case 'url': { const c = checkUrl(v, { allowAnchor: false }); return c.ok && c.url ? c.url : null; }
+    case 'tg': {
+      const u = /^@?[A-Za-z0-9_]{4,64}$/.test(v) ? 'https://t.me/' + v.replace('@', '') : v;
+      const c = checkUrl(u, { allowAnchor: false });
+      return c.ok && c.url && /^(https:\/\/t\.me\/.+|tg:)/i.test(c.url) ? c.url : null;
+    }
+    case 'bot': {
+      const b = String(a.bot || '').replace('@', '').trim();
+      if (!BOT_RE.test(b) || (v && !/^[A-Za-z0-9_{}-]{1,64}$/.test(v))) return null;
+      return 'https://t.me/' + b + (v ? '?start=' + v : '');
+    }
+    case 'app': {
+      const b = String(a.bot || '').replace('@', '').trim(), app = String(a.app || '').trim();
+      if (!BOT_RE.test(b) || (app && !/^[A-Za-z0-9_]{3,64}$/.test(app)) || (v && !/^[A-Za-z0-9_{}-]{1,64}$/.test(v))) return null;
+      return 'https://t.me/' + b + (app ? '/' + app : '') + (v ? '?startapp=' + v : (app ? '' : '?startapp'));
+    }
+    case 'share': {
+      if (!v) return null;
+      return 'https://t.me/share/url?url=' + encKeepVars(v) + (a.text ? '&text=' + encKeepVars(a.text) : '');
+    }
+    case 'addset': {
+      const kind = CSS.pick(a.kind, ['addstickers', 'addemoji', 'addtheme', 'addlist', 'addvoice']) || 'addstickers';
+      const m = v.match(/t\.me\/add\w+\/([A-Za-z0-9_-]+)/);
+      const name = m ? m[1] : v;
+      return /^[A-Za-z0-9_-]{1,64}$/.test(name) ? 'https://t.me/' + kind + '/' + name : null;
+    }
+    case 'tgpage': return 'https://t.me/' + (v === 'stars' ? 'stars' : 'premium');
+    default: return null;
+  }
+}
+function actionPayload(a) {
+  const d = ACT[a.type];
+  const p = {};
+  for (const f of (d && d.params) || []) if (a[f.k] !== undefined && a[f.k] !== '') p[f.k] = a[f.k];
+  return p;
+}
+
+/* Разметка для кнопки, ссылки, картинки или пункта меню */
+function actionParts(act, ctx) {
+  let a = act || { type: 'none' };
+  if (a.type === 'miniapp') a = { ...a, type: 'tg' }; // старый тип: ссылка t.me/бот?startapp=…
+  let extra = '';
+  const hp = CSS.pick(a.haptic, HAPTIC_KEYS);
+  if (hp) extra += ` data-ps-h="${hp}"`;
+  if (a.confirm && a.type !== 'goto' && a.type !== 'none') extra += ` data-ps-confirm="${TA(a.confirm, ctx)}"`;
+  if (a.type === 'goto') {
+    const id = parseGoto(a.value);
+    if (!id) return { tag: 'button', attrs: ' type="button"' + extra };
+    return { tag: 'a', attrs: ` goto_web_page="${escAttr(id)}" role="button" tabindex="0"` + extra };
+  }
+  if (a.type === 'anchor') {
+    const an = String(a.value || '').replace(/^#/, '');
+    if (!/^[a-z0-9_-]+$/i.test(an)) return { tag: 'button', attrs: ' type="button"' + extra };
+    return { tag: 'a', attrs: ` href="#ps-${an}"${a.confirm && ctx.js ? ' data-ps-act="anchor"' : ''}` + extra };
+  }
+  const d = ACT[a.type];
+  if (d && d.link) {
+    const href = actionHref(a);
+    if (!href) return { tag: 'button', attrs: ' type="button"' + extra };
+    const ext = a.type !== 'url' || a.newTab !== false;
+    const p = a.type === 'url' && a.newTab === false ? ` data-ps-p="${escAttr(JSON.stringify({ same: 1 }))}"` : '';
+    return { tag: 'a', attrs: ` href="${escAttr(href)}"${ext ? ' target="_blank" rel="noopener noreferrer"' : ''}${ctx.js ? ' data-ps-act="link"' + p : ''}` + extra, js: !!ctx.js };
+  }
+  if (a.type === 'submit') return { tag: 'button', attrs: ' type="submit"' + extra };
+  if (!d || a.type === 'none') return { tag: 'button', attrs: ' type="button"' + extra };
+  return { tag: 'button', attrs: ` type="button" data-ps-act="${a.type}" data-ps-p="${TA(JSON.stringify(actionPayload(a)), ctx)}"` + extra, js: true };
+}
+/* Для пунктов меню: поле «Ссылка» или «Страница Mini App» */
+function itemAction(it) {
+  const id = parseGoto(it.page);
+  if (it.page && id) return { type: 'goto', value: id };
+  const u = String(it.url || '').trim();
+  if (!u) return null;
+  if (/^#/.test(u)) return { type: 'anchor', value: u.slice(1) };
+  if (/^@?[A-Za-z0-9_]{4,64}$/.test(u) || /^https:\/\/t\.me\//i.test(u)) return { type: 'tg', value: u };
+  return { type: 'url', value: u };
+}
+const JS_FREE_ACTIONS = new Set(['none', 'url', 'goto', 'anchor', 'tg', 'bot', 'app', 'share', 'addset', 'tgpage', 'submit']);
+
+/* ---------- Код обработчиков (в итоговую страницу попадают только используемые) ---------- */
+const ACT_JS = {
+  link: `link: function (p, el) { openUrl(el.getAttribute('href'), !p.same); }`,
+  anchor: `anchor: function (p, el) { var t = document.getElementById(el.getAttribute('href').slice(1)); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }`,
+  copy: `copy: function (p, el) { copyText(p.value || '', el); }`,
+  close: `close: function () { if (need()) tg.close(); }`,
+  expand: `expand: function () { if (need()) tg.expand(); }`,
+  fullscreen: `fullscreen: function (p) { if (!need('8.0')) return; if (p.value === 'on') tg.requestFullscreen(); else if (p.value === 'off') tg.exitFullscreen(); else if (tg.isFullscreen) tg.exitFullscreen(); else tg.requestFullscreen(); }`,
+  swipes: `swipes: function (p) { if (!need('7.7')) return; if (p.value === 'on') tg.enableVerticalSwipes(); else tg.disableVerticalSwipes(); }`,
+  closeconfirm: `closeconfirm: function (p) { if (!need('6.2')) return; if (p.value === 'off') tg.disableClosingConfirmation(); else tg.enableClosingConfirmation(); }`,
+  orientation: `orientation: function (p) { if (!need('8.0')) return; if (p.value === 'unlock') tg.unlockOrientation(); else tg.lockOrientation(); }`,
+  home: `home: function () { if (need('8.0')) tg.addToHomeScreen(); }`,
+  homestatus: `homestatus: function () { if (need('8.0')) tg.checkHomeScreenStatus(function (s) { say({ unsupported: 'На этом устройстве не поддерживается', unknown: 'Статус неизвестен', added: 'Ярлык уже на экране «Домой»', missed: 'Ярлыка ещё нет' }[s] || s); }); }`,
+  hidekb: `hidekb: function () { if (need('9.1')) tg.hideKeyboard(); }`,
+  senddata: `senddata: function (p) { if (need()) tg.sendData(String(p.value || '')); }`,
+  inline: `inline: function (p) { if (!need('6.7')) return; var t = p.types === 'all' ? ['users', 'bots', 'groups', 'channels'] : (p.types ? [p.types] : undefined); tg.switchInlineQuery(p.value || '', t); }`,
+  sharemsg: `sharemsg: function (p) { if (need('8.0')) tg.shareMessage(p.value, function (ok) { if (!ok) say('Сообщение не отправлено'); }); }`,
+  story: `story: function (p) { if (!need('7.8')) return; var o = {}; if (p.text) o.text = String(p.text).slice(0, 200); if (p.wurl) o.widget_link = p.wname ? { url: p.wurl, name: String(p.wname).slice(0, 48) } : { url: p.wurl }; tg.shareToStory(p.value, o); }`,
+  download: `download: function (p) { if (need('8.0')) tg.downloadFile({ url: p.value, file_name: p.name || 'file' }, function (ok) { if (!ok) say('Загрузка отменена'); }); }`,
+  invoice: `invoice: function (p) { if (need('6.1')) tg.openInvoice(p.value, function (s) { say({ paid: 'Оплата прошла', cancelled: 'Оплата отменена', failed: 'Оплата не прошла', pending: 'Платёж обрабатывается' }[s] || s); }); }`,
+  requestchat: `requestchat: function (p) { if (need('9.6')) tg.requestChat(p.value, function (ok) { if (!ok) say('Чат не выбран'); }); }`,
+  emoji: `emoji: function (p) { if (need('8.0')) tg.setEmojiStatus(p.value, p.duration ? { duration: +p.duration } : {}, function (ok) { say(ok ? 'Статус установлен' : 'Статус не установлен'); }); }`,
+  emojiaccess: `emojiaccess: function () { if (need('8.0')) tg.requestEmojiStatusAccess(function (ok) { say(ok ? 'Доступ выдан' : 'Доступ не выдан'); }); }`,
+  contact: `contact: function () { if (need('6.9')) tg.requestContact(function (ok) { say(ok ? 'Номер отправлен боту' : 'Номер не отправлен'); }); }`,
+  writeaccess: `writeaccess: function () { if (need('6.9')) tg.requestWriteAccess(function (ok) { say(ok ? 'Теперь бот сможет вам писать' : 'Разрешение не выдано'); }); }`,
+  qr: `qr: function (p, el) { if (need('6.4')) tg.showScanQrPopup({ text: p.value || '' }, function (d) { setTimeout(function () { if (p.then === 'copy') copyText(d, el); else if (p.then !== 'show' && /^https?:\\/\\//i.test(d)) openUrl(d, true); else say(d); }, 60); return true; }); }`,
+  location: `location: function (p) { if (!need('8.0')) return; var L = tg.LocationManager; if (!L) return say('Геолокация недоступна'); L.init(function () { if (!L.isLocationAvailable) return say('Геолокация недоступна на этом устройстве'); L.getLocation(function (g) { if (!g) return say('Доступ к геолокации не выдан'); if (p.then === 'show') say('Широта: ' + g.latitude.toFixed(5) + '\\nДолгота: ' + g.longitude.toFixed(5)); else openUrl('https://maps.google.com/?q=' + g.latitude + ',' + g.longitude, true); }); }); }`,
+  bio: `bio: function (p) { if (!need('7.2')) return; var B = tg.BiometricManager, why = p.value || 'Подтвердите действие'; B.init(function () { if (!B.isBiometricAvailable) return say('Биометрия недоступна на этом устройстве'); function go() { B.authenticate({ reason: why }, function (ok) { if (ok) { if (p.url) openUrl(p.url, true); else say('Подтверждено'); } else say('Не подтверждено'); }); } if (B.isAccessGranted) go(); else B.requestAccess({ reason: why }, function (g) { if (g) go(); else say('Доступ к биометрии не выдан'); }); }); }`,
+  biosettings: `biosettings: function () { if (need('7.2')) tg.BiometricManager.init(function () { tg.BiometricManager.openSettings(); }); }`,
+  camera: `camera: function () { if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return say('Камера недоступна в этом окне'); navigator.mediaDevices.getUserMedia({ video: true }).then(function (s) { s.getTracks().forEach(function (t) { t.stop(); }); say('Камера доступна'); }, function (e) { say('Камера недоступна: ' + e.message); }); }`,
+  sensor: `sensor: function (p) { if (!need('8.0')) return; var s = tg[p.value]; if (!s) return say('Датчик недоступен'); s.start({ refresh_rate: 100 }, function (ok) { if (!ok) return say('Не удалось запустить датчик'); setTimeout(function () { var v = p.value === 'DeviceOrientation' ? { alpha: s.alpha, beta: s.beta, gamma: s.gamma } : { x: s.x, y: s.y, z: s.z }; s.stop(); say(JSON.stringify(v)); }, 600); }); }`,
+  storage: `storage: function (p) { var n = p.store || 'CloudStorage'; if (!need(n === 'CloudStorage' ? '6.9' : '9.0')) return; var st = tg[n]; if (!st) return say('Хранилище недоступно'); var k = String(p.key || ''); if (!/^[A-Za-z0-9_-]{1,128}$/.test(k)) return say('Некорректный ключ'); if (p.op === 'get') st.getItem(k, function (e, v) { say(e ? 'Ошибка: ' + e : (v || '(пусто)')); }); else if (p.op === 'remove') st.removeItem(k, function (e) { say(e ? 'Ошибка: ' + e : 'Удалено'); }); else st.setItem(k, String(p.value || ''), function (e) { say(e ? 'Ошибка: ' + e : 'Сохранено'); }); }`,
+  alert: `alert: function (p) { say(p.value || ''); }`,
+  popup: `popup: function (p) { if (!tg || !tg.showPopup || !ver('6.2')) { if (window.confirm(String(p.value || '')) && p.url) openUrl(p.url, true); return; } var o = { message: String(p.value || '').slice(0, 256), buttons: [{ id: 'ok', type: 'default', text: String(p.ok || 'Продолжить').slice(0, 64) }, { type: 'cancel' }] }; if (p.title) o.title = String(p.title).slice(0, 64); tg.showPopup(o, function (id) { if (id === 'ok' && p.url) openUrl(p.url, true); }); }`,
+  haptic: `haptic: function (p) { hap(p.value || 'medium'); }`,
+  info: `info: function (p) { if (!need()) return; var u = tg.initDataUnsafe || {}, m = { user: u.user || {}, chat: u.chat || {}, theme: tg.themeParams || {}, version: { version: tg.version, platform: tg.platform, colorScheme: tg.colorScheme }, viewport: { height: tg.viewportHeight, stable: tg.viewportStableHeight, expanded: tg.isExpanded, fullscreen: tg.isFullscreen, safeArea: tg.safeAreaInset } }; say(JSON.stringify(m[p.value] || m.version, null, 2)); }`,
+};
 
 /* ===== 05-generator.js ===== */
 /* ============================================================
@@ -1880,14 +2110,25 @@ function declStr(d, ind = '  ') {
 }
 
 /* ---------- CSS корня и базовых компонентов ---------- */
-function rootVars(tokens) {
+function adaptiveColors(tokens, ov, scheme) {
+  const pal = tokens[scheme] || tokens.light;
+  const v = {};
+  for (const [k] of TOKEN_COLORS) {
+    const fixed = ov && ov[k] ? CSS.color(ov[k]) : null;
+    const base = CSS.color(pal[k]) || THEMES.dark[k];
+    v['--ps-' + k] = fixed || (tokens.adaptive === 'tg' && TG_MAP[k] ? `var(${TG_MAP[k]}, ${base})` : base);
+  }
+  return v;
+}
+function rootVars(tokens, ov) {
   const v = {};
   for (const [k] of TOKEN_COLORS) {
     const c = CSS.color(tokens[k]) || THEMES.dark[k];
     v['--ps-' + k] = c;
   }
-  v['--ps-on-primary'] = v['--ps-onPrimary'];
-  v['--ps-grad'] = `linear-gradient(135deg, ${v['--ps-primary']}, ${v['--ps-primary2']})`;
+  if (tokens.adaptive) Object.assign(v, adaptiveColors(tokens, ov, 'light'));
+  v['--ps-on-primary'] = tokens.adaptive ? 'var(--ps-onPrimary)' : v['--ps-onPrimary'];
+  v['--ps-grad'] = tokens.adaptive ? 'linear-gradient(135deg, var(--ps-primary), var(--ps-primary2))' : `linear-gradient(135deg, ${v['--ps-primary']}, ${v['--ps-primary2']})`;
   v['--ps-primary-t'] = tint(tokens.primary, 0.14);
   v['--ps-success-t'] = tint(tokens.success, 0.14);
   v['--ps-danger-t'] = tint(tokens.danger, 0.14);
@@ -1918,11 +2159,11 @@ const EMBED_MODES = [
 ];
 function embedRootCss(page, rootBg) {
   const bg = rootBg || 'var(--ps-bg)';
-  const minH = page.fullHeight !== false ? '  min-height: 100vh;\n  min-height: 100dvh;' : '';
+  const minH = page.fullHeight !== false ? '  min-height: 100vh;\n  min-height: var(--tg-viewport-stable-height, 100dvh);' : '';
   switch (page.embedMode) {
     case 'transparent': return '  background: transparent;';
     case 'block': return `  background: ${bg};\n  border-radius: calc(var(--ps-radius) + 4px);\n  overflow: hidden;`;
-    case 'fill': return `  background: ${bg};\n${minH}\n  /* на всю ширину экрана, даже если у обёртки PuzzleBot есть отступы */\n  width: 100vw;\n  max-width: 100vw;\n  margin-left: calc(50% - 50vw);\n  margin-right: calc(50% - 50vw);`;
+    case 'fill': return `  background: ${bg};\n${minH}\n  /* на всю ширину экрана, даже если у обёртки PuzzleBot есть отступы */\n  width: 100vw;\n  max-width: 100vw;\n  margin-left: calc(50% - 50vw);\n  margin-right: calc(50% - 50vw);\n  /* полноэкранный режим Telegram: не залезать под системные элементы */\n  padding-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));`;
     default: return `  background: ${bg};\n${minH}`;
   }
 }
@@ -1959,6 +2200,35 @@ function embedHex(project) {
   return /^#[0-9a-f]{6}$/i.test(c) ? c : (/^#[0-9a-f]{3}$/i.test(c) ? '#' + c.slice(1).split('').map(x => x + x).join('') : '#000000');
 }
 
+/* Тёмная версия адаптивной темы: по настройке устройства, по Telegram (атрибут data-ps-scheme,
+   его ставит скрипт по Telegram.WebApp.colorScheme) или принудительно в редакторе. */
+function adaptiveCss(R, tokens, page) {
+  if (!tokens.adaptive) return '';
+  const dark = declStr(adaptiveColors(tokens, page.tokens, 'dark'), '    ');
+  const light = declStr(adaptiveColors(tokens, page.tokens, 'light'), '    ');
+  return `
+/* ---- Адаптивная тема: светлая / тёмная по устройству и Telegram ---- */
+@media (prefers-color-scheme: dark) {
+  ${R}:not([data-ps-scheme="light"]) {
+${dark}
+  }
+}
+${R}[data-ps-scheme="dark"] {
+${dark}
+}
+${R}[data-ps-scheme="light"] {
+${light}
+}
+@supports (color: color-mix(in srgb, red 10%, transparent)) {
+  ${R} {
+    --ps-primary-t: color-mix(in srgb, var(--ps-primary) 14%, transparent);
+    --ps-success-t: color-mix(in srgb, var(--ps-success) 14%, transparent);
+    --ps-danger-t: color-mix(in srgb, var(--ps-danger) 14%, transparent);
+    --ps-glow: color-mix(in srgb, var(--ps-primary) 50%, transparent);${tokens.adaptive === 'tg' && !(page.tokens || {}).surface2 ? '\n    --ps-surface2: color-mix(in srgb, var(--ps-text) 7%, var(--ps-surface));' : ''}
+  }
+}`;
+}
+
 function baseCss(R, pid, page, tokens) {
   const tabRules = [];
   for (let i = 1; i <= 8; i++) {
@@ -1971,7 +2241,7 @@ ${R} .ps-tab-r:nth-of-type(${i}):focus-visible ~ .ps-tab-bar .ps-tab-l:nth-of-ty
   const rootBg = page.pageBg;
   return `/* ---- Корень проекта: все правила ниже работают только внутри него ---- */
 ${R} {
-${declStr(rootVars(tokens))}
+${declStr(rootVars(tokens, page.tokens))}
   font-family: var(--ps-font);
   font-size: 15px;
   font-weight: 400;
@@ -1983,6 +2253,8 @@ ${declStr(rootVars(tokens))}
   color: var(--ps-text);
   -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 ${embedRootCss(page, rootBg)}
 }
 ${R}, ${R} *, ${R} *::before, ${R} *::after { box-sizing: border-box; }
@@ -2013,7 +2285,7 @@ ${R} .ps-icon--circle, ${R} .ps-icon--square { width: calc(var(--ps-is) * 1.9); 
 ${R} .ps-icon--circle { border-radius: 50%; }
 ${R} .ps-icon--square { border-radius: var(--ps-radius-sm); }
 /* ---- Кнопки ---- */
-${R} .ps-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 12px 20px; border: 1px solid transparent; border-radius: var(--ps-btn-radius); font-family: inherit; font-size: 15px; font-weight: 600; line-height: 1.2; text-align: center; text-decoration: none; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease, border-color .18s ease, filter .18s ease; }
+${R} .ps-btn { -webkit-user-select: none; user-select: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 12px 20px; border: 1px solid transparent; border-radius: var(--ps-btn-radius); font-family: inherit; font-size: 15px; font-weight: 600; line-height: 1.2; text-align: center; text-decoration: none; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease, border-color .18s ease, filter .18s ease; }
 ${R} .ps-btn--sm { min-height: 36px; padding: 8px 14px; font-size: 13px; }
 ${R} .ps-btn--lg { min-height: 54px; padding: 16px 26px; font-size: 17px; }
 ${R} .ps-btn--full { width: 100%; }
@@ -2134,7 +2406,7 @@ ${R} .ps-nav--pills .ps-nav-ic { width: auto; height: auto; background: none; }
 @media (hover: hover) { ${R} a.ps-nav-i:hover { border-color: var(--ps-primary); } }
 ${R} a.ps-nav-i:active { transform: scale(0.98); }
 /* ---- Нижняя навигация ---- */
-${R} .ps-bnav { display: flex; justify-content: space-around; gap: 4px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px)); border: 1px solid var(--ps-border); border-radius: calc(var(--ps-radius) + 2px); background-color: var(--ps-surface); }
+${R} .ps-bnav { display: flex; justify-content: space-around; gap: 4px; padding: 8px 8px calc(8px + max(env(safe-area-inset-bottom, 0px), var(--tg-safe-area-inset-bottom, 0px))); border: 1px solid var(--ps-border); border-radius: calc(var(--ps-radius) + 2px); background-color: var(--ps-surface); }
 ${R} .ps-bnav--sticky { position: sticky; bottom: 8px; z-index: 20; margin-top: auto; box-shadow: ${SHADOWS.md}; }
 ${R} .ps-bnav-i { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 4px; border-radius: 12px; color: var(--ps-muted); font-size: 11px; font-weight: 600; text-decoration: none; }
 ${R} .ps-bnav-i.is-active { background-color: var(--ps-primary-t); color: var(--ps-primary); }
@@ -2172,6 +2444,15 @@ ${R} a.ps-soc-i:active { transform: scale(0.95); }
 ${R} .ps-stars { display: flex; align-items: center; gap: 2px; }
 ${R} .ps-star { opacity: 0.25; } ${R} .ps-star.is-on { opacity: 1; } ${R} .ps-star svg { fill: currentColor; }
 ${R} .ps-stars-c { margin-left: 8px; font-size: 13px; color: var(--ps-muted); }
+/* ---- Пользователь Telegram, главная кнопка, всплывающая подсказка ---- */
+${R} .ps-tguser { display: flex; align-items: center; gap: 12px; min-width: 0; }
+${R} .ps-tguser-tx { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+${R} .ps-tguser-n { font-family: var(--ps-font-h); font-size: 17px; font-weight: 700; overflow-wrap: anywhere; }
+${R} .ps-tguser-u, ${R} .ps-tguser-s { font-size: 13px; color: var(--ps-muted); }
+${R} .ps-avatar img[hidden], ${R} .ps-avatar span[hidden] { display: none; }
+${R} .ps-mainbtn-w { position: sticky; bottom: 0; z-index: 30; margin-top: auto; padding: 10px 0 calc(10px + max(env(safe-area-inset-bottom, 0px), var(--tg-safe-area-inset-bottom, 0px))); background: linear-gradient(to top, var(--ps-bg) 70%, transparent); }
+${R} .ps-mainbtn-w[hidden] { display: none; }
+${R} .ps-toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); z-index: 1001; transform: translateX(-50%); max-width: calc(100vw - 32px); padding: 10px 16px; border-radius: 12px; background: var(--ps-text); color: var(--ps-bg); font-size: 14px; font-weight: 600; text-align: center; box-shadow: ${SHADOWS.md}; animation: ps-${pid}-up .2s ease both; }
 /* ---- Анимации появления ---- */
 @keyframes ps-${pid}-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes ps-${pid}-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
@@ -2183,7 +2464,7 @@ ${R} .ps-anim-zoom { animation: ps-${pid}-zoom .5s cubic-bezier(.2,.7,.2,1) both
 ${R} .ps-anim-left { animation: ps-${pid}-left .6s cubic-bezier(.2,.7,.2,1) both; }
 @media (prefers-reduced-motion: reduce) {
   ${R} *, ${R} *::before, ${R} *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-}`;
+}${adaptiveCss(R, tokens, page)}`;
 }
 
 /* ---------- Правила для конкретных узлов ---------- */
@@ -2248,7 +2529,7 @@ function nodeRules(n, R, tokens, out) {
 
 /* ---------- Нужен ли JavaScript ---------- */
 function scanFeatures(root) {
-  const f = { js: false, copy: false, timer: false, form: false, tg: false, tgSend: false, tgClose: false, links: false, fonts: new Set(), images: [], vars: new Set(), nodes: 0 };
+  const f = { acts: new Set(),  js: false, copy: false, timer: false, form: false, tg: false, tgSend: false, tgClose: false, links: false, fonts: new Set(), images: [], vars: new Set(), nodes: 0 };
   const visit = n => {
     if (!n || n.hidden) return;
     f.nodes++;
@@ -2256,8 +2537,17 @@ function scanFeatures(root) {
     if (a.type === 'copy') { f.copy = true; f.js = true; }
     if (a.type === 'close') { f.tgClose = true; f.tg = true; f.js = true; }
     if (a.type === 'senddata') { f.tgSend = true; f.tg = true; f.js = true; }
-    if (a.type === 'url' || a.type === 'tg' || a.type === 'bot') f.links = true;
-    if (n.type === 'copyfield') { f.copy = true; f.js = true; }
+    if (a.type && a.type !== 'none') {
+      const t = a.type === 'miniapp' ? 'tg' : a.type;
+      const d = ACT[t];
+      if (d && d.link && t !== 'goto' && t !== 'anchor') { f.links = true; f.js = true; f.acts.add('link'); }
+      if (t === 'anchor' && a.confirm) f.acts.add('anchor');
+      if (!JS_FREE_ACTIONS.has(t)) { f.js = true; f.acts.add(t); }
+      if (a.confirm || a.haptic) f.js = true;
+    }
+    if (n.type === 'button' || n.type === 'navmenu' || n.type === 'bottomnav' || n.type === 'accordion' || n.type === 'tabs') f.tapables = true;
+    if (n.type === 'tguser') { f.js = true; f.tg = true; }
+    if (n.type === 'copyfield') { f.copy = true; f.js = true; f.acts.add('copy'); }
     if (n.type === 'timer') { f.timer = true; f.js = true; }
     if (n.type === 'form') { f.form = true; f.js = true; if (n.props.mode === 'senddata') { f.tgSend = true; f.tg = true; } }
     if (n.style && n.style.font) f.fonts.add(n.style.font);
@@ -2273,41 +2563,95 @@ function scanFeatures(root) {
 }
 
 /* ---------- Исполняемый JavaScript для итоговой страницы ---------- */
-function runtimeJs(pid, feat) {
-  return `/* Puzzle Studio: интерактив для .ps-p-${pid}. Работает только внутри своего блока. */
+function runtimeJs(pid, feat, opt = {}) {
+  return `/* Puzzle Studio: интерактив и Telegram Mini App API для .ps-p-${pid}. Работает только внутри своего блока. */
 (function () {
   var root = document.querySelector('.ps-p-${pid}');
   if (!root) return;
-  var tg = window.Telegram && window.Telegram.WebApp;
-  function copyText(text, el) {
-    function done(ok) {
-      var label = el.querySelector('span') || el;
+  /* Telegram.WebApp — в этом окне или на странице PuzzleBot, если блок выведен во фрейме */
+  var tg = (window.Telegram && window.Telegram.WebApp) || (function () { try { return window.parent !== window && window.parent.Telegram && window.parent.Telegram.WebApp; } catch (e) { return null; } })() || null;
+  if (tg && (!tg.platform || tg.platform === 'unknown') && !tg.initData) tg = null;
+  function can(v) { return !!tg && (!v || !tg.isVersionAtLeast || tg.isVersionAtLeast(v)); }
+  function haptic(kind) { hap(kind === 'ok' ? 'success' : kind === 'err' ? 'error' : kind === 'sel' ? 'selection' : DEFH); }
+  function toast(text) {
+    var t = document.createElement('div'); t.className = 'ps-toast'; t.textContent = text; root.appendChild(t);
+    setTimeout(function () { t.remove(); }, 2600);
+  }
+  function needTg(v) { toast(tg ? 'Обновите Telegram, чтобы использовать эту функцию' : 'Эта кнопка работает внутри Telegram'); }
+  /* тема Telegram → цвета страницы, светлая/тёмная схема */
+  function applyTheme() {
+    if (!tg) return;
+    try {
+      ${opt.tgTheme ? "var tp = tg.themeParams || {}; for (var k in tp) if (tp[k]) root.style.setProperty('--tg-theme-' + k.replace(/_/g, '-'), tp[k]);" : ''}
+      if (tg.colorScheme) root.setAttribute('data-ps-scheme', tg.colorScheme);
+    } catch (e) {}
+  }
+  applyTheme();
+  if (tg && tg.onEvent) tg.onEvent('themeChanged', applyTheme);
+  /* данные пользователя из Telegram */
+  try {
+    var u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+    if (u) {
+      var els = root.querySelectorAll('[data-ps-tg]');
+      for (var i = 0; i < els.length; i++) {
+        var f = els[i].getAttribute('data-ps-tg');
+        if (f === 'photo_url') { if (u.photo_url) { els[i].src = u.photo_url; els[i].hidden = false; if (els[i].nextElementSibling) els[i].nextElementSibling.hidden = true; } }
+        else if (f === 'name') els[i].textContent = [u.first_name, u.last_name].filter(Boolean).join(' ');
+        else if (f === 'username') { if (u.username) els[i].textContent = '@' + u.username; else els[i].hidden = true; }
+        else if (f === 'initial') els[i].textContent = (u.first_name || '?').charAt(0).toUpperCase();
+        else if (u[f] != null) els[i].textContent = String(u[f]);
+      }
+    }
+  } catch (e) {}
+  function copyText(text, el, done) {
+    function fin(ok) {
+      haptic(ok ? 'ok' : 'err');
+      var label = el && el.querySelector('span') || el;
+      if (!label || label === root) { toast(ok ? (done || 'Скопировано') : 'Выделите текст и скопируйте вручную'); return; }
       var old = label.getAttribute('data-ps-old') || label.textContent;
       label.setAttribute('data-ps-old', old);
-      label.textContent = ok ? (el.getAttribute('data-ps-done') || 'Скопировано') : 'Выделите и скопируйте вручную';
+      label.textContent = ok ? (done || 'Скопировано') : 'Скопируйте вручную';
       setTimeout(function () { label.textContent = old; }, 1800);
     }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(fallback(text)); });
-    } else { done(fallback(text)); }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { fin(true); }, function () { fin(fallback(text)); });
+    else fin(fallback(text));
   }
   function fallback(text) {
-    try {
-      var t = document.createElement('textarea');
-      t.value = text; t.setAttribute('readonly', ''); t.style.position = 'fixed'; t.style.opacity = '0';
-      document.body.appendChild(t); t.select();
-      var ok = document.execCommand('copy'); document.body.removeChild(t); return ok;
-    } catch (e) { return false; }
+    try { var t = document.createElement('textarea'); t.value = text; t.setAttribute('readonly', ''); t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t); t.select(); var ok = document.execCommand('copy'); document.body.removeChild(t); return ok; } catch (e) { return false; }
   }
+  function isUrl(s) { return /^https?:\\/\\//i.test(s); }
+  var PREVIEW = !!window.__psPreview;
+  var DEFH = '${opt.haptics ? (opt.hapticType || 'light') : 'none'}';
+  function ver(v) { return can(v); }
+  function need(v) { if (can(v)) return true; toast(tg ? 'Обновите Telegram: нужна версия Bot API ' + v + ' или новее' : 'Эта кнопка работает внутри Telegram'); return false; }
+  function say(t) { t = String(t); if (can('6.2') && tg.showAlert) { try { tg.showAlert(t.slice(0, 4000)); return; } catch (e) {} } toast(t.slice(0, 300)); }
+  function hap(t) { try { if (!t || t === 'none' || !can('6.1') || !tg.HapticFeedback) return; var H = tg.HapticFeedback; if (t === 'selection') H.selectionChanged(); else if (t === 'success' || t === 'warning' || t === 'error') H.notificationOccurred(t); else H.impactOccurred(t); } catch (e) {} }
+  function openUrl(u, ext) {
+    if (!u) return;
+    if (tg && /^https:\\/\\/t\\.me\\//i.test(u)) { tg.openTelegramLink(u); return; }
+    if (tg && ext !== false) { tg.openLink(u); return; }
+    if (ext === false) location.href = u; else window.open(u, '_blank', 'noopener');
+  }
+  /* обработчики действий: в код попадают только те, что используются на странице */
+  var H = {
+    ${(opt.acts || []).map(k => ACT_JS[k]).filter(Boolean).join(',\n    ')}
+  };
   root.addEventListener('click', function (e) {
-    var el = e.target.closest ? e.target.closest('[data-ps-act]') : null;
-    if (!el || !root.contains(el)) return;
-    var act = el.getAttribute('data-ps-act'), val = el.getAttribute('data-ps-val') || '';
-    if (act === 'copy') { e.preventDefault(); copyText(val, el); }
-    else if (act === 'link' && tg && tg.openLink) { e.preventDefault(); tg.openLink(el.href); }
-    else if (act === 'tglink' && tg && tg.openTelegramLink) { e.preventDefault(); tg.openTelegramLink(el.href); }
-    else if (act === 'close') { e.preventDefault(); if (tg && tg.close) tg.close(); }
-    else if (act === 'senddata') { e.preventDefault(); if (tg && tg.sendData) tg.sendData(val); }
+    var el = e.target.closest ? e.target.closest('[data-ps-act], [goto_web_page]') : null;
+    if (el && root.contains(el)) {
+      var hh = el.getAttribute('data-ps-h'); hap(hh === null ? DEFH : hh);
+      if (el.hasAttribute('goto_web_page')) { if (PREVIEW) { e.preventDefault(); say('Переход на страницу мини-приложения PuzzleBot: ' + el.getAttribute('goto_web_page')); } return; }
+      var a = el.getAttribute('data-ps-act'), p = {}, cf = el.getAttribute('data-ps-confirm');
+      try { p = JSON.parse(el.getAttribute('data-ps-p') || '{}'); } catch (er) {}
+      if (a === 'link' && !tg && !cf) return; /* вне Telegram — обычный переход по ссылке */
+      e.preventDefault();
+      var go = function () { if (H[a]) H[a](p, el); else if (a === 'link') openUrl(el.getAttribute('href'), !p.same); };
+      if (cf) { if (can('6.2') && tg.showConfirm) tg.showConfirm(cf, function (ok) { if (ok) go(); }); else if (window.confirm(cf)) go(); }
+      else go();
+      return;
+    }
+    var b = e.target.closest ? e.target.closest('.ps-btn, .ps-nav-i, .ps-bnav-i, .ps-soc-i, summary, .ps-tab-l, [data-ps-h]') : null;
+    if (b && root.contains(b)) { var h2 = b.getAttribute('data-ps-h'); hap(h2 !== null ? h2 : (b.tagName === 'SUMMARY' || b.classList.contains('ps-tab-l') ? (DEFH === 'none' ? 'none' : 'selection') : DEFH)); }
   });${feat.timer ? `
   var timers = root.querySelectorAll('[data-ps-timer]');
   function tick() {
@@ -2331,7 +2675,7 @@ function runtimeJs(pid, feat) {
       if (wrap) wrap.classList.toggle('is-invalid', !valid);
       if (!valid) ok = false;
     }
-    if (!ok) return;
+    if (!ok) { haptic('err'); return; }
     var data = {};
     for (var j = 0; j < fields.length; j++) { var n = fields[j].name; if (!n) continue; data[n] = fields[j].type === 'checkbox' ? fields[j].checked : fields[j].value; }
     var msg = f.querySelector('.ps-form-ok'), err = f.querySelector('.ps-form-err');
@@ -2342,12 +2686,13 @@ function runtimeJs(pid, feat) {
       var btn = f.querySelector('[type=submit]'); if (btn) btn.disabled = true;
       var payload = { form: data, page: 'ps-${pid}', sent_at: new Date().toISOString(), tg_user: tg && tg.initDataUnsafe ? tg.initDataUnsafe.user || null : null, tg_init_data: tg ? tg.initData || '' : '' };
       fetch(hook, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-        .then(function (r) { if (!r.ok) throw new Error(r.status); if (msg) msg.hidden = false; f.reset(); })
-        .catch(function () { if (err) err.hidden = false; })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); if (msg) msg.hidden = false; haptic('ok'); f.reset(); })
+        .catch(function () { if (err) err.hidden = false; haptic('err'); })
         .then(function () { if (btn) btn.disabled = false; });
       return;
     }
     if (msg) msg.hidden = false;
+    haptic('ok');
     f.reset();
   });` : ''}
 })();`;
@@ -2398,8 +2743,10 @@ function generate(project, opts = {}) {
   page.embedMode = opts.embed || project.page.embed || 'transparent';
   const feat = scanFeatures(project.root);
   feat.fill = page.embedMode === 'fill' && mode !== 'edit';
+  if (tokens.adaptive) feat.js = true;
+  if (project.page.haptics !== false && feat.tapables) feat.js = true;
   const includeJs = opts.js !== false && (feat.js || feat.fill);
-  const ctx = { mode, pid, project, js: includeJs || mode === 'edit', varMode: opts.varMode || 'raw', now: opts.now };
+  const ctx = { mode, pid, project, js: includeJs || mode === 'edit', varMode: opts.varMode || 'raw', now: opts.now, scheme: opts.scheme };
   if (mode !== 'edit' && opts.noAnim) ctx.mode = 'export';
   let html = renderNode(project.root, ctx);
   if (opts.noAnim) html = html.replace(/ ps-anim-(fade|up|zoom|left)/g, '');
@@ -2414,7 +2761,7 @@ function generate(project, opts = {}) {
   if (out.hideTablet.length) css += `\n@media (min-width: ${BP.tablet}px) and (max-width: ${BP.desktop - 0.02}px) { ${out.hideTablet.join(', ')} { display: none !important; } }`;
   if (out.hideDesktop.length) css += `\n@media (min-width: ${BP.desktop}px) { ${out.hideDesktop.join(', ')} { display: none !important; } }`;
   const fonts = new Set([tokens.font, tokens.headingFont, ...feat.fonts].filter(Boolean));
-  const js = includeJs ? [feat.js ? runtimeJs(pid, feat) : '', feat.fill ? fillJs(pid, embedHex(project)) : ''].filter(Boolean).join('\n') : '';
+  const js = includeJs ? [feat.js ? runtimeJs(pid, feat, { haptics: project.page.haptics !== false, hapticType: project.page.hapticType || 'light', tgTheme: tokens.adaptive === 'tg', acts: [...feat.acts] }) : '', feat.fill ? fillJs(pid, embedHex(project)) : ''].filter(Boolean).join('\n') : '';
   if (mode !== 'edit' && !opts.minify && opts.pretty !== false) html = beautifyHtml(html);
   if (opts.minify) css = minifyCss(css);
   return { html, css, js, fonts: [...fonts], fontsHref: googleFontsHref([...fonts]), feat, tokens, pid, embed: page.embedMode, hostHex: embedHex(project) };
@@ -2429,7 +2776,7 @@ const PROJECT_VERSION = 1;
 function newRoot(children = [], style = {}) {
   return { id: 'page', type: 'page', props: {}, style: { ...style }, children };
 }
-function newProject({ name = 'Новая страница', themeId = 'dark', root, tokens, templateId, customVars } = {}) {
+function newProject({ name = 'Новая страница', themeId = 'telegram', root, tokens, templateId, customVars } = {}) {
   const now = Date.now();
   return {
     id: 'p' + uid(10), pid: uid(6), version: PROJECT_VERSION,
@@ -2584,33 +2931,35 @@ function lintProject(project, opts = {}) {
     }
     if (n.type === 'gallery') (p.items || []).forEach((it, i) => { if (it.src && it.src.length > 300000) add('warn', `«${L}», фото ${i + 1}: встроенная картинка весит ~${fmtBytes(it.src.length * 0.75)}`, n.id); });
     if (COMP[n.type] && COMP[n.type].action) {
-      if (n.type === 'button' && (!a.type || a.type === 'none') && !p.disabled) add('info', `«${L}»: у кнопки нет действия`, n.id);
-      if (a.type === 'url' || a.type === 'tg') {
-        let u = String(a.value || '').trim();
-        if (a.type === 'tg' && /^@?[A-Za-z0-9_]{4,64}$/.test(u)) u = 'https://t.me/' + u.replace('@', '');
-        const c = checkUrl(u, { allowAnchor: false });
-        if (!u) add('error', `«${L}»: не указана ссылка`, n.id);
-        else if (!c.ok) add('error', `«${L}»: ссылка некорректна — ${c.reason}`, n.id);
-        else if (c.insecure) add('warn', `«${L}»: ссылка http:// — используйте https://`, n.id);
+      const t = a.type === 'miniapp' ? 'tg' : (a.type || 'none');
+      const d = ACT[t];
+      if (n.type === 'button' && t === 'none' && !p.disabled) add('info', `«${L}»: у кнопки нет действия`, n.id);
+      if (d && t !== 'none') {
+        for (const f of d.params || []) if (f.req && !String(a[f.k] ?? '').trim()) add('error', `«${L}»: в действии «${d.label}» не заполнено «${f.label}»`, n.id);
+        if (t === 'goto') {
+          if (a.value && !parseGoto(a.value)) add('error', `«${L}»: не удалось найти ID страницы Mini App`, n.id);
+          add('info', `«${L}»: переход goto_web_page обрабатывает PuzzleBot — проверьте его внутри мини-приложения`, n.id);
+        } else if (t === 'anchor') {
+          if (!anchors.has(String(a.value || '').replace(/^#/, ''))) add('error', `«${L}»: блок с якорем «${a.value || '—'}» не найден`, n.id);
+        } else if (d.link) {
+          if ((a.value || a.bot) && !actionHref({ ...a, type: t })) add('error', `«${L}»: ссылка некорректна — проверьте поля действия`, n.id);
+          if (t === 'url') { const c = checkUrl(a.value, { allowAnchor: false }); if (c.ok && c.insecure) add('warn', `«${L}»: ссылка http:// — внутри Telegram используйте https://`, n.id); }
+        }
+        for (const f of d.params || []) if (f.type === 'url' && a[f.k]) { const c = checkUrl(a[f.k], { allowAnchor: false }); if (!c.ok || !/^https:/.test(c.url)) add('error', `«${L}»: «${f.label}» — нужна ссылка https://`, n.id); }
+        if (!JS_FREE_ACTIONS.has(t) && opts.js === false) add('warn', `«${L}»: действие «${d.label}» требует JavaScript, а он выключен в экспорте`, n.id);
+        if (d.min && parseFloat(d.min) >= 8) add('info', `«${L}»: «${d.label}» работает в Telegram с Bot API ${d.min}+ — на старых версиях пользователь увидит просьбу обновиться`, n.id);
+        if (['sharemsg', 'requestchat', 'invoice'].includes(t)) add('warn', `«${L}»: для «${d.label}» нужен свой сервер бота (Bot API), PuzzleBot сам это не создаёт`, n.id);
+        if (t === 'senddata') add('warn', `«${L}»: sendData работает, только если Mini App открыт кнопкой обычной клавиатуры бота`, n.id);
+        if (t === 'submit') {
+          let inForm = false, cur = findNode(project.root, n.id);
+          while (cur && cur.parent) { if (cur.parent.type === 'form') { inForm = true; break; } cur = findNode(project.root, cur.parent.id); }
+          if (!inForm) add('error', `«${L}»: кнопка «Отправить форму» должна лежать внутри блока «Форма»`, n.id);
+        }
+        if (!JS_FREE_ACTIONS.has(t) && /\{\{[A-Za-z0-9_]+\}\}/.test(JSON.stringify(a))) add('info', `«${L}»: переменная внутри данных кнопки. Если значение переменной содержит кавычки, действие может не сработать`, n.id);
       }
-      if (a.type === 'bot') {
-        if (!/^@?[A-Za-z0-9_]{4,64}$/.test(String(a.bot || '').trim())) add('error', `«${L}»: укажите юзернейм бота (латиница, цифры, _)`, n.id);
-        else if (a.value && !/^[A-Za-z0-9_-]{1,64}$/.test(a.value)) add('warn', `«${L}»: параметр start может содержать только латиницу, цифры, _ и -. Переменные в нём Telegram не подставит сам`, n.id);
-        add('info', `«${L}»: обработку параметра start нужно настроить в боте PuzzleBot`, n.id);
-      }
-      if (a.type === 'anchor' && !anchors.has(String(a.value || '').replace(/^#/, ''))) add('error', `«${L}»: блок с якорем «${a.value || '—'}» не найден`, n.id);
-      if ((a.type === 'copy' || a.type === 'close' || a.type === 'senddata') && opts.js === false) add('warn', `«${L}»: действие требует JavaScript, а он выключен в настройках экспорта`, n.id);
-      if (a.type === 'close' || a.type === 'senddata') add('warn', `«${L}»: работает только в Telegram Mini App с подключённым telegram-web-app.js`, n.id);
-      if (a.type === 'submit') {
-        let inForm = false;
-        let cur = findNode(project.root, n.id);
-        while (cur && cur.parent) { if (cur.parent.type === 'form') { inForm = true; break; } cur = findNode(project.root, cur.parent.id); }
-        if (!inForm) add('error', `«${L}»: кнопка «Отправить форму» должна лежать внутри блока «Форма»`, n.id);
-      }
-      if ((a.type === 'copy' || a.type === 'senddata') && VAR_RE.test(a.value || '')) add('info', `«${L}»: переменная внутри атрибута data-ps-val. Проверьте, что PuzzleBot подставляет переменные в HTML-атрибуты`, n.id);
-      VAR_RE.lastIndex = 0;
     }
     if (n.type === 'navmenu' || n.type === 'bottomnav') (p.items || []).forEach((it, i) => {
+      if (it.page) { if (!parseGoto(it.page)) add('error', `«${L}», пункт ${i + 1}: не найден ID страницы Mini App`, n.id); return; }
       if (!it.url) return;
       if (/^#/.test(it.url)) { if (!anchors.has(it.url.slice(1))) add('warn', `«${L}», пункт ${i + 1}: якорь ${it.url} не найден на странице`, n.id); }
       else if (!checkUrl(/^@?[A-Za-z0-9_]{4,64}$/.test(it.url) ? 'https://t.me/' + it.url : it.url).ok) add('error', `«${L}», пункт ${i + 1}: некорректная ссылка`, n.id);
@@ -3929,7 +4278,7 @@ function hostColor(project) {
 function previewSrcdoc(project, varMode, opt = {}) {
   const g = generate(project, { mode: 'export', js: true, varMode, pretty: false, embed: opt.embed });
   const pad = g.embed !== 'fill' && g.embed !== 'doc';
-  return `<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${g.fontsHref ? `<link rel="stylesheet" href="${escAttr(g.fontsHref)}">` : ''}<style>html,body{margin:0;background:${g.embed === 'doc' ? embedHex(project) : hostColor(project)}}${pad ? 'body{padding:16px 16px 24px}' : ''}${g.css}</style></head><body>${g.html}${g.js ? `<script>${g.js}<\/script>` : ''}</body></html>`;
+  return `<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${g.fontsHref ? `<link rel="stylesheet" href="${escAttr(g.fontsHref)}">` : ''}<style>html,body{margin:0;background:${g.embed === 'doc' ? embedHex(project) : hostColor(project)}}${pad ? 'body{padding:16px 16px 24px}' : ''}${g.css}</style></head><body>${g.html}<script>window.__psPreview = 1;<\/script>${g.js ? `<script>${g.js}<\/script>` : ''}</body></html>`;
 }
 
 const DEVICES = { mobile: { w: 390, label: 'Телефон', icon: 'smartphone' }, tablet: { w: 768, label: 'Планшет', icon: 'tablet' }, desktop: { w: 1280, label: 'Компьютер', icon: 'monitor' } };
@@ -4957,47 +5306,92 @@ const Inspector = {
     box.append(h('button', { class: 'btn sm', onclick: () => { const a = clone(items); a.push(clone(f.add)); this.openItems.add(n.id + ':' + f.k + ':' + (a.length - 1)); commit(a, null, true); } }, ic('plus', 14), 'Добавить'));
     return field(f.label + ' · ' + items.length, box);
   },
-  actionEditor(n) {
-    const a = n.action || { type: 'none' };
-    const set = (patch, panel) => Editor.setProp(n.id, ['action'], { ...(Editor.node(n.id).action || {}), ...patch }, n.id + ':action:' + Object.keys(patch).join(','), { panel });
+  /* ---------- действие кнопки: группы, поля, проверки ---------- */
+  actionSelect(cur, groups, onPick) {
+    const sel = h('select', { class: 'sel', 'aria-label': 'Действие' });
+    ACT_GROUPS.forEach((g, gi) => {
+      if (groups && !groups.includes(gi)) return;
+      const og = h('optgroup', { label: g });
+      for (const d of ACTION_DEFS.filter(x => x.g === gi)) {
+        const o = h('option', { value: d.id }, d.label + (d.min && parseFloat(d.min) >= 7 ? '  · Telegram ' + d.min + '+' : ''));
+        if (d.id === cur) o.selected = true;
+        og.append(o);
+      }
+      sel.append(og);
+    });
+    sel.addEventListener('change', () => onPick(sel.value));
+    return sel;
+  },
+  actionStatus(a) {
+    const d = ACT[a.type];
+    if (!d || a.type === 'none') return null;
+    for (const f of d.params || []) if (f.req && !String(a[f.k] ?? '').trim()) return ['bad', 'Заполните поле «' + f.label + '»'];
+    if (a.type === 'goto') { const id = parseGoto(a.value); return id ? ['ok', '✓ <a goto_web_page="' + id + '">'] : ['bad', 'Не нашёл ID: нужна ссылка вида https://t.me/бот?startapp=ID']; }
+    if (a.type === 'anchor') return null;
+    if (d.link) { const href = actionHref(a); return href ? ['ok', '✓ ' + href] : ['bad', 'Ссылка некорректна: проверьте поля']; }
+    for (const f of d.params || []) if (f.type === 'url' && a[f.k]) { const c = checkUrl(a[f.k], { allowAnchor: false }); if (!c.ok || !/^https:/.test(c.url)) return ['bad', '«' + f.label + '»: нужна ссылка https://']; }
+    if (a.type === 'storage' && a.key && !/^[A-Za-z0-9_-]{1,128}$/.test(a.key)) return ['bad', 'Ключ: только латиница, цифры, _ и -'];
+    return null;
+  },
+  actionFields(a, set) {
+    const d = ACT[a.type] || ACT.none;
     const out = [];
-    let opts = ACTIONS;
-    if (n.type === 'image' || n.type === 'link') opts = ACTIONS.filter(x => ['none', 'url', 'tg', 'bot', 'anchor'].includes(x[0]));
-    out.push(field('Что делает', selectEl(opts, a.type || 'none', v => Editor.setProp(n.id, ['action'], { type: v, value: v === 'tg' ? 'https://t.me/' : '', bot: a.bot || '' }, null, { panel: true }))));
     const status = h('div', { class: 'status-line' });
-    const vInput = (label, ph, check) => {
-      const el = h('input', { class: 'inp', value: a.value || '', placeholder: ph });
-      const run = () => { if (!check) return; const r = check(el.value.trim()); status.className = 'status-line ' + r[0]; status.textContent = r[1]; };
-      el.addEventListener('input', () => { set({ value: el.value.trim() }); run(); });
-      run();
-      return field(label, el, { right: ['copy', 'senddata'].includes(a.type) ? this.varButton(el) : null });
-    };
-    if (a.type === 'url') {
-      out.push(vInput('Адрес', 'https://example.com', v => { if (!v) return ['bad', 'Укажите адрес']; const c = checkUrl(v, { allowAnchor: false }); return c.ok ? [c.insecure ? 'warn' : 'ok', c.insecure ? 'Лучше использовать https://' : '✓ Ссылка корректна'] : ['bad', c.reason + (c.fix ? ' → ' + c.fix : '')]; }), status);
-      out.push(toggle('Открывать в новой вкладке', a.newTab !== false, v => set({ newTab: v })));
-    } else if (a.type === 'tg') {
-      out.push(vInput('Ссылка или @юзернейм', 'https://t.me/username', v => { const u = /^@?[A-Za-z0-9_]{4,64}$/.test(v) ? 'https://t.me/' + v.replace('@', '') : v; const c = checkUrl(u, { allowAnchor: false }); if (!v || v === 'https://t.me/') return ['bad', 'Допишите имя канала, чата или пользователя']; return c.ok ? ['ok', '✓ ' + u] : ['bad', c.reason]; }), status);
-    } else if (a.type === 'bot') {
-      const bot = h('input', { class: 'inp', value: a.bot || '', placeholder: 'my_shop_bot' });
-      const prm = h('input', { class: 'inp', value: a.value || '', placeholder: 'menu' });
-      const upd = () => {
-        const bn = bot.value.trim().replace('@', ''), p = prm.value.trim();
-        const okB = /^[A-Za-z0-9_]{4,64}$/.test(bn), okP = !p || /^[A-Za-z0-9_-]{1,64}$/.test(p);
-        status.className = 'status-line ' + (okB && okP ? 'ok' : 'bad');
-        status.textContent = !okB ? 'Юзернейм бота: латиница, цифры и _' : !okP ? 'Параметр: только латиница, цифры, _ и -' : '✓ https://t.me/' + bn + (p ? '?start=' + p : '');
-      };
-      bot.addEventListener('input', () => { set({ bot: bot.value.trim().replace('@', '') }); upd(); });
-      prm.addEventListener('input', () => { set({ value: prm.value.trim() }); upd(); });
-      out.push(field('Юзернейм бота', bot), field('Параметр start', prm), status);
-      upd();
-    } else if (a.type === 'anchor') {
-      const anchors = anchorsList(S.project.root);
-      if (!anchors.length) out.push(h('div', { class: 'hint box warn' }, 'На странице нет блоков с якорем. Выберите нужный блок и задайте ему якорь в разделе «Ещё».'));
-      else out.push(field('К какому блоку', selectEl([['', '— выберите —'], ...anchors.map(x => [x.anchor, '#' + x.anchor + ' · ' + x.label.slice(0, 24)])], a.value || '', v => set({ value: v }, false))));
-    } else if (a.type === 'copy') out.push(vInput('Что копировать', 'Текст или {{REF_LINK}}'));
-    else if (a.type === 'senddata') out.push(vInput('Данные для бота', 'order_42'));
-    if (ACTION_INFO[a.type]) out.push(h('div', { class: 'hint box' + (['close', 'senddata', 'bot'].includes(a.type) ? ' warn' : '') }, ACTION_INFO[a.type]));
+    const check = () => { const r = this.actionStatus(a); if (r) { status.className = 'status-line ' + r[0]; status.textContent = r[1]; } else status.textContent = ''; };
+    const upd = (k, v) => { a[k] = v; set({ [k]: v }); check(); };
+    for (const f of d.params || []) {
+      if (f.type === 'anchor') {
+        const anchors = anchorsList(S.project.root);
+        if (!anchors.length) out.push(h('div', { class: 'hint box warn' }, 'На странице нет блоков с якорем. Выберите нужный блок → вкладка «Действия» → «Якорь».'));
+        else out.push(field(f.label, selectEl([['', '— выберите —'], ...anchors.map(x => [x.anchor, '#' + x.anchor + ' · ' + x.label.slice(0, 24)])], a.value || '', v => upd('value', v))));
+      } else if (f.type === 'select') out.push(field(f.label, selectEl(f.options, a[f.k] ?? f.def ?? f.options[0][0], v => upd(f.k, v))));
+      else if (f.type === 'toggle') out.push(toggle(f.label, a[f.k] ?? f.def, v => upd(f.k, v)));
+      else {
+        const el = h('input', { class: 'inp', value: a[f.k] ?? '', placeholder: f.ph || '' });
+        el.addEventListener('input', () => upd(f.k, el.value.trim()));
+        out.push(field(f.label + (f.req ? ' *' : ''), el, { right: this.varButton(el) }));
+      }
+    }
+    out.push(status);
+    check();
+    if (a.type === 'goto') out.push(h('button', { class: 'btn sm', onclick: () => this.askGoto(a.value, id => upd('value', id)) }, ic('link', 14), 'Вставить ссылку на страницу'));
+    if (d.info) out.push(h('div', { class: 'hint box' + (/только|нужен|нужна|не сработает|работает, только/.test(d.info) ? ' warn' : '') }, d.info));
+    if (d.min) out.push(h('div', { class: 'hint' }, `Нужен Telegram с Bot API ${d.min} или новее. На старых версиях пользователь увидит просьбу обновить Telegram, вне Telegram — подсказку открыть страницу в Telegram.`));
+    if (a.type !== 'none') {
+      out.push(field('Вибрация при нажатии', selectEl(HAPTIC_OPTS, a.haptic || '', v => upd('haptic', v))));
+      if (!['goto', 'submit', 'haptic'].includes(a.type)) {
+        const cf = h('input', { class: 'inp', value: a.confirm || '', placeholder: 'Например: Перейти к оплате?' });
+        cf.addEventListener('input', () => upd('confirm', cf.value));
+        out.push(field('Спросить подтверждение (необязательно)', cf, { hint: 'Перед действием Telegram покажет окно «OK / Отмена» с этим текстом.' }));
+      }
+    }
     return out;
+  },
+  askGoto(cur, done) {
+    return UI.prompt({ title: 'Страница мини-приложения', label: 'Вставьте ссылку на страницу Mini App из PuzzleBot (Конструктор → мини-приложение → ссылка). ID — всё, что после «startapp=».', value: cur ? 'https://t.me/?startapp=' + cur : '', placeholder: 'https://t.me/BrootsBot?startapp=623ec549b7791482', ok: 'Готово' }).then(v => {
+      if (v === null) return null;
+      const id = parseGoto(v);
+      if (!id) { UI.toast('Не нашёл ID страницы. Нужна ссылка вида https://t.me/бот?startapp=ID', { err: true, ms: 5000 }); return null; }
+      done(id);
+      UI.toast('Страница: ' + id, { icon: 'check' });
+      return id;
+    });
+  },
+  actionEditor(n) {
+    const a = { ...(n.action || { type: 'none' }) };
+    if (a.type === 'miniapp') a.type = 'tg';
+    const set = patch => Editor.setProp(n.id, ['action'], { ...(Editor.node(n.id).action || {}), ...patch }, n.id + ':action:' + Object.keys(patch).join(','));
+    const groups = n.type === 'image' || n.type === 'link' ? [0] : null;
+    const pick = this.actionSelect(a.type || 'none', groups, v => {
+      const d = ACT[v] || {};
+      const next = { type: v, haptic: a.haptic, confirm: a.confirm };
+      for (const f of d.params || []) if (f.def !== undefined) next[f.k] = f.def;
+      if (v === 'tg') next.value = '@';
+      const apply = () => Editor.setProp(n.id, ['action'], next, null, { panel: true });
+      if (v === 'goto') this.askGoto('', id => { next.value = id; }).then(() => apply());
+      else apply();
+    });
+    return [field('Что делает', pick), ...this.actionFields(a, set)];
   },
 
   /* ---------- панель выбранного блока ---------- */
@@ -5018,7 +5412,7 @@ const Inspector = {
       h('button', { class: 'btn sm icon', title: n.hidden ? 'Показать' : 'Скрыть', 'aria-label': n.hidden ? 'Показать' : 'Скрыть', onclick: () => { Editor.toggleFlag(n.id, 'hidden'); } }, ic(n.hidden ? 'eye-off' : 'eye', 14)),
       h('button', { class: 'btn sm icon' + (n.locked ? ' on' : ''), title: n.locked ? 'Разблокировать' : 'Заблокировать', 'aria-label': n.locked ? 'Разблокировать' : 'Заблокировать', onclick: () => Editor.toggleFlag(n.id, 'locked') }, ic(n.locked ? 'lock' : 'unlock', 14)),
       h('button', { class: 'btn sm icon danger', title: 'Удалить', 'aria-label': 'Удалить', onclick: () => Editor.remove(n.id) }, ic('trash', 14)));
-    R.append(h('div', { class: 'insp-head' }, h('div', { class: 'insp-title' }, ic(iconForNode(n), 16), nameInp), crumbs, acts));
+    R.append(h('div', { class: 'insp-head' }, h('div', { class: 'insp-title' }, ic(iconForNode(n), 16), nameInp), crumbs, def.usage ? h('div', { class: 'usage' }, h('b', null, 'Для чего: '), def.usage) : null, acts));
     const tab = S.inspTab || 'content';
     R.append(h('div', { class: 'insp-tabs', role: 'tablist' }, [['content', 'Контент'], ['style', 'Настройки'], ['actions', 'Действия']].map(([id, l]) =>
       h('button', { class: tab === id ? 'on' : '', role: 'tab', 'aria-selected': String(tab === id), onclick: () => { S.inspTab = id; this.render(); } }, l))));
@@ -5208,6 +5602,18 @@ const Inspector = {
     ];
   },
 
+  /* ---------- возможности Telegram для всей страницы ---------- */
+  telegramCtl() {
+    const p = S.project;
+    return [
+      toggle('Вибрация при нажатиях (HapticFeedback)', p.page.haptics !== false, v => Editor.act('Вибрация', pr => { pr.page.haptics = v; }, { struct: false, panel: true })),
+      p.page.haptics !== false ? field('Сила вибрации по умолчанию', selectEl(HAPTIC_OPTS.slice(2, 7), p.page.hapticType || 'light', v => Editor.act('Вибрация', pr => { pr.page.hapticType = v; }, { struct: false }))) : null,
+      h('div', { class: 'hint' }, 'Отклик телефона на кнопки, меню и вкладки; «успех» и «ошибка» на формах и копировании. У отдельной кнопки силу можно поменять во вкладке «Действия». Работает только в Telegram.'),
+      h('div', { class: 'hint box' }, 'Цвета под тему устройства: выберите тему «Telegram (авто)» — блоки возьмут цвета светлой или тёмной темы Telegram пользователя. «Авто: светлая / тёмная» — переключается по настройке телефона.'),
+      h('div', { class: 'hint' }, 'Системные кнопки Telegram (главная, «Назад», «Настройки») не используются: в PuzzleBot ими управляют блоки «Клавиатура» и настройки мини-приложения.'),
+    ].filter(Boolean);
+  },
+
   /* ---------- размещение в PuzzleBot: режим фона ---------- */
   embedCtl(after) {
     const p = S.project, mode = p.page.embed || 'transparent', hex = embedHex(p);
@@ -5216,7 +5622,9 @@ const Inspector = {
     return [
       field('Фон HTML-блока', segmented(EMBED_MODES.map(m => [m[0], m[1]]), mode, v => { Editor.act('Режим фона', pr => { pr.page.embed = v; }, { panel: true, struct: false }); if (after) after(); })),
       h('div', { class: 'hint' }, info ? info[2] : ''),
-      field('Цвет для PuzzleBot: «Задать фон» и «Задать цвет шапки»', hexBox, { hint: 'Это фон вашей темы. Укажите его в настройках мини-приложения PuzzleBot — тогда вокруг блока не будет белых полей.' }),
+      themeTokens(p.page).adaptive === 'tg'
+        ? h('div', { class: 'hint box' }, 'Тема «Telegram (авто)»: блок сам берёт цвета Telegram пользователя. В PuzzleBot «Задать фон» и «Задать цвет шапки» лучше выключить — тогда фон совпадёт автоматически, в светлой и тёмной теме.')
+        : field('Цвет для PuzzleBot: «Задать фон» и «Задать цвет шапки»', hexBox, { hint: themeTokens(p.page).adaptive ? 'Тема меняется по устройству, а «Задать фон» в PuzzleBot — один цвет. Для полного совпадения выберите тему «Telegram (авто)».' : 'Это фон вашей темы. Укажите его в настройках мини-приложения PuzzleBot — тогда вокруг блока не будет белых полей.' }),
       field('Фон вокруг блока на холсте', selectEl(HOST_PREVIEW, p.page.hostPreview || 'theme', v => { Editor.act('Фон проверки', pr => { pr.page.hostPreview = v === 'theme' ? undefined : v; }, { struct: false }); }), { hint: 'Только для проверки в редакторе: так видно, как блок встанет на разный фон PuzzleBot.' }),
       h('button', { class: 'btn sm', onclick: () => UI.copy(diagnosticSnippet(), 'Код диагностики скопирован — вставьте его в HTML-блок PuzzleBot') }, ic('help', 14), 'Скопировать код диагностики'),
     ];
@@ -5229,14 +5637,16 @@ const Inspector = {
     const body = h('div', { class: 'pane-body', style: { padding: 0 } });
     R.append(body);
     body.append(this.sec('embed', 'Размещение в PuzzleBot', this.embedCtl(), { open: true }));
+    body.append(this.sec('tgapp', 'Telegram', this.telegramCtl()));
     // Темы
     const tgrid = h('div', { class: 'two' });
     for (const [id, t] of Object.entries(THEMES)) {
       const on = p.page.themeId === id;
       const b = h('button', { class: 'row-item', style: { flexDirection: 'column', alignItems: 'stretch', gap: '6px', padding: '8px', borderColor: on ? 'var(--accent)' : '', background: on ? 'var(--accent-soft)' : '' }, 'aria-pressed': String(on) },
         h('div', { style: { display: 'flex', height: '26px', borderRadius: '6px', overflow: 'hidden', border: '1px solid var(--line)' } },
-          ...[t.bg, t.surface, t.primary, t.primary2, t.accent].map(c => h('span', { style: { flex: 1, background: c } }))),
-        h('span', { style: { fontSize: '12px', fontWeight: 600 } }, t.label));
+          ...(t.adaptive ? [t.light.bg, t.light.primary, t.dark.bg, t.dark.primary] : [t.bg, t.surface, t.primary, t.primary2, t.accent]).map(c => h('span', { style: { flex: 1, background: c } }))),
+        h('span', { style: { fontSize: '12px', fontWeight: 600 } }, t.label),
+        t.adaptive ? h('span', { style: { fontSize: '11px', color: 'var(--muted)' } }, t.adaptive === 'tg' ? 'цвета Telegram пользователя' : 'светлая или тёмная по устройству') : null);
       b.addEventListener('click', async () => {
         if (Object.keys(p.page.tokens || {}).length && !(await UI.confirm({ title: 'Сменить тему?', text: 'Ваши ручные правки цветов и шрифтов темы будут сброшены. Структура и содержимое страницы не изменятся.', ok: 'Сменить' }))) return;
         Editor.act('Смена темы', pr => { pr.page.themeId = id; pr.page.tokens = {}; }, { panel: true, struct: false });
@@ -5376,7 +5786,7 @@ const Home = {
   },
 
   async newBlank() {
-    const p = newProject({ name: 'Новая страница', themeId: 'dark', root: newRoot([B.h('Заголовок страницы', 1), B.t('Нажмите на текст, чтобы изменить его, или добавьте блоки из каталога.', { color: 'token:muted' }), B.btn('Кнопка', 'primary')]) });
+    const p = newProject({ name: 'Новая страница', themeId: 'telegram', root: newRoot([B.h('Заголовок страницы', 1), B.t('Нажмите на текст, чтобы изменить его, или добавьте блоки из каталога.', { color: 'token:muted' }), B.btn('Кнопка', 'primary')]) });
     await this.persist(p);
     Editor.open(p);
   },
