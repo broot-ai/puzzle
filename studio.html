@@ -1004,6 +1004,165 @@ html, body { overflow: hidden; overscroll-behavior: none; }
 .dlg .status-line.bad { justify-content: flex-start; text-align: left; padding: 8px 10px; border-radius: 10px; background: color-mix(in srgb, var(--err) 8%, transparent); }
 .dlg .status-line.bad::before { width: 48px; height: 48px; }
 
+/* ================================================================
+   ПАНЕЛЬ СВОЙСТВ В СТИЛЕ PUZZLEBOT
+   поля с подчёркиванием, счётчик символов, большие галочки,
+   серые переключатели, шапка блока «Заголовок №2  ↓ ↑ ⋮ ˅»
+   ================================================================ */
+.pane.right { --pb-lbl: #8a8f99; --pb-line: #d3d7de; --pb-seg: #e0e0e0; --pb-segon: #fff; --pb-hbar: #e2e3e6; --pb-btn: #b7bbc2; --pb-row: #eef3fc; --pb-rowb: #7ea7ee; --pb-kb: #e8798a; --pb-ink: #2b2f36; }
+:root:not([data-ui="light"]) .pane.right { --pb-lbl: var(--muted); --pb-line: var(--line2); --pb-seg: var(--panel3); --pb-segon: var(--panel); --pb-hbar: var(--panel3); --pb-btn: #5b616d; --pb-row: rgba(75,141,248,.12); --pb-rowb: rgba(75,141,248,.55); --pb-kb: rgba(232,121,138,.7); --pb-ink: var(--text); }
+/* шапка блока */
+.pbk-h { display: flex; align-items: center; gap: 6px; margin: 10px 10px 0; padding: 6px 6px 6px 10px; border-radius: var(--r) var(--r) 0 0; background: var(--pb-hbar); color: #7b8088; flex: none; }
+:root:not([data-ui="light"]) .pbk-h { color: var(--muted); }
+.pbk-h b { font-size: 14px; font-weight: 700; } .pbk-n { font-size: 14px; font-weight: 600; opacity: .85; }
+.pbk-h .grow { flex: 1; }
+.pbk-ic .ic { color: inherit; }
+.pbk-b { width: 30px; height: 30px; display: grid; place-items: center; border: 0; border-radius: 3px; background: var(--pb-btn); color: #fff; cursor: pointer; }
+.pbk-b:hover:not(:disabled) { filter: brightness(.92); }
+.pbk-b:disabled { opacity: .45; cursor: default; }
+.pbk-c { width: 30px; height: 30px; display: grid; place-items: center; border: 0; background: none; color: #8a8f99; cursor: pointer; }
+.pbk-h + .insp-head { margin-top: 0; border-top: 0; border-radius: 0 0 var(--r) var(--r); }
+.pbk-h + .insp-head .insp-title .ic { display: none; }
+/* поля */
+.pane.right .fld { gap: 4px; }
+.pane.right .fld > label, .pane.right .fld-l { font-size: 14px; font-weight: 400; color: var(--pb-lbl); }
+.pane.right .inp, .pane.right .sel, .pane.right .ta { height: 38px; padding: 0 2px; border: 0; border-bottom: 1px solid var(--pb-line); border-radius: 0; background-color: transparent !important; color: var(--pb-ink); font-size: 14.5px; box-shadow: none; }
+.pane.right .ta { height: auto; min-height: 40px; padding: 8px 2px; }
+.pane.right .inp:focus, .pane.right .sel:focus, .pane.right .ta:focus { border-bottom-color: var(--accent); box-shadow: 0 1px 0 var(--accent); }
+.pane.right .inp.over, .pane.right .ta.over { border: 1px solid var(--err); border-radius: 2px; }
+.pane.right .sel { padding-right: 24px; background-position: calc(100% - 13px) 17px, calc(100% - 8px) 17px; }
+.pane.right .unit .inp, .pane.right .rng .inp { text-align: center; }
+.tf { display: flex; flex-direction: column; gap: 4px; }
+.tf-cnt { font-size: 11.5px; color: var(--faint); }
+.tf-cnt.over { color: var(--err); }
+.fld-ic { display: inline-flex; align-items: center; gap: 8px; }
+.pane.right .fld-l .mini { color: #a3a8b1; font-size: 15px; padding: 0; line-height: 1; cursor: pointer; }
+.pane.right .fld-l .mini:hover { color: var(--accent); }
+.var-btn .va { font-weight: 300; } .var-btn i { font-style: italic; font-family: Georgia, serif; font-weight: 700; margin-left: 1px; }
+.emo-btn .ic { width: 17px; height: 17px; }
+.emo-grid { display: grid; grid-template-columns: repeat(8, 32px); gap: 2px; }
+.emo-grid button { width: 32px; height: 32px; border: 0; border-radius: 6px; background: none; font-size: 19px; cursor: pointer; }
+.emo-grid button:hover { background: var(--panel3); }
+/* большие галочки */
+.pane.right .chk { min-height: 40px; gap: 14px; font-size: 14.5px; color: var(--pb-ink); }
+.pane.right .chk .sw { width: 30px; height: 30px; border-radius: 3px; border: 2px solid var(--accent); background: var(--panel); }
+.pane.right .chk .sw::after { width: 13px; height: 7px; top: 7px; left: 6px; border-left-width: 3px; border-bottom-width: 3px; }
+.pane.right .chk input:checked + .sw { background: var(--accent); }
+/* серые переключатели */
+.pane.right .seg { padding: 4px; border: 0; border-radius: 3px; background: var(--pb-seg); gap: 4px; }
+.pane.right .seg button { height: 34px; border-radius: 3px; color: var(--pb-ink); font-size: 13.5px; font-weight: 500; }
+.pane.right .seg button.on { background: var(--pb-segon); box-shadow: none; }
+/* разделы */
+.pane.right .sec-h { height: 44px; font-size: 14px; font-weight: 500; color: var(--pb-lbl) !important; letter-spacing: 0; }
+.insp-tabs { padding: 4px; border: 0; border-radius: 3px; background: var(--pb-seg, #e0e0e0); }
+.insp-tabs button { height: 34px; color: var(--text); font-weight: 500; }
+.insp-tabs button.on { background: var(--pb-segon, #fff); color: var(--text); }
+/* список кнопок / строк — как «Клавиатура» в PuzzleBot */
+.pbk-list { display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid var(--pb-kb); border-radius: 4px; background: var(--panel); }
+.pbk-list-h { display: flex; align-items: center; gap: 8px; color: var(--pb-lbl); font-size: 14px; }
+.pbk-list-h small { margin-left: auto; font-size: 12px; }
+.pbk-row { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 34px; padding: 6px 8px; border: 1px solid var(--pb-rowb); border-radius: 3px; background: var(--pb-row); color: var(--pb-ink); font-size: 14px; text-align: left; cursor: pointer; }
+.pbk-row span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pbk-row .ic { color: var(--accent); }
+.pbk-row:hover { filter: brightness(.98); border-color: var(--accent); }
+.pbk-edit { display: flex; flex-direction: column; gap: 12px; padding: 10px; border-radius: 3px; background: var(--pb-row); }
+.pbk-edit-h { display: flex; align-items: center; justify-content: space-between; color: var(--pb-lbl); font-size: 13px; }
+.pbk-mini { width: 28px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 3px; background: var(--pb-btn); color: #fff; cursor: pointer; }
+.pbk-edit-f { display: grid; grid-template-columns: 1fr 80px; gap: 8px; }
+.pbk-save { height: 38px; border: 0; border-radius: 3px; background: #4caf50; color: #fff; font-size: 14.5px; font-weight: 600; cursor: pointer; }
+.pbk-save:hover { background: #43a047; }
+.pbk-del { height: 38px; display: grid; place-items: center; border: 0; border-radius: 3px; background: #f26b5b; color: #fff; cursor: pointer; }
+.pbk-del:hover { background: #e85b4b; }
+.pbk-add { height: 36px; border: 1px solid var(--pb-line); border-radius: 3px; background: var(--panel); color: #9aa0aa; font-size: 14px; cursor: pointer; }
+.pbk-add:hover { border-color: var(--accent); color: var(--accent); }
+/* низ панели: «Добавить новый блок» + «Вставить» */
+.pbk-f { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 10px 10px 0; padding: 10px 12px; border-radius: var(--r); background: var(--pb-hbar); }
+.pbk-f-add { border: 0; background: none; color: #8a8f99; font-size: 14px; cursor: pointer; padding: 0; }
+.pbk-f-add:hover { color: var(--accent); }
+.pbk-paste { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 0; border-radius: 3px; background: var(--pb-btn); color: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer; }
+.pbk-paste:disabled { opacity: .55; cursor: default; }
+
+/* ===== Интеграции в стиле страницы партнёров PuzzleBot ===== */
+.ig { display: grid; grid-template-columns: minmax(0, 1fr) 220px; align-items: start; gap: 16px; }
+.ig-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.ig-menu { position: sticky; top: 0; display: flex; flex-direction: column; padding: 6px 0; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); }
+.ig-menu button { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 14px; border: 0; background: none; color: var(--text); font-size: 14px; text-align: left; cursor: pointer; }
+.ig-menu button small { color: var(--faint); font-size: 12px; }
+.ig-menu button:hover { background: var(--panel2); }
+.ig-menu button.on { background: var(--accent-soft); color: var(--text); }
+.ig-q { margin: 2px 8px 8px; }
+.ig-card { display: flex; flex-direction: column; gap: 12px; padding: 18px 16px 16px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); box-shadow: none; }
+.ig-card.on { border-color: var(--accent-line); box-shadow: none; }
+.ig-brand { display: flex; align-items: center; gap: 12px; min-height: 44px; }
+.ig-brand b { font-size: 21px; font-weight: 800; letter-spacing: -0.02em; color: var(--text); line-height: 1.15; }
+.ig-img { width: 40px; height: 40px; flex: none; object-fit: contain; border-radius: 8px; }
+.ig-tag { margin-left: auto; align-self: flex-start; padding: 2px 8px; border-radius: 999px; background: #e7f8ee; color: #138a45; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.ig-tag.in { background: var(--accent-soft); color: var(--accent); }
+.ig-card p { margin: 0; font-size: 14px; line-height: 1.45; color: var(--text); }
+.ig-btn { height: 32px; padding: 0 16px; border: 0; border-radius: 3px; background: #4b9bf5; color: #fff; font-size: 14px; font-weight: 500; cursor: pointer; }
+.ig-btn:hover { background: #3a8be8; }
+.ig-btn.off { background: var(--panel3); color: var(--text); }
+.ig-btn.ghost { background: none; color: var(--accent); padding: 0 8px; }
+.ig-on { display: inline-flex; align-items: center; gap: 6px; color: var(--ok); font-size: 13.5px; font-weight: 600; }
+@media (max-width: 900px) { .ig { grid-template-columns: 1fr; } .ig-menu { position: static; order: -1; flex-direction: row; flex-wrap: nowrap; overflow-x: auto; padding: 4px; scrollbar-width: none; } .ig-menu button { flex: none; padding: 8px 12px; border-radius: 3px; } .ig-q { display: none; } .ig-list { grid-template-columns: 1fr; } }
+.dlg .ig { grid-template-columns: minmax(0, 1fr) 200px; }
+
+/* ===== Окно подключения бота ===== */
+.bcd { display: flex; flex-direction: column; gap: 14px; }
+.bcd-warn { display: flex; gap: 12px; padding: 12px 14px; border: 1px solid #f3c969; border-radius: 8px; background: #fff8e6; color: #5c4400; }
+:root:not([data-ui="light"]) .bcd-warn { background: rgba(243,201,105,.12); color: var(--text); border-color: rgba(243,201,105,.5); }
+.bcd-warn-i { font-size: 22px; line-height: 1; }
+.bcd-warn b { display: block; margin-bottom: 4px; font-size: 14px; }
+.bcd-warn p { margin: 0; font-size: 13px; line-height: 1.45; }
+.bcd-pane { display: flex; flex-direction: column; gap: 12px; }
+.bcd-rec { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border-radius: 8px; background: var(--accent-soft); color: var(--text); font-size: 13px; line-height: 1.45; }
+.bcd-rec .ic { color: var(--accent); margin-top: 1px; }
+.bcd-act { display: flex; flex-direction: column; gap: 8px; }
+.bc { display: flex; gap: 14px; align-items: flex-start; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+.bc.sm { padding: 10px; gap: 10px; align-items: center; }
+.bc-av { width: 64px; height: 64px; flex: none; border-radius: 50%; object-fit: cover; }
+.bc.sm .bc-av { width: 40px; height: 40px; }
+.bc-av--l { display: grid; place-items: center; background: linear-gradient(135deg, #5fb3f9, #3a7be0); color: #fff; font-size: 26px; font-weight: 700; }
+.bc.sm .bc-av--l { font-size: 17px; }
+.bc-m { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.bc-m b { font-size: 16px; } .bc.sm .bc-m b { font-size: 14px; }
+.bc-m a { color: var(--accent); font-size: 13px; text-decoration: none; }
+.bc-short { margin: 4px 0 0; font-size: 13.5px; font-weight: 600; color: var(--text); }
+.bc-desc { margin: 2px 0 0; font-size: 13px; color: var(--muted); white-space: pre-wrap; line-height: 1.45; }
+.bc-m small { color: var(--faint); font-size: 11.5px; margin-top: 2px; }
+.pane.right .inp::placeholder, .pane.right .ta::placeholder { color: var(--faint); font-style: italic; opacity: 1; }
+
+/* ===== Лимит выгрузок: окно как «Превышен лимит» в PuzzleBot ===== */
+.dlg.qm-dlg { width: min(500px, calc(100vw - 24px)); overflow: hidden; }
+.qm-dlg .dlg-h { position: absolute; right: 6px; top: 6px; z-index: 2; border: 0; background: none; padding: 6px; }
+.qm-dlg .dlg-h h2, .qm-dlg .dlg-h .dlg-t { display: none; }
+.qm-dlg .dlg-b { padding: 0 !important; }
+.qm { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 18px 18px; color: #23262d; }
+.qm-top { align-self: stretch; height: 210px; margin: 0 -18px 4px; display: flex; align-items: flex-end; justify-content: center; background: linear-gradient(#fff3d6 0 76%, #fff 76%); }
+.qm-top .mascot { width: 150px; height: 150px; }
+.qm h2 { margin: 14px 0 12px; font-size: 30px; font-weight: 800; letter-spacing: -0.01em; color: #23262d; }
+.qm p { margin: 0 0 12px; max-width: 400px; font-size: 13.5px; line-height: 1.5; color: #2b2f36; }
+.qm-btn { align-self: stretch; height: 44px; margin-top: 10px; border: 0; border-radius: 4px; background: #ffb04c; color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; }
+.qm-btn:hover { background: #ffa232; }
+.qm-link { margin-top: 10px; border: 0; background: none; color: #4b8df8; font-size: 13.5px; cursor: pointer; }
+.qm-link:hover { text-decoration: underline; }
+.qm-dev, .qm-devrow { margin-top: 8px; font-size: 12px; color: #8a8f99; display: flex; align-items: center; gap: 4px; }
+.qm-dev b, .qm-devrow b { font-family: var(--font-m); color: var(--text); letter-spacing: .04em; }
+.qp { display: flex; flex-direction: column; gap: 10px; padding: 16px; border: 1px solid var(--line); border-radius: var(--r); background: var(--panel); }
+.qp-h { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.qp-h b { font-size: 15px; } .qp-h span:last-child { color: var(--muted); font-size: 13px; }
+.qp-badge { padding: 2px 8px; border-radius: 4px; background: var(--panel3); color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .06em; }
+.qp-badge.pro { background: linear-gradient(90deg, #ffb04c, #ff7a3d); color: #fff; }
+.qp-bar { height: 6px; border-radius: 3px; background: var(--panel3); overflow: hidden; flex-basis: 100%; }
+.qp-bar i { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
+.qp-bar.warn i { background: #ffb04c; } .qp-bar.full i { background: var(--err); }
+.exp-q { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px; margin-bottom: 4px; border: 1px solid var(--line); border-radius: var(--r); background: var(--panel2); font-size: 13px; }
+.exp-q .btn { margin-left: auto; }
+.exp-main { position: relative; }
+pre.code.locked { user-select: none; -webkit-user-select: none; -webkit-mask-image: linear-gradient(#000 40%, transparent 95%); mask-image: linear-gradient(#000 40%, transparent 95%); }
+.code-lock { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); width: min(440px, calc(100% - 32px)); display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); box-shadow: var(--shadow); text-align: center; }
+.code-lock span { font-size: 13px; color: var(--muted); line-height: 1.45; }
+
 </style>
 </head>
 <body>
@@ -1195,6 +1354,9 @@ function safe(fn, fallback) {
    02 · ИКОНКИ (собственный набор, без внешних библиотек)
    ============================================================ */
 const ICONS = {
+  'more-v': '<circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/>',
+  smile: '<circle cx="12" cy="12" r="9"/><path d="M8.5 14.5c1 1.3 2.2 2 3.5 2s2.5-.7 3.5-2"/><path d="M9 9.5h.01M15 9.5h.01"/>',
+  keyboard: '<rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>',
   'trending-up': '<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
   shuffle: '<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/>',
   plug: '<path d="M9 2v6M15 2v6"/><path d="M6 8h12v4a6 6 0 0 1-12 0z"/><path d="M12 18v4"/>',
@@ -1705,7 +1867,7 @@ const COMP = {
 
   heading: {
     label: 'Заголовок', icon: 'heading', text: 'text',
-    fields: [{ k: 'text', label: 'Текст', type: 'textarea', vars: true }, { k: 'level', label: 'Уровень', type: 'seg', options: O.level, num: true }],
+    fields: [{ k: 'text', label: 'Заголовок', type: 'textarea', vars: true, rows: 2, max: 320 }, { k: 'level', label: 'Уровень', type: 'seg', options: O.level, num: true }],
     defaults: { props: { text: 'Заголовок страницы', level: 2 } },
     render(n, ctx) { const l = clamp(parseInt(n.props.level) || 2, 1, 6); return `<h${l} ${at(n, ctx, 'ps-h ps-h' + l)}>${T(n.props.text, ctx)}</h${l}>`; },
   },
@@ -2618,7 +2780,7 @@ const ACTION_DEFS = [
 
   { id: 'sendmsg', g: 8, label: 'Отправить сообщение в Telegram', bot: 'send', params: [
       { k: 'chat', label: 'Кому: chat_id (ID пользователя или чата)', type: 'text', def: '{{USER_ID_TEXT}}', req: true, ph: '{{USER_ID_TEXT}} или ID админа' },
-      { k: 'value', label: 'Текст сообщения', type: 'text', req: true, ph: 'Новая заявка от {{FIRST_NAME_TEXT}}: [[phone]]' },
+      { k: 'value', label: 'Текст сообщения', type: 'text', req: true, def: 'Привет, {{FIRST_NAME_TEXT}}! Спасибо за заявку.', ph: 'Например: Новая заявка от {{FIRST_NAME_TEXT}}: [[phone]]' },
       { k: 'html', label: 'Разметка HTML (<b>, <i>, <a>)', type: 'toggle', def: false },
       { k: 'done', label: 'Сообщение пользователю после отправки', type: 'text', def: 'Отправлено ✓' }],
     info: 'Отправляет текст через бота (метод sendMessage). В тексте можно писать переменные PuzzleBot {{…}}, значения полей страницы [[имя_поля]] и состав корзины [[корзина]]. Как отправлять — задаётся в панели «Страница» → «Связь с ботом».' },
@@ -3261,53 +3423,65 @@ ${R} .ps-edit-note { font-size: 12px; color: var(--ps-muted); text-align: center
 const INTEG_CATS = [['all', 'Все'], ['on', 'Подключённые'], ['content', 'Контент'], ['data', 'Данные'], ['money', 'Формы и оплата'], ['stats', 'Аналитика'], ['bot', 'Бот и базы']];
 const INTEG = [
   // --- встроенные: работают всегда ---
-  { id: 'puzzlebot', name: 'PuzzleBot', cat: 'bot', color: '#2d6de0', ic: 'bot', builtin: true, site: 'https://puzzlebot.top/?r=Lz9ywKLe',
+  { id: 'puzzlebot', dom: 'puzzlebot.top', name: 'PuzzleBot', cat: 'bot', color: '#2d6de0', ic: 'bot', builtin: true, site: 'https://puzzlebot.top/?r=Lz9ywKLe',
     desc: 'Конструктор Telegram-ботов. Команды, переменные, категории, сценарии и сообщения прямо из кнопок страницы.',
     gives: ['Действия «Бот и PuzzleBot API»', 'Товары и переменные проекта', 'MCP-агент'], open: 'pb' },
-  { id: 'tgbot', name: 'Telegram Bot API', cat: 'bot', color: '#2aa3df', ic: 'send', builtin: true, site: 'https://core.telegram.org/bots/api',
+  { id: 'tgbot', dom: 'telegram.org', lg: 'logos:telegram', name: 'Telegram Bot API', cat: 'bot', color: '#2aa3df', ic: 'send', builtin: true, site: 'https://core.telegram.org/bots/api',
     desc: 'Отправка сообщений и ссылок пользователю или админу методом sendMessage.', gives: ['Действия «Отправить сообщение / ссылку»', 'Формы и корзина → в Telegram'], open: 'page' },
-  { id: 'nocodb', name: 'NocoDB', cat: 'bot', color: '#7b5cff', ic: 'table', builtin: true, site: 'https://nocodb.com',
+  { id: 'nocodb', dom: 'nocodb.com', name: 'NocoDB', cat: 'bot', color: '#7b5cff', ic: 'table', builtin: true, site: 'https://nocodb.com',
     desc: 'Таблицы как база данных: списки товаров, запись заявок и заказов, облако проектов.', gives: ['Блок «Список из NocoDB»', 'Запись форм', 'Облако проектов'], open: 'nocodb' },
-  { id: 'hooks', name: 'Вебхуки: n8n, Make, Albato', cat: 'bot', color: '#ff6d5a', ic: 'link', builtin: true, site: 'https://n8n.io',
+  { id: 'hooks', dom: 'n8n.io', name: 'Вебхуки: n8n, Make, Albato', cat: 'bot', color: '#ff6d5a', ic: 'link', builtin: true, site: 'https://n8n.io',
     desc: 'Форма или корзина отправляет JSON на ваш сценарий автоматизации — дальше CRM, почта, таблицы.', gives: ['Режим формы «вебхук»', 'Режим корзины «вебхук»'], kb: 'botlink' },
-  { id: 'maps', name: 'Яндекс Карты и Google Maps', cat: 'content', color: '#fc3f1d', ic: 'map-pin', builtin: true, site: 'https://yandex.ru/map-constructor/',
+  { id: 'maps', dom: 'yandex.ru', name: 'Яндекс Карты и Google Maps', cat: 'content', color: '#fc3f1d', ic: 'map-pin', builtin: true, site: 'https://yandex.ru/map-constructor/',
     desc: 'Карта по адресу и кнопка «Проложить маршрут».', gives: ['Блок «Карта»'] },
-  { id: 'qr', name: 'QR-коды (goqr.me)', cat: 'content', color: '#111827', ic: 'grid', builtin: true, site: 'https://goqr.me/api/',
+  { id: 'qr', dom: 'goqr.me', name: 'QR-коды (goqr.me)', cat: 'content', color: '#111827', ic: 'grid', builtin: true, site: 'https://goqr.me/api/',
     desc: 'QR-код по ссылке, в том числе с переменными PuzzleBot.', gives: ['Блок «QR-код»'] },
-  { id: 'gfonts', name: 'Google Fonts', cat: 'content', color: '#4285f4', ic: 'type', builtin: true, site: 'https://fonts.google.com',
+  { id: 'gfonts', dom: 'fonts.google.com', name: 'Google Fonts', cat: 'content', color: '#4285f4', ic: 'type', builtin: true, site: 'https://fonts.google.com',
     desc: 'Шрифты для заголовков и текста. Подключаются в код страницы автоматически.', gives: ['Шрифты в теме страницы'] },
   // --- плагины ---
-  { id: 'iconify', name: 'Iconify', cat: 'content', color: '#1769aa', ic: 'star', def: true, site: 'https://icon-sets.iconify.design',
+  { id: 'iconify', dom: 'iconify.design', name: 'Iconify', cat: 'content', color: '#1769aa', ic: 'star', def: true, site: 'https://icon-sets.iconify.design',
     desc: 'Больше 200 000 бесплатных иконок: Material, Tabler, Phosphor, эмодзи и логотипы. Поиск прямо в редакторе.', gives: ['Блок «Иконка Iconify»'], blocks: ['iconify'] },
-  { id: 'openverse', name: 'Openverse', cat: 'content', color: '#c52b9b', ic: 'image', def: true, site: 'https://openverse.org',
+  { id: 'openverse', dom: 'openverse.org', name: 'Openverse', cat: 'content', color: '#c52b9b', ic: 'image', def: true, site: 'https://openverse.org',
     desc: 'Поиск по 800 млн свободных фото и иллюстраций (лицензии Creative Commons).', gives: ['Кнопка «Найти фото» у картинок'] },
-  { id: 'picsum', name: 'Lorem Picsum', cat: 'content', color: '#374151', ic: 'shuffle', def: true, site: 'https://picsum.photos',
+  { id: 'picsum', dom: 'picsum.photos', name: 'Lorem Picsum', cat: 'content', color: '#374151', ic: 'shuffle', def: true, site: 'https://picsum.photos',
     desc: 'Красивые случайные фото-заглушки для макета одним нажатием.', gives: ['Кнопка «Случайное фото» у картинок'] },
-  { id: 'dicebear', name: 'DiceBear', cat: 'content', color: '#f59e0b', ic: 'user', site: 'https://www.dicebear.com',
+  { id: 'dicebear', dom: 'dicebear.com', name: 'DiceBear', cat: 'content', color: '#f59e0b', ic: 'user', site: 'https://www.dicebear.com',
     desc: 'Аватарки-персонажи по любому слову или ID пользователя. Каждому пользователю — свой.', gives: ['Блок «Аватар DiceBear»'], blocks: ['avatarGen'] },
-  { id: 'lottie', name: 'Lottie', cat: 'content', color: '#00ddb3', ic: 'play', site: 'https://lottiefiles.com/free-animations',
+  { id: 'lottie', dom: 'lottiefiles.com', name: 'Lottie', cat: 'content', color: '#00ddb3', ic: 'play', site: 'https://lottiefiles.com/free-animations',
     desc: 'Лёгкие векторные анимации из LottieFiles: стикеры, иконки, иллюстрации.', gives: ['Блок «Анимация Lottie»'], blocks: ['lottie'] },
-  { id: 'confetti', name: 'Конфетти', cat: 'content', color: '#ec4899', ic: 'sparkles', def: true, site: 'https://github.com/catdad/canvas-confetti',
+  { id: 'confetti', dom: '', name: 'Конфетти', cat: 'content', color: '#ec4899', ic: 'sparkles', def: true, site: 'https://github.com/catdad/canvas-confetti',
     desc: 'Праздничный салют конфетти или звёздами — после покупки, победы в квизе или регистрации.', gives: ['Действие «Конфетти»'], acts: ['confetti'] },
-  { id: 'embed', name: 'Видео и формы', cat: 'content', color: '#ef4444', ic: 'video', def: true, site: 'https://cal.com',
+  { id: 'embed', dom: 'youtube.com', lg: 'logos:youtube-icon', name: 'Видео и формы', cat: 'content', color: '#ef4444', ic: 'video', def: true, site: 'https://cal.com',
     desc: 'Встраивание YouTube, RuTube, VK Видео, онлайн-записи Cal.com, Google и Яндекс Форм, Typeform.', gives: ['Блок «Встраивание»'], blocks: ['embed'] },
-  { id: 'weather', name: 'Погода Open-Meteo', cat: 'data', color: '#0ea5e9', ic: 'sun', def: true, site: 'https://open-meteo.com',
+  { id: 'weather', dom: 'open-meteo.com', name: 'Погода Open-Meteo', cat: 'data', color: '#0ea5e9', ic: 'sun', def: true, site: 'https://open-meteo.com',
     desc: 'Текущая погода и прогноз на несколько дней для любого города. Без ключа и регистрации.', gives: ['Блок «Погода»'], blocks: ['weather'] },
-  { id: 'rates', name: 'Курсы валют ЦБ РФ', cat: 'data', color: '#16a34a', ic: 'trending-up', site: 'https://www.cbr-xml-daily.ru',
+  { id: 'rates', dom: 'cbr.ru', name: 'Курсы валют ЦБ РФ', cat: 'data', color: '#16a34a', ic: 'trending-up', site: 'https://www.cbr-xml-daily.ru',
     desc: 'Официальные курсы Центробанка: доллар, евро, юань и другие, с изменением за день.', gives: ['Блок «Курсы валют»'], blocks: ['rates'] },
-  { id: 'gsheets', name: 'Google Таблицы', cat: 'data', color: '#0f9d58', ic: 'table', site: 'https://sheets.google.com',
+  { id: 'gsheets', dom: 'sheets.google.com', name: 'Google Таблицы', cat: 'data', color: '#0f9d58', ic: 'table', site: 'https://sheets.google.com',
     desc: 'Каталог, меню или расписание прямо из таблицы. Изменили таблицу — страница обновилась сама.', gives: ['Блок «Данные из Google Таблицы»'], blocks: ['gsheet'] },
-  { id: 'web3forms', name: 'Web3Forms', cat: 'money', color: '#5b21b6', ic: 'mail', site: 'https://web3forms.com',
+  { id: 'web3forms', dom: 'web3forms.com', name: 'Web3Forms', cat: 'money', color: '#5b21b6', ic: 'mail', site: 'https://web3forms.com',
     desc: 'Заявки с формы приходят на почту. Бесплатно до 250 писем в месяц, нужен только ключ доступа.', gives: ['Режим формы «На почту»'], kb: 'integrations' },
-  { id: 'yoomoney', name: 'ЮMoney', cat: 'money', color: '#8b3ffd', ic: 'wallet', site: 'https://yoomoney.ru/quickpay',
+  { id: 'yoomoney', dom: 'yoomoney.ru', name: 'ЮMoney', cat: 'money', color: '#8b3ffd', ic: 'wallet', site: 'https://yoomoney.ru/quickpay',
     desc: 'Приём оплаты картой или с кошелька ЮMoney по кнопке. Подходит для донатов, предоплаты и цифровых товаров.', gives: ['Действие «Оплатить через ЮMoney»'], acts: ['yoomoney'] },
-  { id: 'calendar', name: 'Google Календарь', cat: 'money', color: '#1a73e8', ic: 'calendar', site: 'https://calendar.google.com',
+  { id: 'calendar', dom: 'calendar.google.com', lg: 'logos:google-calendar', name: 'Google Календарь', cat: 'money', color: '#1a73e8', ic: 'calendar', site: 'https://calendar.google.com',
     desc: 'Кнопка «Добавить в календарь» для вебинара, записи или события.', gives: ['Действие «Добавить в календарь»'], acts: ['calendar'] },
-  { id: 'metrika', name: 'Яндекс Метрика', cat: 'stats', color: '#ffcc00', ic: 'chart', site: 'https://metrika.yandex.ru',
+  { id: 'metrika', dom: 'metrika.yandex.ru', name: 'Яндекс Метрика', cat: 'stats', color: '#ffcc00', ic: 'chart', site: 'https://metrika.yandex.ru',
     desc: 'Посещения, клики и цели. Метрика официально поддерживает Telegram Mini Apps.', gives: ['Счётчик в настройках страницы', 'Действие «Цель аналитики»'], acts: ['goal'], page: true },
-  { id: 'ga4', name: 'Google Analytics 4', cat: 'stats', color: '#e37400', ic: 'chart', site: 'https://analytics.google.com',
+  { id: 'ga4', dom: 'analytics.google.com', lg: 'logos:google-analytics', name: 'Google Analytics 4', cat: 'stats', color: '#e37400', ic: 'chart', site: 'https://analytics.google.com',
     desc: 'Статистика посещений и события. Цели из действий отправляются как события GA4.', gives: ['Счётчик в настройках страницы', 'Действие «Цель аналитики»'], acts: ['goal'], page: true },
 ];
+/* Логотип сервиса: сначала значок из набора Iconify (если есть), затем значок сайта сервиса, иначе — цветная плитка */
+function integLogo(it, size = 40) {
+  const srcs = [];
+  if (it.lg) { const [a, b] = it.lg.split(':'); srcs.push(`https://api.iconify.design/${a}/${b}.svg`); }
+  if (it.dom) srcs.push(`https://www.google.com/s2/favicons?sz=128&domain=${encodeURIComponent(it.dom)}`);
+  const tile = () => h('span', { class: 'ig-logo', style: { background: it.color, width: size + 'px', height: size + 'px' } }, it.id === 'confetti' ? h('span', { style: { fontSize: Math.round(size * .55) + 'px' } }, '🎉') : ic(it.ic, Math.round(size * .5)));
+  if (!srcs.length) return tile();
+  const img = h('img', { class: 'ig-img', src: srcs[0], alt: it.name, width: size, height: size, loading: 'lazy', referrerpolicy: 'no-referrer' });
+  let k = 0;
+  img.addEventListener('error', () => { k++; if (k < srcs.length) img.src = srcs[k]; else img.replaceWith(tile()); });
+  return img;
+}
 const INTEG_BY = Object.fromEntries(INTEG.map(x => [x.id, x]));
 
 /* Состояние плагинов: в этом браузере, для всех проектов */
@@ -3715,6 +3889,94 @@ CATALOG.push({ cat: 'Интеграции', hint: 'Бесплатные серв
   { id: 'payBtn', label: 'Оплата ЮMoney', icon: 'wallet', plug: 'yoomoney', make: () => mk('button', { text: 'Оплатить 990 ₽', variant: 'primary', full: true }, {}, null, { action: { type: 'yoomoney', value: '', sum: '990', targets: 'Оплата заказа', label: '{{USER_ID}}', pay: 'AC' } }) },
   { id: 'calBtn', label: 'В календарь', icon: 'calendar', plug: 'calendar', make: () => mk('button', { text: 'Добавить в календарь', variant: 'secondary', icon: 'calendar', iconPos: 'left' }, {}, null, { action: { type: 'calendar', value: 'Вебинар', start: '2026-12-01 19:00' } }) },
 ] });
+
+/* ===== 04d-pbblocks.js ===== */
+/* ============================================================
+   04d · БЛОКИ «КАК В PUZZLEBOT»: Строки и Клавиатура
+   Внешний вид — сгруппированные списки в стиле iOS / Telegram:
+   серый заголовок капсом, белая скруглённая карточка, описание снизу.
+   ============================================================ */
+function pbGroupWrap(n, ctx, cls, inner) {
+  const p = n.props;
+  return `<div ${at(n, ctx, 'ps-pg ' + cls)}>${p.showTitle && p.title ? `<div class="ps-pg-t">${T(p.title, ctx)}</div>` : ''}<div class="ps-pg-c">${inner}</div>${p.showDesc && p.desc ? `<div class="ps-pg-d">${T(p.desc, ctx)}</div>` : ''}</div>`;
+}
+function pbImg(src, ctx) {
+  const c = checkUrl(src || '', { allowData: true, allowAnchor: false });
+  return c.ok && c.url && c.kind !== 'variable' ? `<img class="ps-pg-img" src="${escAttr(c.url)}" alt="" loading="lazy">` : `<span class="ps-pg-img ps-pg-img--e">${svgI('image', 16)}</span>`;
+}
+const PB_GROUP_FIELDS = [
+  { k: 'showTitle', label: 'Добавить заголовок', type: 'toggle' },
+  { k: 'title', label: 'Заголовок', type: 'text', vars: true, max: 320, when: p => p.showTitle },
+  { k: 'showDesc', label: 'Добавить описание', type: 'toggle' },
+  { k: 'desc', label: 'Описание', type: 'textarea', vars: true, max: 1024, when: p => p.showDesc },
+];
+Object.assign(COMP, {
+  pbRows: {
+    label: 'Строки', icon: 'list',
+    usage: 'Список строк «текст слева — текст справа», как в PuzzleBot и настройках Telegram: баланс, тариф, дата, характеристики товара.',
+    fields: [
+      { k: 'look', label: 'Стиль', type: 'seg', options: [['text', 'Только текст'], ['img', 'Изображение и текст']] },
+      { k: 'items', label: 'Строки', type: 'items', itemLabel: 'left', itemName: 'Строка', addLabel: 'Добавить строку', fields: [
+        { k: 'left', label: 'Текст слева', type: 'text', vars: true, max: 320 },
+        { k: 'right', label: 'Текст справа', type: 'text', vars: true, max: 320 },
+        { k: 'img', label: 'Изображение', type: 'image', when: (it, p) => p.look === 'img' },
+      ], add: { left: 'Текст слева', right: 'Текст справа', img: '' } },
+      ...PB_GROUP_FIELDS,
+    ],
+    defaults: { props: { look: 'text', showTitle: true, title: 'Заголовок', showDesc: true, desc: 'Описание', items: [{ left: 'Баланс', right: '{{BALANCE}} ₽', img: '' }, { left: 'Тариф', right: 'Pro', img: '' }] } },
+    render(n, ctx) {
+      const p = n.props, img = p.look === 'img';
+      const rows = (p.items || []).map(it => `<div class="ps-pg-r">${img ? pbImg(it.img, ctx) : ''}<span class="ps-pg-l">${T(it.left, ctx)}</span><span class="ps-pg-v">${T(it.right, ctx)}</span></div>`).join('');
+      return pbGroupWrap(n, ctx, 'ps-pg--rows', rows || (ctx.mode === 'edit' ? '<div class="ps-pg-r"><span class="ps-pg-v">Добавьте строку</span></div>' : ''));
+    },
+  },
+  pbKbd: {
+    label: 'Клавиатура', icon: 'menu',
+    usage: 'Кнопки-строки со стрелкой «›», как клавиатура в PuzzleBot: разделы, ссылки, переходы на страницы мини-приложения.',
+    fields: [
+      { k: 'look', label: 'Вид кнопки', type: 'seg', options: [['text', 'Только текст'], ['img', 'Изображение и текст']] },
+      ...PB_GROUP_FIELDS,
+      { k: 'items', label: 'Клавиатура', type: 'items', itemLabel: 'text', itemName: 'Кнопка', addLabel: 'Добавить кнопку', fields: [
+        { k: 'text', label: 'Название кнопки', type: 'text', vars: true, max: 64 },
+        { k: 'img', label: 'Изображение', type: 'image', when: (it, p) => p.look === 'img' },
+        { k: 'page', label: 'Страница Mini App PuzzleBot (goto_web_page)', type: 'text', placeholder: 'https://t.me/имя_бота?startapp=ID' },
+        { k: 'url', label: 'Или ссылка (https://, t.me, #якорь)', type: 'url' },
+      ], add: { text: 'Название кнопки', img: '', page: '', url: '' } },
+    ],
+    defaults: { props: { look: 'img', showTitle: false, title: 'Разделы', showDesc: false, desc: '', items: [{ text: 'Каталог', img: '', page: '', url: '#catalog' }, { text: 'Мой профиль', img: '', page: '', url: '' }] } },
+    render(n, ctx) {
+      const p = n.props, img = p.look === 'img';
+      const rows = (p.items || []).map(it => {
+        const ia = itemAction(it); const ap = ia ? actionParts(ia, ctx) : { tag: 'div', attrs: '' };
+        const tag = ap.tag === 'button' ? 'div' : ap.tag;
+        return `<${tag} class="ps-pg-r ps-pg-k"${tag === 'div' ? '' : ap.attrs}>${img ? pbImg(it.img, ctx) : ''}<span class="ps-pg-l">${T(it.text, ctx)}</span>${svgI('chevron-right', 18)}</${tag}>`;
+      }).join('');
+      return pbGroupWrap(n, ctx, 'ps-pg--kbd', rows);
+    },
+  },
+});
+const PBB_CSS = R => `
+/* ---- Строки и Клавиатура (как в PuzzleBot / Telegram) ---- */
+${R} .ps-pg { display: flex; flex-direction: column; gap: 6px; }
+${R} .ps-pg-t { padding: 0 16px; color: var(--ps-muted); font-size: 13px; text-transform: uppercase; letter-spacing: .02em; }
+${R} .ps-pg-d { padding: 0 16px; color: var(--ps-muted); font-size: 13px; line-height: 1.4; }
+${R} .ps-pg-c { display: flex; flex-direction: column; overflow: hidden; border-radius: 22px; background-color: var(--ps-surface); }
+${R} .ps-pg-r { position: relative; display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 10px 16px; color: var(--ps-text); text-decoration: none; font-size: 16px; }
+${R} .ps-pg-r + .ps-pg-r::before { content: ''; position: absolute; top: 0; left: 16px; right: 0; height: 1px; background-color: var(--ps-border); transform: scaleY(.5); }
+${R} .ps-pg-l { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+${R} .ps-pg-v { color: var(--ps-muted); text-align: right; overflow-wrap: anywhere; }
+${R} .ps-pg-img { width: 32px; height: 32px; flex: none; border-radius: 8px; object-fit: cover; }
+${R} .ps-pg-img--e { display: grid; place-items: center; background-color: var(--ps-surface2); color: var(--ps-muted); }
+${R} .ps-pg-k { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+${R} .ps-pg-k:active { background-color: var(--ps-surface2); }
+${R} .ps-pg-k .ps-ic { flex: none; color: var(--ps-muted); opacity: .6; }`;
+
+(() => {
+  const g = CATALOG.find(x => x.cat === 'Кнопки и переходы') || CATALOG[0];
+  g.items.unshift({ id: 'pbKbd', label: 'Клавиатура', icon: 'menu', make: () => mk('pbKbd') });
+  const t = CATALOG.find(x => x.cat === 'Данные и списки') || CATALOG[0];
+  t.items.unshift({ id: 'pbRows', label: 'Строки', icon: 'list', make: () => mk('pbRows') });
+})();
 
 /* ===== 05-generator.js ===== */
 /* ============================================================
@@ -4143,6 +4405,7 @@ ${R} .ps-sheet-t { padding-right: 40px; font-family: var(--ps-font-h); font-size
 @media (prefers-reduced-motion: reduce) { ${R} .ps-sheet, ${R} .ps-sheet-bg { transition: none; } }
 ${EXT_CSS(R, pid)}
 ${INTEG_CSS(R)}
+${PBB_CSS(R)}
 /* ---- NocoDB ---- */
 ${R} [data-nc]:not([data-nc-done]):empty::after { content: "…"; opacity: .5; }
 ${R} .ps-nc-msg { color: var(--ps-muted); font-size: 14px; padding: 8px 0; }
@@ -8064,8 +8327,30 @@ const Inspector = {
     el._b = b;
     return el;
   },
+  /* счётчик символов под полем, как в PuzzleBot */
+  counted(el, max) {
+    const c = h('div', { class: 'tf-cnt' });
+    const upd = () => { const n = (el.value || '').length; c.textContent = `Символов: ${n} (максимально: ${max})`; c.classList.toggle('over', n > max); el.classList.toggle('over', n > max); };
+    el.addEventListener('input', upd); upd();
+    return h('div', { class: 'tf' }, el, c);
+  },
+  fieldIcons(el, vars) { return h('span', { class: 'fld-ic' }, vars ? this.varButton(el) : null, this.emojiButton(el)); },
+  emojiButton(target) {
+    const btn = h('button', { class: 'mini emo-btn', type: 'button', title: 'Вставить эмодзи', 'aria-label': 'Вставить эмодзи' }, ic('smile', 16));
+    btn.addEventListener('click', () => {
+      const E = '😀 😃 😄 😁 😊 😍 🤩 😎 🤔 😉 🙂 😇 🥳 😅 😢 😡 👍 👎 👏 🙏 💪 👋 👉 👇 ✅ ❌ ⚡ 🔥 ⭐ 🌟 ✨ 🎉 🎁 💎 💰 💳 🛒 📦 🚚 📍 📞 ✉️ 📅 ⏰ 🔔 💬 ❤️ 💙 💚 🧡 💜 🖤 ➡️ ⬅️ ⬆️ ⬇️ 🔗 📎 🏆 🎯 📈 🚀'.split(' ');
+      const grid = h('div', { class: 'emo-grid' }, E.map(e => h('button', { type: 'button', onclick: () => {
+        const s0 = target.selectionStart ?? target.value.length, e0 = target.selectionEnd ?? s0;
+        target.value = target.value.slice(0, s0) + e + target.value.slice(e0);
+        target.dispatchEvent(new Event('input', { bubbles: true })); target.focus();
+        try { target.setSelectionRange(s0 + e.length, s0 + e.length); } catch (er) {}
+      } }, e)));
+      UI.popover(btn, grid);
+    });
+    return btn;
+  },
   varButton(target) {
-    const btn = h('button', { class: 'mini var-btn', type: 'button', title: 'Вставить переменную', 'aria-label': 'Вставить переменную' }, '{{ }}');
+    const btn = h('button', { class: 'mini var-btn', type: 'button', title: 'Вставить переменную', 'aria-label': 'Вставить переменную', html: '<span class="va">{</span><i>α</i>' });
     btn.addEventListener('click', () => {
       const q = h('input', { class: 'inp', placeholder: 'Поиск переменной', 'data-novar': '' });
       const list = h('div', { class: 'row-list', style: { marginTop: '8px' } });
@@ -8196,9 +8481,9 @@ const Inspector = {
           el.addEventListener('input', chk); chk();
           return field(f.label, h('div', { class: 'fld' }, el, stl));
         }
-        return field(f.label, el, { right: f.vars ? this.varButton(el) : null, hint: f.hint });
+        return field(f.label, this.counted(el, f.max || 320), { right: this.fieldIcons(el, f.vars), hint: f.hint });
       }
-      case 'textarea': { const el = this.text(b, { multiline: true, rows: f.rows || 3, vars: f.vars }); return field(f.label, el, { right: f.vars ? this.varButton(el) : null, hint: f.hint }); }
+      case 'textarea': { const el = this.text(b, { multiline: true, rows: f.rows || 3, vars: f.vars }); return field(f.label, this.counted(el, f.max || 4096), { right: this.fieldIcons(el, f.vars), hint: f.hint }); }
       case 'number': return field(f.label, this.num(b, { min: f.min ?? 0, max: f.max ?? 999, unit: f.unit || '' }));
       case 'range': return field(f.label, this.range(b, { min: f.min, max: f.max, step: f.step || 1, unit: f.unit || '' }));
       case 'select': return field(f.label, selectEl(f.options, b.get(), v => b.set(f.num ? parseInt(v) : v)));
@@ -8245,39 +8530,45 @@ const Inspector = {
   },
   itemsEditor(n, f) {
     const items = n.props[f.k] || [];
-    const box = h('div', { class: 'items' });
+    const box = h('div', { class: 'pbk-list' });
     const commit = (arr, key, panel) => Editor.setProp(n.id, ['props', f.k], arr, key, { panel });
+    const noun = f.itemName || 'Пункт';
+    box.append(h('div', { class: 'pbk-list-h' }, ic(n.type === 'pbKbd' ? 'keyboard' : 'list', 15), h('span', null, f.label), h('small', null, items.length || '')));
     items.forEach((it, i) => {
       const okey = n.id + ':' + f.k + ':' + i;
       const open = this.openItems.has(okey);
-      const lab = (it[f.itemLabel] && (f.itemLabel === 'net' ? NET_LABEL[it.net] : String(it[f.itemLabel]))) || 'Пункт ' + (i + 1);
-      const el = h('div', { class: 'item' + (open ? ' open' : '') });
-      const title = h('span', null, lab);
-      title.addEventListener('click', () => { el.classList.toggle('open'); el.classList.contains('open') ? this.openItems.add(okey) : this.openItems.delete(okey); });
-      const mv = (d) => { const a = clone(items); const j = i + d; if (j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]]; commit(a, null, true); };
-      el.append(h('div', { class: 'item-h' }, title,
-        h('button', { class: 'btn icon sm ghost', title: 'Выше', 'aria-label': 'Выше', disabled: i === 0, onclick: () => mv(-1) }, ic('arrow-up', 13)),
-        h('button', { class: 'btn icon sm ghost', title: 'Ниже', 'aria-label': 'Ниже', disabled: i === items.length - 1, onclick: () => mv(1) }, ic('arrow-down', 13)),
-        h('button', { class: 'btn icon sm ghost', title: 'Дублировать', 'aria-label': 'Дублировать', onclick: () => { const a = clone(items); a.splice(i + 1, 0, clone(it)); commit(a, null, true); } }, ic('copy', 13)),
-        h('button', { class: 'btn icon sm ghost danger', title: 'Удалить', 'aria-label': 'Удалить', onclick: () => { const a = clone(items); a.splice(i, 1); commit(a, null, true); } }, ic('trash', 13))));
-      const body = h('div', { class: 'item-b' });
+      const lab = (it[f.itemLabel] && (f.itemLabel === 'net' ? NET_LABEL[it.net] : String(it[f.itemLabel]))) || noun + ' ' + (i + 1);
+      const close = () => { this.openItems.delete(okey); Inspector.render(); };
+      const mv = d => { const a = clone(items); const j = i + d; if (j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]]; this.openItems.delete(okey); commit(a, null, true); };
+      const del = () => { const a = clone(items); a.splice(i, 1); this.openItems.delete(okey); commit(a, null, true); };
+      if (!open) {
+        const row = h('button', { class: 'pbk-row', type: 'button', onclick: () => { [...this.openItems].filter(k => k.startsWith(n.id + ':' + f.k + ':')).forEach(k => this.openItems.delete(k)); this.openItems.add(okey); Inspector.render(); } }, h('span', null, lab), ic('chevron-right', 16));
+        box.append(row);
+        return;
+      }
+      const more = h('button', { class: 'pbk-mini', type: 'button', title: 'Ещё', 'aria-label': 'Ещё' }, ic('more-v', 16));
+      more.addEventListener('click', () => UI.menu(more, [
+        { label: 'Выше', icon: 'arrow-up', fn: () => mv(-1) }, { label: 'Ниже', icon: 'arrow-down', fn: () => mv(1) },
+        { label: 'Дублировать', icon: 'copy', fn: () => { const a = clone(items); a.splice(i + 1, 0, clone(it)); commit(a, null, true); } },
+        '-', { label: 'Удалить', icon: 'trash', danger: true, fn: del }]));
+      const ed = h('div', { class: 'pbk-edit' }, h('div', { class: 'pbk-edit-h' }, h('b', null, noun + ' №' + (i + 1)), more));
       for (const sf of f.fields) {
+        if (sf.when && !sf.when(it, n.props)) continue;
         const b = {
           get: () => it[sf.k],
           set: (v, key) => {
             const cur = (Editor.node(n.id) || n).props[f.k] || [];
             const a = clone(cur); a[i] = { ...a[i], [sf.k]: v };
             commit(a, key || okey + ':' + sf.k, sf.type === 'icon' || sf.type === 'select');
-            if (sf.k === f.itemLabel) title.textContent = (f.itemLabel === 'net' ? NET_LABEL[v] : v) || 'Пункт ' + (i + 1);
           },
         };
-        body.append(this.fieldCtl(sf, b));
+        ed.append(this.fieldCtl(sf, b));
       }
-      el.append(body);
-      box.append(el);
+      ed.append(h('div', { class: 'pbk-edit-f' }, h('button', { class: 'pbk-save', type: 'button', onclick: close }, 'Сохранить'), h('button', { class: 'pbk-del', type: 'button', title: 'Удалить', 'aria-label': 'Удалить', onclick: del }, ic('trash', 16))));
+      box.append(ed);
     });
-    box.append(h('button', { class: 'btn sm', onclick: () => { const a = clone(items); a.push(clone(f.add)); this.openItems.add(n.id + ':' + f.k + ':' + (a.length - 1)); commit(a, null, true); } }, ic('plus', 14), 'Добавить'));
-    return field(f.label + ' · ' + items.length, box);
+    box.append(h('button', { class: 'pbk-add', type: 'button', onclick: () => { const a = clone(items); a.push(clone(f.add)); [...this.openItems].filter(k => k.startsWith(n.id + ':' + f.k + ':')).forEach(k => this.openItems.delete(k)); this.openItems.add(n.id + ':' + f.k + ':' + (a.length - 1)); commit(a, null, true); } }, f.addLabel || 'Добавить'));
+    return box;
   },
   /* ---------- сценарий при открытии страницы ---------- */
   flowCtl() {
@@ -8334,6 +8625,7 @@ const Inspector = {
     const out = [
       h('div', { class: 'hint' }, 'Нужна для действий «Отправить сообщение / ссылку в Telegram», команд, переменных, категорий и сценариев PuzzleBot, а также для форм и корзины в режиме «Сообщением в Telegram».'),
       field('Как отправлять', segmented([['webhook', 'Свой сервер'], ['puzzlebot', 'PuzzleBot API'], ['botapi', 'Bot API']], via, v => set({ via: v }, true))),
+      h('button', { class: 'btn sm', type: 'button', onclick: () => BotConnect.dialog({ onDone: () => Inspector.render() }) }, ic('bot', 14), 'Подключить бота через окно'),
     ];
     if (via === 'webhook') out.push(field('Адрес вебхука', inp('hook', 'https://ваш-сервер/puzzle'), { hint: 'Страница пришлёт POST JSON { method, params, platform, tg_init_data }. Сервер проверяет initData и вызывает PuzzleBot API или Bot API сам — токены остаются у вас. Самый безопасный вариант.' }));
     if (via === 'puzzlebot') out.push(field('API-токен PuzzleBot', inp('pb', 'Токен из «Входящие запросы»', 'password')), field('Платформа', segmented([['tg', 'Telegram'], ['max', 'MAX']], b.platform || 'tg', v => set({ platform: v }))),
@@ -8346,6 +8638,7 @@ const Inspector = {
       try {
         if (c.via === 'webhook') { if (!c.hook) throw new Error('Укажите адрес https://'); const r = await fetch(c.hook, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ method: 'test', params: {} }) }); if (!r.ok) throw new Error('HTTP ' + r.status); }
         else if (c.via === 'puzzlebot') { const r = await fetch('https://api.puzzlebot.top/', { method: 'POST', body: new URLSearchParams({ token: c.pb, method: 'test', platform: c.platform }) }); const j = await r.json(); if (j.code) throw new Error(PB_ERR[j.code] || 'Код ' + j.code); }
+        else if (TG_TOKEN_RE.test(c.bt)) { const b = await BotConnect.info(c.bt); st.className = 'status-line ok'; st.textContent = '✓ Токен принят'; st.after(BotConnect.card(b)); return; }
         else { const r = await fetch('https://api.telegram.org/bot' + c.bt + '/getMe'); const j = await r.json(); if (!j.ok) throw new Error(j.description || 'Токен не принят'); st.className = 'status-line ok'; st.textContent = '✓ Бот @' + j.result.username; return; }
         st.className = 'status-line ok'; st.textContent = '✓ Работает';
       } catch (e) { st.className = 'status-line bad'; st.textContent = (e.message || 'Ошибка') + (/fetch/i.test(e.message || '') ? ' — нет связи: проверьте интернет и адрес' : ''); }
@@ -8419,7 +8712,7 @@ const Inspector = {
     if (a.type === 'storage' && a.key && !/^[A-Za-z0-9_-]{1,128}$/.test(a.key)) return ['bad', 'Ключ: только латиница, цифры, _ и -'];
     return null;
   },
-  actionFields(a, set) {
+  actionFields(a, set, nodeId) {
     const d = ACT[a.type] || ACT.none;
     const out = [];
     const status = h('div', { class: 'status-line' });
@@ -8498,6 +8791,7 @@ const Inspector = {
     }
     out.push(status);
     check();
+    if (d.bot === 'send') out.push(BotConnect.actionBox(nodeId));
     if (a.type === 'goto' || a.type === 'app') out.push(h('button', { class: 'btn sm', onclick: () => this.askGoto(a.value, id => upd('value', id)) }, ic('link', 14), 'Вставить ссылку на страницу'));
     if (d.info) out.push(h('div', { class: 'hint box' + (/только|нужен|нужна|не сработает|работает, только/.test(d.info) ? ' warn' : '') }, d.info));
     if (d.min) out.push(h('div', { class: 'hint' }, `Нужен Telegram с Bot API ${d.min} или новее. На старых версиях пользователь увидит просьбу обновить Telegram, вне Telegram — подсказку открыть страницу в Telegram.`));
@@ -8534,8 +8828,9 @@ const Inspector = {
       const apply = () => Editor.setProp(n.id, ['action'], next, null, { panel: true });
       if (v === 'goto' || v === 'app') this.askGoto('', id => { next.value = id; }, v === 'app').then(() => apply());
       else apply();
+      if (d.bot === 'send' && !BotConnect.configured()) setTimeout(() => BotConnect.dialog({ nodeId: n.id, onDone: () => Inspector.render() }), 200);
     });
-    return [field('Что делает', pick), ...this.actionFields(a, set)];
+    return [field('Что делает', pick), ...this.actionFields(a, set, n.id)];
   },
 
   /* ---------- панель выбранного блока ---------- */
@@ -8550,13 +8845,26 @@ const Inspector = {
     const crumbs = h('div', { class: 'crumbs' });
     path.forEach(p => { crumbs.append(h('button', { onclick: () => Editor.select(p.id === 'page' ? null : p.id) }, p.id === 'page' ? 'Страница' : nodeLabel(p).slice(0, 18)), ic('chevron-right', 11)); });
     crumbs.append(h('span', null, def.label));
-    const acts = h('div', { class: 'insp-acts' },
-      h('button', { class: 'btn sm', onclick: () => Editor.duplicate(n.id) }, ic('copy', 14), 'Дублировать'),
-      h('button', { class: 'btn sm', onclick: () => Editor.moveDialog(n.id) }, ic('move', 14), 'Переместить'),
-      h('button', { class: 'btn sm icon', title: n.hidden ? 'Показать' : 'Скрыть', 'aria-label': n.hidden ? 'Показать' : 'Скрыть', onclick: () => { Editor.toggleFlag(n.id, 'hidden'); } }, ic(n.hidden ? 'eye-off' : 'eye', 14)),
-      h('button', { class: 'btn sm icon' + (n.locked ? ' on' : ''), title: n.locked ? 'Разблокировать' : 'Заблокировать', 'aria-label': n.locked ? 'Разблокировать' : 'Заблокировать', onclick: () => Editor.toggleFlag(n.id, 'locked') }, ic(n.locked ? 'lock' : 'unlock', 14)),
-      h('button', { class: 'btn sm icon danger', title: 'Удалить', 'aria-label': 'Удалить', onclick: () => Editor.remove(n.id) }, ic('trash', 14)));
-    R.append(h('div', { class: 'insp-head' }, h('div', { class: 'insp-title' }, ic(iconForNode(n), 16), nameInp), crumbs, def.usage ? h('div', { class: 'usage' }, h('b', null, 'Для чего: '), def.usage) : null, acts));
+    const pf = findNode(S.project.root, n.id);
+    const pos = pf ? pf.index + 1 : 1;
+    const moreBtn = h('button', { class: 'pbk-b', type: 'button', title: 'Ещё', 'aria-label': 'Ещё действия с блоком' }, ic('more-v', 16));
+    moreBtn.addEventListener('click', () => UI.menu(moreBtn, [
+      { label: 'Переименовать', icon: 'edit', fn: () => { nameInp.focus(); nameInp.select(); } },
+      { label: 'Дублировать', icon: 'copy', kbd: 'Ctrl+D', fn: () => Editor.duplicate(n.id) },
+      { label: 'Копировать', icon: 'copy', kbd: 'Ctrl+C', fn: () => Editor.copy(n.id) },
+      { label: 'Переместить в…', icon: 'move', fn: () => Editor.moveDialog(n.id) },
+      { label: n.hidden ? 'Показать блок' : 'Скрыть блок', icon: n.hidden ? 'eye' : 'eye-off', fn: () => Editor.toggleFlag(n.id, 'hidden') },
+      { label: n.locked ? 'Разблокировать' : 'Заблокировать', icon: n.locked ? 'unlock' : 'lock', fn: () => Editor.toggleFlag(n.id, 'locked') },
+      { label: 'Сохранить в «Мои компоненты»', icon: 'bookmark', fn: () => Editor.saveMine(n.id) },
+      '-', { label: 'Удалить', icon: 'trash', danger: true, kbd: 'Del', fn: () => Editor.remove(n.id) }]));
+    const pbh = h('div', { class: 'pbk-h' },
+      h('span', { class: 'pbk-ic' }, ic(iconForNode(n), 16)), h('b', null, def.label), h('span', { class: 'pbk-n' }, '№' + pos),
+      h('span', { class: 'grow' }),
+      h('button', { class: 'pbk-b', type: 'button', title: 'Ниже', 'aria-label': 'Переместить ниже', disabled: !pf || pf.index >= pf.parent.children.length - 1, onclick: () => Editor.moveStep(n.id, 1) }, ic('arrow-down', 16)),
+      h('button', { class: 'pbk-b', type: 'button', title: 'Выше', 'aria-label': 'Переместить выше', disabled: !pf || pf.index === 0, onclick: () => Editor.moveStep(n.id, -1) }, ic('arrow-up', 16)),
+      moreBtn,
+      h('button', { class: 'pbk-c', type: 'button', title: 'Свернуть', 'aria-label': 'Свернуть блок', onclick: () => Editor.select(null) }, ic('chevron-down', 18)));
+    R.append(pbh, h('div', { class: 'insp-head' }, h('div', { class: 'insp-title' }, ic(iconForNode(n), 16), nameInp), crumbs, def.usage ? h('div', { class: 'usage' }, h('b', null, 'Для чего: '), def.usage) : null));
     const tab = S.inspTab || 'content';
     R.append(h('div', { class: 'insp-tabs', role: 'tablist' }, [['content', 'Контент'], ['style', 'Настройки'], ['actions', 'Действия']].map(([id, l]) =>
       h('button', { class: tab === id ? 'on' : '', role: 'tab', 'aria-selected': String(tab === id), onclick: () => { S.inspTab = id; this.render(); } }, l))));
@@ -8593,6 +8901,9 @@ const Inspector = {
       body.append(this.sec('fx', 'Эффекты и состояния', this.fxCtl(n)));
       body.append(this.sec('more', 'Якорь, копирование, сброс', this.moreCtl(n)));
     }
+    let hasClip = !!S.clip; if (!hasClip) try { hasClip = !!localStorage.getItem('ps-clip'); } catch (e) {}
+    body.append(h('div', { class: 'pbk-f' }, h('button', { class: 'pbk-f-add', type: 'button', onclick: () => { Editor.setRtab('add'); if (isMobile()) Editor.setMpane('add'); } }, 'Добавить новый блок'),
+      h('button', { class: 'pbk-paste', type: 'button', disabled: !hasClip, title: hasClip ? 'Вставить скопированный блок после этого' : 'Сначала скопируйте блок (⋮ → Копировать)', onclick: () => Editor.paste() }, ic('copy', 15), 'Вставить')));
   },
 
   layoutCtl(n) {
@@ -9210,6 +9521,8 @@ const Home = {
   /* ---------- Настройки ---------- */
   async settings(main) {
     main.append(this.head('Настройки', 'Параметры редактора в этом браузере'));
+    await Quota.ready();
+    main.append(h('div', { class: 'section-title', style: { marginTop: '8px' } }, 'Тариф'), Quota.panel());
     const list = h('div', { class: 'setting-list' });
     const row = (title, sub, ctl) => h('div', { class: 'setting' }, h('div', null, h('b', null, title), h('span', null, sub)), ctl);
     list.append(
@@ -9538,6 +9851,7 @@ Object.assign(PBUI, {
       foot: [
         h('button', { class: 'btn', onclick: () => d.close() }, 'Закрыть'),
         h('button', { class: 'btn primary', disabled: !S.project, onclick: () => busy('Отправляю агенту…', async () => {
+          if (!(await Quota.use(S.project))) return;
           const ex = buildExport(S.project, { mode: mode.v === 'head' ? 'pbhead' : 'puzzlebot', js: true });
           const code = mode.v === 'head' ? ex.parts.map(p => `--- ${p.tab} ---\n${p.code}`).join('\n\n') : ex.single;
           if (code.length > 900000) throw { message: 'Код больше 900 КБ — агент PuzzleBot принимает вёрстку до 1 МБ. Уменьшите картинки (загрузите их по ссылке).' };
@@ -9584,6 +9898,28 @@ const KB_CATS = [
 ];
 
 const KB = [
+  { id: 'plan', cat: 'start', title: 'Тариф: бесплатные выгрузки и Pro', body: `В бесплатной версии можно выгрузить код **10 раз**. Выгрузка — это копирование, скачивание файла, ZIP или отправка в PuzzleBot одной версии страницы. Повторно выгрузить ту же версию можно бесплатно: лимит тратится, только когда страница изменилась.
+
+До выгрузки в окне экспорта видно только начало кода. Сколько выгрузок осталось — вверху окна экспорта и в «Настройки» → «Тариф».
+
+## Подписка Pro
+С подпиской выгрузки без ограничений. После оплаты вы получаете ключ вида PS1.… — вставьте его: «Настройки» → «Тариф» → «У меня есть ключ». Ключ может быть привязан к устройству — тогда сообщите продавцу «Код устройства» из того же раздела.
+
+[[Настройки|settings]]
+
+## Попытки обхода
+Счётчик хранится в нескольких местах и защищён подписью. Если его пытаются изменить или сбросить, это видно, и после нескольких попыток выгрузка блокируется до оформления подписки.` },
+  { id: 'botconnect', cat: 'telegram', title: 'Подключить бота для отправки сообщений', body: `Действия «Отправить сообщение в Telegram» и «Отправить ссылку в Telegram» работают через бота. Когда вы выбираете такое действие, открывается окно подключения.
+
+## Почему токен нельзя вставлять напрямую
+Код Mini App видит любой пользователь. Если в коде есть токен бота, человек сможет делать рассылки и писать от имени бота. Если токен утёк — перевыпустите его в @BotFather командой /revoke.
+
+## Три варианта
+- **Свой сервер (рекомендуется).** Страница отправляет запрос на ваш адрес (n8n, Make, Albato или свой скрипт), а сервер с токеном вызывает Telegram. Токена в странице нет.
+- **Ссылка на команду бота.** Без токена и сервера: кнопка открывает https://t.me/имя_бота?start=параметр, а команда PuzzleBot с этим параметром отправляет нужное сообщение.
+- **Токен бота.** Быстро для проверки, но небезопасно. После ввода Puzzle Studio спросит Telegram и покажет бота: аватарку, имя, @юзернейм, короткое и полное описание. Подключить можно только после галочки «Понимаю риск».
+
+Токен хранится только в проекте в этом браузере и не попадает в файл проекта .json.` },
   { id: 'integrations', cat: 'integr', title: 'Интеграции: плагины бесплатных сервисов', body: `Вкладка «Интеграции» — каталог сервисов, которые подключаются к конструктору как плагины. Включили переключатель — в редакторе появились новые блоки, действия или настройки.
 
 [[Открыть интеграции|plugins]]
@@ -9680,6 +10016,12 @@ PuzzleBot, Telegram Bot API, NocoDB, вебхуки (n8n, Make, Albato), кар�
   { id: 'news', cat: 'start', title: 'Что нового в Puzzle Studio', body: `Все последние возможности — со ссылками на подробные статьи.
 
 ## Новое
+- **Тарифы: 10 бесплатных выгрузок кода**, дальше — подписка Pro по ключу. [Подробнее](kb:plan)
+- **Окно подключения бота** у действий «Отправить сообщение / ссылку»: предупреждение о токене, три варианта (токен, свой сервер, ссылка на команду бота) и карточка бота с аватаркой, именем и описанием после проверки токена. [Подробнее](kb:botconnect)
+- **Панель свойств как в PuzzleBot**: шапка блока «Заголовок №2» со стрелками ↓ ↑ и меню ⋮, поля с подчёркиванием, счётчик символов, кнопки {α (переменные) и ☺ (эмодзи), большие галочки, «Добавить новый блок» и «Вставить» внизу.
+- **Списки кнопок и строк — как «Клавиатура» в PuzzleBot**: строка «Название кнопки ›», по нажатию раскрывается редактирование с зелёной «Сохранить» и красной корзиной.
+- **Новые блоки «Строки» и «Клавиатура»** — как в PuzzleBot и настройках Telegram: серый заголовок, белая карточка, текст слева и справа, стрелка «›», картинка у кнопки.
+- **Интеграции с логотипами сервисов** и меню разделов справа, как на странице партнёров PuzzleBot.
 - **Вкладка «Интеграции»**: бесплатные сервисы подключаются как плагины — погода, курсы ЦБ, иконки Iconify, фото Openverse, Google Таблицы, видео и формы, ЮMoney, Метрика и GA4, конфетти. [Подробнее](kb:integrations)
 - **Puzzlo собирает страницу медленно, с полосой прогресса**, а чат на это время прячется. [Подробнее](kb:ai-build)
 - **Карточки в окне Puzzlo листаются свайпом**, чат больше не закрывает их. Шапку чата можно потянуть вверх или вниз.
@@ -11345,46 +11687,51 @@ const IntegUI = {
   cat: 'all', q: '',
   card(it, redraw) {
     const on = Plug.on(it.id);
-    const sw = h('button', { class: 'ig-sw' + (on ? ' on' : ''), type: 'button', role: 'switch', 'aria-checked': String(on), 'aria-label': (on ? 'Отключить ' : 'Подключить ') + it.name, disabled: !!it.builtin });
-    sw.addEventListener('click', () => {
+    const flip = () => {
       Plug.set(it.id, !Plug.on(it.id));
       UI.toast(Plug.on(it.id) ? `«${it.name}» подключён — ищите его в «Добавить» → «Интеграции»` : `«${it.name}» отключён. Уже добавленные блоки продолжат работать`, { icon: Plug.on(it.id) ? 'check' : undefined });
       if (S.view === 'editor') { Editor.renderLeft(); Inspector.render(); }
       redraw();
-    });
-    const actions = [];
-    if (it.open === 'pb') actions.push(h('button', { class: 'btn sm', onclick: () => App.go('pb') }, 'Настроить'));
-    if (it.open === 'nocodb') actions.push(h('button', { class: 'btn sm', onclick: () => NCUI.open() }, 'Настроить'));
-    if (it.open === 'page' || it.page) actions.push(h('button', { class: 'btn sm', disabled: !on, onclick: () => { UI.closeAll && UI.closeAll(); App.go('page'); } }, 'В настройки страницы'));
-    if (it.kb) actions.push(h('button', { class: 'btn sm ghost', onclick: () => App.go('kb:' + it.kb) }, 'Как работает'));
-    return h('article', { class: 'ig-card' + (on ? ' on' : '') },
-      h('div', { class: 'ig-top' },
-        h('span', { class: 'ig-logo', style: { background: it.color } }, ic(it.ic, 20)),
-        h('div', { class: 'ig-tt' }, h('b', null, it.name), h('span', { class: 'ig-badge' + (it.builtin ? ' in' : '') }, it.builtin ? 'Встроено' : 'Бесплатно')),
-        sw),
+    };
+    const btns = [];
+    if (it.builtin) {
+      if (it.open === 'pb') btns.push(h('button', { class: 'ig-btn', onclick: () => App.go('pb') }, 'Настроить'));
+      else if (it.open === 'nocodb') btns.push(h('button', { class: 'ig-btn', onclick: () => NCUI.open() }, 'Настроить'));
+      else if (it.open === 'page') btns.push(h('button', { class: 'ig-btn', onclick: () => App.go('page') }, 'Настроить'));
+      else if (it.kb) btns.push(h('button', { class: 'ig-btn', onclick: () => App.go('kb:' + it.kb) }, 'Как работает'));
+      else btns.push(h('span', { class: 'ig-on' }, ic('check', 14), 'Подключено'));
+    } else {
+      btns.push(h('button', { class: 'ig-btn' + (on ? ' off' : ''), onclick: flip }, on ? 'Отключить' : 'Подключить'));
+      if (on && it.page) btns.push(h('button', { class: 'ig-btn ghost', onclick: () => App.go('page') }, 'Настроить'));
+      if (it.kb) btns.push(h('button', { class: 'ig-btn ghost', onclick: () => App.go('kb:' + it.kb) }, 'Как работает'));
+    }
+    return h('article', { class: 'ig-card' + (on && !it.builtin ? ' on' : '') },
+      h('div', { class: 'ig-brand' }, integLogo(it, 40), h('b', null, it.name), on && !it.builtin ? h('span', { class: 'ig-tag' }, 'подключено') : it.builtin ? h('span', { class: 'ig-tag in' }, 'встроено') : null),
       h('p', null, it.desc),
       h('div', { class: 'ig-gives' }, it.gives.map(g => h('span', null, g))),
-      h('div', { class: 'ig-foot' }, ...actions, h('a', { class: 'ig-site', href: it.site, target: '_blank', rel: 'noopener' }, 'Сайт сервиса', ic('external', 13))));
+      h('div', { class: 'ig-foot' }, ...btns, h('a', { class: 'ig-site', href: it.site, target: '_blank', rel: 'noopener' }, 'Сайт', ic('external', 13))));
   },
-  body(onClose) {
+  body() {
     const wrap = h('div', { class: 'ig' });
-    const grid = h('div', { class: 'ig-grid' });
-    const chips = h('div', { class: 'chips' });
-    const q = h('input', { class: 'inp', placeholder: 'Найти сервис: погода, оплата, иконки…', value: this.q, 'data-novar': '', 'aria-label': 'Поиск интеграций' });
+    const list = h('div', { class: 'ig-list' });
+    const menu = h('nav', { class: 'ig-menu', 'aria-label': 'Разделы интеграций' });
+    const q = h('input', { class: 'inp', placeholder: 'Найти сервис', value: this.q, 'data-novar': '', 'aria-label': 'Поиск интеграций' });
     const draw = () => {
-      chips.innerHTML = '';
-      for (const [id, l] of INTEG_CATS) chips.append(h('button', { class: 'chip' + (this.cat === id ? ' on' : ''), onclick: () => { this.cat = id; draw(); } }, l + (id === 'on' ? ' · ' + Plug.count() : '')));
-      grid.innerHTML = '';
+      menu.innerHTML = '';
+      menu.append(h('div', { class: 'search ig-q' }, ic('search', 15), q));
+      for (const [id, l] of INTEG_CATS) {
+        const n = id === 'all' ? INTEG.length : id === 'on' ? Plug.count() : INTEG.filter(x => x.cat === id).length;
+        menu.append(h('button', { class: this.cat === id ? 'on' : '', onclick: () => { this.cat = id; draw(); } }, h('span', null, l), h('small', null, n)));
+      }
+      list.innerHTML = '';
       const qq = this.q.trim().toLowerCase();
-      const list = INTEG.filter(it => (this.cat === 'all' || (this.cat === 'on' ? !it.builtin && Plug.on(it.id) : it.cat === this.cat)) && (!qq || (it.name + ' ' + it.desc + ' ' + it.gives.join(' ')).toLowerCase().includes(qq)));
-      list.sort((a, b) => (a.builtin ? 1 : 0) - (b.builtin ? 1 : 0));
-      if (!list.length) grid.append(h('div', { class: 'empty' }, h('p', null, this.cat === 'on' ? 'Пока ничего не подключено' : 'Ничего не нашлось')));
-      for (const it of list) grid.append(this.card(it, draw));
+      const arr = INTEG.filter(it => (this.cat === 'all' || (this.cat === 'on' ? !it.builtin && Plug.on(it.id) : it.cat === this.cat)) && (!qq || (it.name + ' ' + it.desc + ' ' + it.gives.join(' ')).toLowerCase().includes(qq)));
+      arr.sort((a, b) => (a.builtin ? 1 : 0) - (b.builtin ? 1 : 0));
+      if (!arr.length) list.append(h('div', { class: 'empty' }, h('p', null, this.cat === 'on' ? 'Пока ничего не подключено' : 'Ничего не нашлось')));
+      for (const it of arr) list.append(this.card(it, draw));
     };
-    q.addEventListener('input', () => { this.q = q.value; draw(); });
-    wrap.append(
-      h('div', { class: 'ig-hero' }, mascotImg('wave', 64), h('div', null, h('b', null, 'Плагины для мощных страниц'), h('span', null, 'Включите сервис — в редакторе появятся его блоки и действия. Все сервисы бесплатные и работают без своего сервера.'))),
-      h('div', { class: 'toolbar' }, h('div', { class: 'search' }, ic('search', 15), q), chips), grid);
+    q.addEventListener('input', () => { this.q = q.value; const pos = q.selectionStart; draw(); q.focus(); try { q.setSelectionRange(pos, pos); } catch (e) {} });
+    wrap.append(list, menu);
     draw();
     return wrap;
   },
@@ -11516,6 +11863,391 @@ const IntegUI = {
   },
 };
 
+/* ===== 14h-botconnect.js ===== */
+/* ============================================================
+   14h · ПОДКЛЮЧЕНИЕ БОТА ДЛЯ «ОТПРАВИТЬ СООБЩЕНИЕ / ССЫЛКУ»
+   Окно с предупреждением о безопасности токена и тремя вариантами:
+   токен напрямую (небезопасно), свой сервер, ссылка на команду бота.
+   После ввода токена показываем бота: аватар, имя, @юзернейм, описание
+   (Telegram Bot API: getMe, getMyDescription, getMyShortDescription,
+   getUserProfilePhotos, getFile). Токен в журнал и в адреса картинок не пишем.
+   ============================================================ */
+const TG_TOKEN_RE = /^\d{6,12}:[A-Za-z0-9_-]{30,}$/;
+const BotConnect = {
+  cache: new Map(), // id бота → карточка (без токена)
+  async tg(token, method, params) {
+    const r = await fetch('https://api.telegram.org/bot' + token + '/' + method, params ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(params) } : undefined);
+    const j = await r.json().catch(() => null);
+    if (!j) throw new Error('Telegram ответил не в формате JSON (HTTP ' + r.status + ')');
+    if (!j.ok) throw new Error(j.error_code === 401 ? 'Токен не принят Telegram: проверьте, что скопировали его полностью из @BotFather' : (j.description || 'Ошибка Telegram'));
+    return j.result;
+  },
+  /* сведения о боте по токену */
+  async info(token) {
+    const me = await this.tg(token, 'getMe');
+    const out = { id: me.id, name: me.first_name || '', username: me.username || '', desc: '', short: '', avatar: '', inline: !!me.supports_inline_queries, groups: !!me.can_join_groups };
+    const [d, sd, ph] = await Promise.allSettled([this.tg(token, 'getMyDescription'), this.tg(token, 'getMyShortDescription'), this.tg(token, 'getUserProfilePhotos', { user_id: me.id, limit: 1 })]);
+    if (d.status === 'fulfilled') out.desc = d.value.description || '';
+    if (sd.status === 'fulfilled') out.short = sd.value.short_description || '';
+    try {
+      const photos = ph.status === 'fulfilled' && ph.value.photos && ph.value.photos[0];
+      if (photos && photos.length) {
+        const best = photos[Math.min(1, photos.length - 1)];
+        const f = await this.tg(token, 'getFile', { file_id: best.file_id });
+        const r = await fetch('https://api.telegram.org/file/bot' + token + '/' + f.file_path);
+        if (r.ok) out.avatar = URL.createObjectURL(await r.blob()); // картинка из памяти — токен не попадает в адрес на странице
+      }
+    } catch (e) {}
+    this.cache.set(String(me.id), out);
+    return out;
+  },
+  card(b, small) {
+    const letter = (b.name || b.username || '?').trim().charAt(0).toUpperCase();
+    const av = b.avatar ? h('img', { class: 'bc-av', src: b.avatar, alt: '' }) : h('span', { class: 'bc-av bc-av--l' }, letter);
+    return h('div', { class: 'bc' + (small ? ' sm' : '') }, av,
+      h('div', { class: 'bc-m' }, h('b', null, b.name || 'Бот'), b.username ? h('a', { href: 'https://t.me/' + b.username, target: '_blank', rel: 'noopener' }, '@' + b.username) : null,
+        !small && b.short ? h('p', { class: 'bc-short' }, b.short) : null,
+        !small && b.desc ? h('p', { class: 'bc-desc' }, b.desc) : null,
+        !small ? h('small', null, 'ID ' + b.id) : null));
+  },
+  /* сохранённый в проекте бот (если токен уже проверяли в этой вкладке) */
+  current() {
+    const bl = (S.project && S.project.page.botlink) || {};
+    if (bl.via !== 'botapi' || !bl.bt) return null;
+    const id = String(bl.bt).split(':')[0];
+    return this.cache.get(id) || null;
+  },
+  configured() { const c = botCfg(S.project); return c.via === 'webhook' ? !!c.hook : c.via === 'puzzlebot' ? !!c.pb : !!c.bt; },
+
+  dialog(opts = {}) {
+    const bl = S.project.page.botlink || {};
+    let tab = opts.tab || (bl.via === 'webhook' && bl.hook ? 'server' : 'token');
+    const body = h('div', { class: 'bcd' });
+    const draw = () => {
+      body.innerHTML = '';
+      body.append(
+        h('div', { class: 'bcd-warn' }, h('span', { class: 'bcd-warn-i' }, '⚠️'), h('div', null,
+          h('b', null, 'Токен бота нельзя вставлять в страницу напрямую'),
+          h('p', null, 'Код Mini App видит любой пользователь. С токеном он получит полный доступ к боту: сможет делать рассылки и писать от его имени. Рекомендуется хранить токен на своём сервере или вместо отправки через API поставить на кнопку ссылку на команду бота.'))),
+        segmented([['token', 'Токен бота'], ['server', 'Свой сервер'], ['cmd', 'Ссылка на команду']], tab, v => { tab = v; draw(); }));
+      if (tab === 'token') body.append(this.tokenPane(d, opts));
+      if (tab === 'server') body.append(this.serverPane(d, opts));
+      if (tab === 'cmd') body.append(this.cmdPane(d, opts));
+    };
+    const d = UI.dialog({ title: 'Подключить бота для отправки сообщений', cls: 'mid', body: [body], foot: [h('button', { class: 'btn', onclick: () => d.close() }, 'Закрыть')] });
+    draw();
+    return d;
+  },
+  tokenPane(d, opts) {
+    const bl = S.project.page.botlink || {};
+    const wrap = h('div', { class: 'bcd-pane' });
+    const tok = h('input', { class: 'inp mono', type: 'password', value: bl.via === 'botapi' ? bl.bt || '' : '', placeholder: '123456789:AA…', autocomplete: 'off', spellcheck: 'false', 'data-novar': '', 'aria-label': 'Токен бота' });
+    const show = h('button', { class: 'btn sm icon ghost', type: 'button', title: 'Показать', 'aria-label': 'Показать токен', onclick: () => { tok.type = tok.type === 'password' ? 'text' : 'password'; } }, ic('eye', 15));
+    const st = h('div', { class: 'status-line' });
+    const box = h('div', { class: 'bcd-bot' });
+    let risk = false, found = null;
+    const use = h('button', { class: 'btn primary', disabled: true }, ic('check', 15), 'Использовать этого бота');
+    const sync = () => { use.disabled = !(found && risk); };
+    const check = async () => {
+      const t = tok.value.trim();
+      found = null; sync(); box.innerHTML = '';
+      if (!TG_TOKEN_RE.test(t)) { st.className = 'status-line bad'; st.textContent = 'Токен выглядит неверно. Он похож на 123456789:AAH… — скопируйте его целиком из @BotFather.'; return; }
+      st.className = 'status-line'; st.textContent = 'Спрашиваю Telegram…';
+      try {
+        const b = await this.info(t);
+        found = b; st.className = 'status-line ok'; st.textContent = '✓ Токен принят';
+        box.append(this.card(b));
+        sync();
+      } catch (e) {
+        st.className = 'status-line bad';
+        st.textContent = /fetch|network|Failed/i.test(e.message || '') ? 'Не удалось связаться с api.telegram.org. Проверьте подключение к интернету.' : e.message;
+      }
+    };
+    tok.addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+    tok.addEventListener('paste', () => setTimeout(check, 30));
+    use.addEventListener('click', () => {
+      const t = tok.value.trim();
+      Editor.act('Связь с ботом', p => { p.page.botlink = { ...(p.page.botlink || {}), via: 'botapi', bt: t, platform: 'tg' }; }, { struct: false, panel: true });
+      d.close(); UI.toast('Бот @' + (found.username || found.name) + ' подключён к странице', { icon: 'check' });
+      if (opts.onDone) opts.onDone();
+    });
+    wrap.append(
+      field('Токен бота из @BotFather', h('div', { class: 'color-row' }, tok, show, h('button', { class: 'btn sm', type: 'button', onclick: check }, 'Проверить'))),
+      st, box,
+      toggle('Понимаю: токен будет виден в коде страницы, и при утечке его нужно перевыпустить в @BotFather (/revoke)', false, v => { risk = v; sync(); }),
+      h('div', { class: 'hint' }, 'Токен хранится только в этом проекте в вашем браузере. В файл проекта (.json) он не попадает. Для настоящего запуска лучше выбрать «Свой сервер».'),
+      h('div', { class: 'btn-row' }, use));
+    if (tok.value) setTimeout(check, 50);
+    return wrap;
+  },
+  serverPane(d, opts) {
+    const bl = S.project.page.botlink || {};
+    const hook = h('input', { class: 'inp', value: bl.hook || '', placeholder: 'https://ваш-сервер/puzzle', 'data-novar': '', spellcheck: 'false' });
+    const st = h('div', { class: 'status-line' });
+    return h('div', { class: 'bcd-pane' },
+      h('div', { class: 'bcd-rec' }, ic('shield', 16), h('span', null, h('b', null, 'Рекомендуется. '), 'Токен лежит только на сервере, страница его не знает.')),
+      field('Адрес вашего сервера (вебхук)', hook),
+      h('div', { class: 'hint' }, 'Страница отправит POST с JSON: { method: "sendMessage", params: { chat_id, text }, platform, tg_init_data }. Сервер проверяет tg_init_data и сам вызывает https://api.telegram.org/bot<токен>/sendMessage. Подойдут n8n, Make, Albato или свой скрипт.'),
+      st,
+      h('div', { class: 'btn-row' }, h('button', { class: 'btn primary', onclick: () => {
+        const c = checkUrl(hook.value.trim(), { allowAnchor: false });
+        if (!c.ok || !/^https:/.test(c.url || '')) { st.className = 'status-line bad'; st.textContent = 'Нужен адрес, начинающийся с https://'; return; }
+        Editor.act('Связь с ботом', p => { p.page.botlink = { ...(p.page.botlink || {}), via: 'webhook', hook: c.url }; }, { struct: false, panel: true });
+        d.close(); UI.toast('Сообщения пойдут через ваш сервер', { icon: 'check' });
+        if (opts.onDone) opts.onDone();
+      } }, ic('check', 15), 'Сохранить')));
+  },
+  cmdPane(d, opts) {
+    const bl = S.project.page.botlink || {};
+    const cur = opts.nodeId ? (Editor.node(opts.nodeId) || {}).action || {} : {};
+    const bot = h('input', { class: 'inp', value: bl.username || '', placeholder: 'имя_бота', 'data-novar': '', spellcheck: 'false' });
+    const cmd = h('input', { class: 'inp', value: '', placeholder: 'send_link', 'data-novar': '', spellcheck: 'false' });
+    const st = h('div', { class: 'status-line' });
+    const cached = this.current(); if (cached && cached.username) bot.value = cached.username;
+    return h('div', { class: 'bcd-pane' },
+      h('div', { class: 'bcd-rec' }, ic('link', 16), h('span', null, h('b', null, 'Без токена и без сервера. '), 'Кнопка откроет чат с ботом, а действие выполнит команда PuzzleBot.')),
+      h('ol', { class: 'steps' },
+        h('li', null, 'В PuzzleBot создайте команду с условием «Параметр /start равен» нужному значению, например send_link.'),
+        h('li', null, 'В команде добавьте сообщение, которое бот должен отправить (текст, ссылку, файл).'),
+        h('li', null, 'Впишите юзернейм бота и этот параметр ниже — кнопка станет ссылкой https://t.me/имя_бота?start=send_link.')),
+      field('Юзернейм бота', bot), field('Параметр команды (start)', cmd, { hint: 'Латиница, цифры, _ и -, до 64 символов. Значение попадёт в переменную {{START_PAYLOAD}}.' }),
+      st,
+      h('div', { class: 'btn-row' }, h('button', { class: 'btn primary', disabled: !opts.nodeId, onclick: () => {
+        const b = bot.value.trim().replace(/^@/, '').replace(/^https:\/\/t\.me\//, ''), c = cmd.value.trim();
+        if (!BOT_RE.test(b)) { st.className = 'status-line bad'; st.textContent = 'Юзернейм: латиница, цифры и _, от 5 символов'; return; }
+        if (c && !/^[A-Za-z0-9_-]{1,64}$/.test(c)) { st.className = 'status-line bad'; st.textContent = 'Параметр: только латиница, цифры, _ и -'; return; }
+        Editor.setProp(opts.nodeId, ['action'], { type: 'bot', bot: b, value: c, haptic: cur.haptic, confirm: cur.confirm }, null, { panel: true });
+        d.close(); UI.toast('Кнопка теперь открывает команду бота: t.me/' + b + (c ? '?start=' + c : ''), { icon: 'check', ms: 4500 });
+      } }, ic('check', 15), opts.nodeId ? 'Заменить действие на ссылку' : 'Откройте окно из кнопки')));
+  },
+  /* блок в настройках действия кнопки */
+  actionBox(nodeId) {
+    const box = h('div', { class: 'bcd-act' });
+    const c = botCfg(S.project);
+    const ok = this.configured();
+    if (ok && c.via === 'botapi') {
+      const cur = this.current();
+      if (cur) box.append(this.card(cur, true));
+      else {
+        const ph = h('div', { class: 'hint' }, 'Бот подключён по токену. Загружаю сведения…');
+        box.append(ph);
+        this.info(c.bt).then(b => { ph.replaceWith(this.card(b, true)); }).catch(() => { ph.textContent = 'Бот подключён по токену (сведения сейчас недоступны).'; });
+      }
+      box.append(h('div', { class: 'hint box warn' }, 'Токен будет виден в коде страницы. Для запуска лучше «Свой сервер» или «Ссылка на команду».'));
+    } else if (ok) box.append(h('div', { class: 'bcd-rec' }, ic(c.via === 'webhook' ? 'shield' : 'bot', 16), h('span', null, c.via === 'webhook' ? 'Отправка через ваш сервер' : 'Отправка через PuzzleBot API')));
+    else box.append(h('div', { class: 'hint box warn' }, 'Бот не подключён — кнопка пока ничего не отправит.'));
+    box.append(h('button', { class: 'btn sm' + (ok ? '' : ' primary'), type: 'button', onclick: () => this.dialog({ nodeId, onDone: () => Inspector.render() }) }, ic('bot', 14), ok ? 'Изменить подключение бота' : 'Подключить бота'));
+    return box;
+  },
+};
+
+/* ===== 14i-quota.js ===== */
+/* ============================================================
+   14i · ЛИМИТ ВЫГРУЗОК КОДА И ПОДПИСКА PRO
+   Бесплатно — 10 выгрузок. Одна выгрузка = копирование, скачивание,
+   ZIP или отправка в PuzzleBot одной версии проекта; повторно выгрузить
+   ту же версию можно бесплатно.
+   Защита от обхода (насколько это возможно без сервера):
+   - счётчик хранится в четырёх местах (localStorage, sessionStorage, cookie,
+     IndexedDB) и восстанавливается, если очистили не всё;
+   - каждая запись подписана — правка числа вручную распознаётся;
+   - откат к старой копии записи распознаётся;
+   - после 3 попыток обхода выгрузка блокируется до оформления подписки;
+   - необязательный сервер учёта (QUOTA_CFG.api) помнит устройство по
+     «отпечатку» браузера — тогда очистка данных не помогает.
+   Подписка — ключ, подписанный вашим закрытым ключом (ECDSA P-256).
+   Подделать ключ без закрытого ключа нельзя. Выпуск ключей: tools/license.py
+   ============================================================ */
+const QUOTA_CFG = {
+  limit: 10,
+  tamperMax: 3,
+  api: '', // адрес сервера учёта, например https://quota.имя.workers.dev (tools/quota-worker.js)
+  planUrl: 'https://t.me/BrootsBot', // куда ведёт «Оформить подписку»
+  pub: 'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAErUJGvOTmet+EHPrctjyU7R3yd1Xp06tD61G3sjzI50fULpeKNPLB52f92Oz9bRfPog3+CLKpkjXLv6OAcOo5Dw==',
+};
+const Quota = (() => {
+  const SALT = 'ps.q.v1.7f3a91c2';
+  let rec = { v: 1, dev: '', used: [], tamper: 0, srv: 0, log: [] };
+  let lic = null, licRaw = '', fp = '', ready = null;
+  const enc = new TextEncoder();
+  const b64 = u8 => btoa(String.fromCharCode(...u8));
+  const unb64u = s => { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return Uint8Array.from(atob(s), c => c.charCodeAt(0)); };
+  const sha = async t => [...new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode(t)))].map(x => x.toString(16).padStart(2, '0')).join('');
+  async function sign(r) {
+    const k = await crypto.subtle.importKey('raw', enc.encode(SALT + (r.dev || '')), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    const body = JSON.stringify({ v: r.v, dev: r.dev, used: r.used, tamper: r.tamper, srv: r.srv, log: r.log });
+    return b64(new Uint8Array(await crypto.subtle.sign('HMAC', k, enc.encode(body))));
+  }
+  /* ---- четыре хранилища ---- */
+  const LS = { get: () => { try { return localStorage.getItem('ps-q'); } catch (e) { return null; } }, set: v => { try { localStorage.setItem('ps-q', v); } catch (e) {} } };
+  const SS = { get: () => { try { return sessionStorage.getItem('ps-q'); } catch (e) { return null; } }, set: v => { try { sessionStorage.setItem('ps-q', v); } catch (e) {} } };
+  const CK = {
+    get: () => { try { const m = document.cookie.match(/(?:^|;\s*)psq=([^;]+)/); return m ? decodeURIComponent(m[1]) : null; } catch (e) { return null; } },
+    set: v => { try { document.cookie = 'psq=' + encodeURIComponent(v) + ';max-age=315360000;path=/;SameSite=Lax'; } catch (e) {} },
+  };
+  const DB = { get: async () => { try { return await Store.kvGet('quota', null); } catch (e) { return null; } }, set: v => { try { Store.kvSet('quota', v); } catch (e) {} } };
+  async function readAll() { return [LS.get(), SS.get(), CK.get(), await DB.get()]; }
+  async function save() {
+    rec.sig = await sign(rec);
+    const s = JSON.stringify(rec);
+    LS.set(s); SS.set(s); CK.set(s); DB.set(s);
+  }
+  function note(t) { rec.log = (rec.log || []).concat([[Date.now(), t]]).slice(-20); }
+
+  /* ---- «отпечаток» браузера: не меняется при очистке данных ---- */
+  async function fingerprint() {
+    let cv = '';
+    try { const c = document.createElement('canvas'); c.width = 220; c.height = 30; const x = c.getContext('2d'); x.textBaseline = 'top'; x.font = '16px Arial'; x.fillStyle = '#f60'; x.fillRect(0, 0, 110, 30); x.fillStyle = '#069'; x.fillText('Puzzle Studio ✓ 2026', 2, 6); cv = c.toDataURL().slice(-80); } catch (e) {}
+    const n = navigator, sc = window.screen || {};
+    const parts = [n.platform, (n.languages || []).join(','), sc.width + 'x' + sc.height + 'x' + sc.colorDepth, Intl.DateTimeFormat().resolvedOptions().timeZone, n.hardwareConcurrency, n.deviceMemory, n.maxTouchPoints, cv];
+    return (await sha(parts.join('|'))).slice(0, 32);
+  }
+  async function server(act, key) {
+    if (!QUOTA_CFG.api) return null;
+    try {
+      const r = await fetch(QUOTA_CFG.api, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fp, dev: rec.dev, key: key || '', act }) });
+      return await r.json();
+    } catch (e) { return null; }
+  }
+
+  /* ---- ключ подписки ---- */
+  async function checkKey(k) {
+    k = String(k || '').trim();
+    const m = k.match(/^PS1\.([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)$/);
+    if (!m) throw new Error('Ключ должен начинаться с PS1. — скопируйте его целиком');
+    const body = unb64u(m[1]), sig = unb64u(m[2]);
+    const pub = await crypto.subtle.importKey('spki', Uint8Array.from(atob(QUOTA_CFG.pub), c => c.charCodeAt(0)), { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+    const ok = await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, pub, sig, body);
+    if (!ok) throw new Error('Ключ не подходит: подпись неверна');
+    const p = JSON.parse(new TextDecoder().decode(body));
+    if (p.e && new Date(p.e + 'T23:59:59') < new Date()) throw new Error('Срок ключа закончился ' + p.e.split('-').reverse().join('.'));
+    if (p.d && p.d !== deviceCode().replace('-', '')) throw new Error('Ключ выпущен для другого устройства (' + p.d + ')');
+    return p;
+  }
+  function deviceCode() { const s = (fp || rec.dev || '00000000').slice(0, 8).toUpperCase(); return s.slice(0, 4) + '-' + s.slice(4); }
+
+  async function init() {
+    fp = await fingerprint();
+    const raws = await readAll();
+    const good = [];
+    let bad = 0, lsRec = null;
+    for (const [i, raw] of raws.entries()) {
+      if (!raw) continue;
+      let r; try { r = JSON.parse(raw); } catch (e) { bad++; continue; }
+      if (!r || !Array.isArray(r.used) || !r.dev) { bad++; continue; }
+      const sig = await sign(r);
+      if (sig !== r.sig) { bad++; continue; }
+      good.push(r); if (i === 0) lsRec = r;
+    }
+    if (good.length) {
+      const best = good.reduce((a, b) => ((b.used.length + b.tamper) > (a.used.length + a.tamper) ? b : a));
+      rec = { ...best, used: [...new Set(good.flatMap(r => r.used))], tamper: Math.max(...good.map(r => r.tamper || 0)), srv: Math.max(...good.map(r => r.srv || 0)) };
+      // старую копию подложили в localStorage вместо свежей
+      if (lsRec && lsRec.used.length < best.used.length && good.length > 1) { rec.tamper++; note('rollback'); }
+    } else {
+      rec.dev = 'd' + uid(12);
+      note('new');
+    }
+    if (bad) { rec.tamper += 1; note('bad-signature x' + bad); }
+    const s = await server('check');
+    if (s && typeof s.used === 'number') rec.srv = Math.max(rec.srv || 0, s.used);
+    try { licRaw = localStorage.getItem('ps-lic') || (await Store.kvGet('lic', '')) || ''; if (licRaw) lic = await checkKey(licRaw); } catch (e) { lic = null; }
+    await save();
+  }
+
+  const used = () => Math.max(rec.used.length, rec.srv || 0);
+  const blocked = () => !lic && rec.tamper >= QUOTA_CFG.tamperMax;
+  function keyFor(p) {
+    const body = JSON.stringify({ r: p.root, s: p.screens || [], g: p.page });
+    let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+    for (let i = 0; i < body.length; i++) { const c = body.charCodeAt(i); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (p.id || 'p') + ':' + (h2 >>> 0).toString(36) + (h1 >>> 0).toString(36);
+  }
+
+  const api = {
+    ready: () => ready || (ready = init().catch(e => { console.warn('quota', e); })),
+    get pro() { return !!lic; },
+    get license() { return lic; },
+    used, limit: () => QUOTA_CFG.limit,
+    left: () => Math.max(0, QUOTA_CFG.limit - used()),
+    blocked,
+    deviceCode,
+    unlocked(p) { return !!lic || rec.used.includes(keyFor(p)); },
+    /* выгрузка: true — можно отдавать код */
+    async use(p) {
+      await api.ready();
+      if (lic) return true;
+      if (blocked()) { api.modal('tamper'); return false; }
+      const k = keyFor(p);
+      if (rec.used.includes(k)) return true;
+      if (used() >= QUOTA_CFG.limit) { api.modal('limit'); return false; }
+      const s = await server('use', k);
+      if (s && s.ok === false) { rec.srv = Math.max(rec.srv || 0, s.used || QUOTA_CFG.limit); await save(); api.modal('limit'); return false; }
+      rec.used.push(k); note('use');
+      await save();
+      const left = api.left();
+      UI.toast(left ? `Выгрузка ${used()} из ${QUOTA_CFG.limit} · осталось ${left}` : 'Это была последняя бесплатная выгрузка', { icon: 'check', ms: 3500 });
+      return true;
+    },
+    async activate(k) {
+      const p = await checkKey(k);
+      lic = p; licRaw = k.trim();
+      try { localStorage.setItem('ps-lic', licRaw); } catch (e) {}
+      try { await Store.kvSet('lic', licRaw); } catch (e) {}
+      return p;
+    },
+    deactivate() { lic = null; licRaw = ''; try { localStorage.removeItem('ps-lic'); } catch (e) {} try { Store.kvSet('lic', ''); } catch (e) {} },
+
+    /* окно «Превышен лимит» в стиле PuzzleBot */
+    modal(kind = 'limit') {
+      const tamper = kind === 'tamper';
+      const d = UI.dialog({ title: '', cls: 'qm-dlg', body: [h('div', { class: 'qm' },
+        h('div', { class: 'qm-top' }, mascotImg(tamper ? 'error' : 'logo', 150)),
+        h('h2', null, tamper ? 'Выгрузка заблокирована' : 'Превышен лимит'),
+        tamper
+          ? h('p', null, 'Похоже, счётчик выгрузок пытались сбросить или изменить. Выгрузка кода на этом устройстве ', h('b', null, 'заблокирована'), '.')
+          : h('p', null, 'В бесплатной версии уже использовано ', h('b', null, `максимальное количество выгрузок кода (${Math.min(used(), QUOTA_CFG.limit)} из ${QUOTA_CFG.limit})`), '.'),
+        h('p', null, 'Оформите подписку ', h('b', null, 'Puzzle Studio Pro'), ' и выгружайте код без ограничений.'),
+        h('button', { class: 'qm-btn', onclick: () => { window.open(QUOTA_CFG.planUrl, '_blank', 'noopener'); } }, 'Оформить подписку'),
+        h('button', { class: 'qm-link', onclick: () => { d.close(); api.keyDialog(); } }, 'У меня есть ключ подписки'),
+        h('div', { class: 'qm-dev' }, 'Код устройства: ', h('b', null, deviceCode())))] });
+      return d;
+    },
+    keyDialog(onDone) {
+      const inp = h('textarea', { class: 'ta mono', rows: 3, placeholder: 'PS1.…', 'data-novar': '', spellcheck: 'false' });
+      const st = h('div', { class: 'status-line' });
+      const d = UI.dialog({ title: 'Ключ подписки Puzzle Studio Pro', cls: 'mid', body: [
+        h('p', { class: 'hint' }, 'Вставьте ключ, который вы получили после оплаты. Если ключ выпускают под ваше устройство, сообщите продавцу код устройства.'),
+        h('div', { class: 'qm-devrow' }, 'Код устройства: ', h('b', null, deviceCode()), h('button', { class: 'btn sm ghost', onclick: () => UI.copy(deviceCode(), 'Код устройства скопирован') }, ic('copy', 14))),
+        field('Ключ', inp), st],
+        foot: [h('button', { class: 'btn', onclick: () => d.close() }, 'Отмена'), h('button', { class: 'btn primary', onclick: async () => {
+          st.className = 'status-line'; st.textContent = 'Проверяю…';
+          try { const p = await api.activate(inp.value); d.close(); UI.toast('Подписка Pro активна' + (p.e ? ' до ' + p.e.split('-').reverse().join('.') : ' бессрочно'), { icon: 'heart', ms: 4000 }); if (onDone) onDone(); if (S.view === 'home' && S.homeTab === 'settings') Home.render(); }
+          catch (e) { st.className = 'status-line bad'; st.textContent = e.message || 'Ключ не подходит'; }
+        } }, 'Активировать')] });
+    },
+    /* блок «Тариф» в настройках */
+    panel() {
+      const lim = QUOTA_CFG.limit, u = Math.min(used(), lim);
+      const box = h('div', { class: 'qp' });
+      if (lic) box.append(h('div', { class: 'qp-h' }, h('span', { class: 'qp-badge pro' }, 'PRO'), h('b', null, 'Подписка активна'), h('span', null, (lic.u ? lic.u + ' · ' : '') + (lic.e ? 'до ' + lic.e.split('-').reverse().join('.') : 'бессрочно'))),
+        h('div', { class: 'btn-row' }, h('button', { class: 'btn sm', onclick: () => { api.deactivate(); Home.render(); } }, 'Отвязать ключ')));
+      else {
+        box.append(h('div', { class: 'qp-h' }, h('span', { class: 'qp-badge' }, 'FREE'), h('b', null, 'Бесплатный тариф'), h('span', null, `Выгрузок кода: ${u} из ${lim}`)),
+          h('div', { class: 'qp-bar' + (u >= lim ? ' full' : u >= lim - 2 ? ' warn' : '') }, h('i', { style: { width: (u / lim * 100) + '%' } })),
+          ...(blocked() ? [h('div', { class: 'status-line bad' }, 'Выгрузка заблокирована: обнаружены попытки обойти лимит.')] : []),
+          h('div', { class: 'hint' }, 'Одна выгрузка — это копирование, скачивание, ZIP или отправка в PuzzleBot одной версии страницы. Повторно выгрузить ту же версию можно бесплатно.'),
+          h('div', { class: 'btn-row' }, h('button', { class: 'btn primary', onclick: () => window.open(QUOTA_CFG.planUrl, '_blank', 'noopener') }, 'Оформить подписку'), h('button', { class: 'btn', onclick: () => api.keyDialog() }, 'У меня есть ключ')));
+      }
+      box.append(h('div', { class: 'qm-devrow' }, 'Код устройства: ', h('b', null, deviceCode())));
+      return box;
+    },
+  };
+  return Object.freeze(api);
+})();
+
 /* ===== 15-export-ui.js ===== */
 /* ============================================================
    15 · ОКНА: экспорт кода, импорт JSON, AI-генерация
@@ -11535,6 +12267,7 @@ const ExportUI = {
     }
     this.P = params.project || S.project;
     Editor.saveNow();
+    if (!params.qok) { Quota.ready().then(() => { if (!Quota.unlocked(this.P) && (Quota.blocked() || Quota.left() <= 0)) Quota.modal(Quota.blocked() ? 'tamper' : 'limit'); else this.open({ ...params, ready: true, project: this.P, qok: true }); }); return; }
     const o = this.opts;
     const scrs = allScreens(this.P);
     o.screen = params.screen || this.P.root.scr.id;
@@ -11558,13 +12291,32 @@ const ExportUI = {
       const part = current.parts[tab];
       const size = new Blob([part.code]).size;
       codeBar.append(tabs, h('span', { class: 'muted', style: { fontSize: '12px' } }, fmtBytes(size)),
-        h('button', { class: 'btn sm', onclick: () => this.download(part.code, part.file, 'text/' + (part.lang === 'js' ? 'javascript' : part.lang)) }, ic('download', 14), 'Файл'),
-        h('button', { class: 'btn sm primary', onclick: () => { S.flags.exported = true; Store.kvSet('flags', S.flags); UI.copy(part.code, 'Код скопирован в буфер обмена'); } }, ic('copy', 14), current.parts.length > 1 ? 'Копировать ' + part.tab : 'Копировать код'));
-      pre.innerHTML = part.code.length > 400000 ? escHtml(part.code) : highlight(part.code, part.lang);
+        h('button', { class: 'btn sm', onclick: async () => { if (!(await Quota.use(this.P))) return; this.download(part.code, part.file, 'text/' + (part.lang === 'js' ? 'javascript' : part.lang)); drawCode(); drawQuota(); } }, ic('download', 14), 'Файл'),
+        h('button', { class: 'btn sm primary', onclick: async () => { if (!(await Quota.use(this.P))) return; S.flags.exported = true; Store.kvSet('flags', S.flags); UI.copy(part.code, 'Код скопирован в буфер обмена'); drawCode(); drawQuota(); } }, ic('copy', 14), current.parts.length > 1 ? 'Копировать ' + part.tab : 'Копировать код'));
+      main.querySelectorAll('.code-lock').forEach(x => x.remove());
+      if (Quota.unlocked(this.P)) {
+        pre.classList.remove('locked');
+        pre.innerHTML = part.code.length > 400000 ? escHtml(part.code) : highlight(part.code, part.lang);
+      } else {
+        // до выгрузки показываем только начало кода
+        pre.classList.add('locked');
+        pre.innerHTML = highlight(part.code.split('\n').slice(0, 24).join('\n'), part.lang);
+        main.append(h('div', { class: 'code-lock' }, h('b', null, 'Показано начало кода'), h('span', null, `Полный код откроется после выгрузки. Бесплатно осталось ${Quota.left()} из ${Quota.limit()}. Эту версию страницы потом можно выгружать повторно без списания.`),
+          h('button', { class: 'btn primary', onclick: async () => { if (await Quota.use(this.P)) { drawCode(); drawQuota(); } } }, ic('unlock', 15), 'Выгрузить код (1 из ' + Quota.left() + ')')));
+      }
       pre.scrollTop = 0;
+    };
+    const qbox = h('div', { class: 'exp-q' });
+    const drawQuota = () => {
+      qbox.innerHTML = '';
+      if (Quota.pro) { qbox.append(h('span', { class: 'qp-badge pro' }, 'PRO'), h('span', null, 'Выгрузка без ограничений')); return; }
+      const u = Math.min(Quota.used(), Quota.limit());
+      qbox.append(h('span', { class: 'qp-badge' }, 'FREE'), h('span', null, `Выгрузок: ${u} из ${Quota.limit()}`), h('button', { class: 'btn sm ghost', onclick: () => Quota.modal('limit') }, 'Без ограничений'),
+        h('div', { class: 'qp-bar' + (u >= Quota.limit() ? ' full' : u >= Quota.limit() - 2 ? ' warn' : '') }, h('i', { style: { width: (u / Quota.limit() * 100) + '%' } })));
     };
     const drawSide = () => {
       side.innerHTML = '';
+      drawQuota(); side.append(qbox);
       if (scrs.length > 1) {
         side.append(h('div', { class: 'grp-t' }, 'Экраны проекта · ' + scrs.length),
           segmented([['pages', 'Отдельные страницы'], ['single', 'Всё в одном блоке']], o.screensMode, v => { o.screensMode = v; tab = 0; rebuild(); }),
@@ -11599,7 +12351,7 @@ const ExportUI = {
       side.append(h('div', { class: 'grp-t' }, 'Как разместить'), h('ol', { class: 'steps' }, (EXPORT_GUIDE[o.mode] || []).map(s => h('li', null, s))));
       side.append(h('div', { class: 'hint box warn' }, 'Способ вставки HTML в PuzzleBot не описан в открытой документации, которую удалось проверить. После вставки обязательно откройте страницу в Telegram на телефоне.'));
       side.append(h('div', { class: 'btn-row' },
-        h('button', { class: 'btn sm', onclick: () => this.zip(current) }, ic('download', 14), 'ZIP-архив'),
+        h('button', { class: 'btn sm', onclick: async () => { if (!(await Quota.use(this.P))) return; this.zip(current); drawCode(); drawQuota(); } }, ic('download', 14), 'ZIP-архив'),
         h('button', { class: 'btn sm', onclick: () => this.downloadProject(this.P) }, ic('file', 14), 'Проект JSON')),
         h('div', { class: 'hint' }, 'Скачивание может попросить подтверждение. Если файл не сохранился, используйте «Копировать».'));
     };
@@ -11804,6 +12556,7 @@ const App = {
     if (Store.mode === 'memory') UI.toast('Хранилище браузера недоступно — проекты не сохранятся после закрытия. Скачивайте JSON.', { err: true, ms: 7000 });
     S.flags = (await Store.kvGet('flags', {})) || {};
     await Plug.load();
+    Quota.ready();
     await Puzzlo.load();
     Puzzlo.mount();
     if (!S.projects.length) S.homeTab = 'templates';
