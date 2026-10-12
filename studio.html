@@ -897,6 +897,20 @@ html, body { overflow: hidden; overscroll-behavior: none; }
 .scr-strip.zoomed-y { overflow-y: auto !important; align-items: flex-start; }
 .scr-bar { left: calc(50% - 60px); }
 @media (max-width: 860px) { .zm { display: none; } .tb-sq { width: 36px; height: 36px; } }
+.qa { display: flex; flex-direction: column; gap: 6px; }
+.qa-score { display: flex; align-items: center; gap: 12px; padding: 10px 12px; margin-bottom: 6px; border-radius: 12px; background: var(--panel2); }
+.qa-score b { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; font-size: 20px; color: #fff; background: #22c55e; }
+.qa-score b.mid { background: #f59e0b; } .qa-score b.bad { background: #ef4444; }
+.qa-fix { color: #15803d; font-size: 11px; white-space: nowrap; }
+.issue .grow { flex: 1; text-align: left; }
+.note-row .grow { display: flex; flex-direction: column; gap: 2px; text-align: left; }
+.note-row small { color: var(--muted); }
+.note-pin { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: #ffd75e; flex: none; }
+.scr-mini { position: absolute; right: 16px; bottom: 96px; z-index: 6; border: 1px solid var(--line2); border-radius: 8px; background: color-mix(in srgb, var(--panel) 92%, transparent); box-shadow: 0 4px 14px rgba(0,0,0,.08); cursor: pointer; overflow: hidden; touch-action: none; }
+.scr-mini .mm-s { position: absolute; display: grid; place-items: center; border-radius: 3px; background: var(--panel3); color: var(--muted); font: 600 9px var(--font); font-style: normal; }
+.scr-mini .mm-s.on { background: var(--accent); color: #fff; }
+.scr-mini .mm-v { position: absolute; border: 1.5px solid var(--accent); border-radius: 3px; background: var(--accent-soft); pointer-events: none; }
+@media (max-width: 860px) { .scr-mini { display: none; } }
 
 </style>
 </head>
@@ -1418,6 +1432,16 @@ function ncWhere(src, valueFn = v => v) {
 /* ---------- помощники рендера ---------- */
 function T(s, ctx) {
   // Текст с переменными {{KEY}} и данными NocoDB #{Источник.Поле}. Всегда экранируется.
+  if (!ctx._noLang && hasLang(s)) {
+    const parts = splitLang(String(s));
+    if (parts) {
+      const keys = Object.keys(parts);
+      const c2 = { ...ctx, _noLang: true };
+      if (ctx.mode === 'export' && ctx.varMode !== 'sample') return `<span data-ps-l>${keys.map((k, i) => `<span data-ps-lang="${k}"${i ? ' hidden' : ''}>${T(parts[k], c2)}</span>`).join('')}</span>`;
+      const pl = (ctx.project && ctx.project.page && ctx.project.page.lang) || keys[0];
+      return T(parts[pl] ?? parts[keys[0]], c2);
+    }
+  }
   let out = escHtml(s ?? '');
   out = out.replace(VAR_RE, (m, k) => {
     if (ctx.varMode === 'sample') return escHtml(varSample(ctx.project, k));
@@ -1442,6 +1466,7 @@ function ncText(sn, f, ctx, raw) {
 function TA(s, ctx) {
   // Текст для атрибута (alt, placeholder, aria-label): только экранирование
   let v = String(s ?? '');
+  if (hasLang(v)) { const parts = splitLang(v); if (parts) { const pl = (ctx.project && ctx.project.page && ctx.project.page.lang) || Object.keys(parts)[0]; v = parts[pl] ?? Object.values(parts)[0]; } }
   if (ctx.varMode === 'sample') v = v.replace(VAR_RE, (m, k) => varSample(ctx.project, k));
   if (v.includes('#{')) v = v.replace(NC_RE, (m, sn, f) => { const src = ncSrcByName(ctx.project, sn); const row = src && (ctx.ncRow && ctx.ncRow.src === src.id ? ctx.ncRow.row : ncCachedRow(ctx.project, src)); return row ? ncFormat(row[f.trim()], ncHost(ctx.project)) : ''; });
   return escAttr(v);
@@ -1470,10 +1495,15 @@ function rich(src, ctx) {
 function at(n, ctx, cls, extra = '') {
   const os = n.adv && n.adv.os;
   const osCls = os === 'ios' ? ' block_android block-android' : os === 'android' ? ' block_ios block-ios' : '';
-  const off = n.adv && n.adv.off ? (ctx.mode === 'edit' ? ' ps-edit-off' : ' ps-off') : '';
+  let off = n.adv && n.adv.off ? (ctx.mode === 'edit' ? ' ps-edit-off' : ' ps-off') : '';
+  const cond = n.adv && n.adv.cond && /^[A-Za-z0-9_]{1,40}$/.test(n.adv.cond.key || '') ? n.adv.cond : null;
+  if (cond) {
+    if (ctx.mode === 'edit') off += ' ps-edit-cond';
+    else if (ctx.mode === 'export' && ctx.varMode !== 'sample') { off += ' ps-cond'; extra += ` data-ps-cond="${escAttr(JSON.stringify({ id: n.id, op: cond.op || 'filled', val: String(cond.val || '').slice(0, 100) }))}"`; (ctx.conds || (ctx.conds = [])).push({ id: n.id, key: cond.key }); }
+  }
   let a = `class="${cls} ps-${n.id}${osCls}${off}${ctx.mode !== 'edit' && n.anim && n.anim.in && n.anim.in !== 'none' ? ' ps-anim-' + n.anim.in : ''}"`;
   if (n.anchor && /^[a-z0-9_-]+$/i.test(n.anchor)) a += ` id="ps-${n.anchor}"`;
-  if (ctx.mode === 'edit') a += ` data-psid="${n.id}"`;
+  if (ctx.mode === 'edit') a += ` data-psid="${n.id}"${n.note ? ` data-psnote="${escAttr(String(n.note).slice(0, 120))}"` : ''}`;
   return a + extra;
 }
 function kids(n, ctx) { return (n.children || []).map(c => renderNode(c, ctx)).join(''); }
@@ -1507,6 +1537,10 @@ function ncMarkup(ctx) {
   for (const s of ncSources(ctx.project)) if (ctx.ncUsed.has(s.id)) { const w = ncWhere(s); if (w) parts.push(`<span data-nc-w="${escAttr(s.id)}">${escHtml(w)}</span>`); }
   return parts.length ? `<div class="ps-nc-cfg" hidden>${parts.join('')}</div>` : '';
 }
+function condMarkup(ctx) {
+  if (!ctx.conds || !ctx.conds.length) return '';
+  return `<div class="ps-flow" hidden>${ctx.conds.map(c => `<span data-ps-cv="${c.id}">{{${c.key}}}</span>`).join('')}</div>`;
+}
 function svgI(name, size) { return iconSvg(name, size || 18, 'class="ps-ic"'); }
 
 /* ---------- Списки опций для панели ---------- */
@@ -1530,7 +1564,7 @@ const NET_LABEL = Object.fromEntries(O.net);
 const COMP = {
   page: {
     label: 'Страница', icon: 'file', container: true, root: true,
-    render: (n, ctx) => `<div class="ps-root ps-p-${ctx.pid}"${ctx.scheme ? ` data-ps-scheme="${ctx.scheme}"` : ''}${ctx.mode === 'edit' ? ` data-psid="${n.id}" data-pscont="column"` : ''}><div class="ps-page ps-${n.id}">${kids(n, ctx)}</div>${ctx.mode !== 'edit' ? flowMarkup(n, ctx) + backMarkup(n, ctx) + ncMarkup(ctx) : ''}</div>`,
+    render: (n, ctx) => `<div class="ps-root ps-p-${ctx.pid}"${ctx.scheme ? ` data-ps-scheme="${ctx.scheme}"` : ''}${ctx.mode === 'edit' ? ` data-psid="${n.id}" data-pscont="column"` : ''}><div class="ps-page ps-${n.id}">${kids(n, ctx)}</div>${ctx.mode !== 'edit' ? flowMarkup(n, ctx) + backMarkup(n, ctx) + ncMarkup(ctx) + condMarkup(ctx) : ''}</div>`,
   },
 
   container: {
@@ -1549,18 +1583,21 @@ const COMP = {
     label: 'Форма', icon: 'form', container: true,
     fields: [
       { k: 'successText', label: 'Сообщение после отправки', type: 'textarea' },
-      { k: 'mode', label: 'Что делать с данными', type: 'select', options: [['message', 'Только показать сообщение'], ['webhook', 'Отправить на вебхук (POST JSON)'], ['senddata', 'Передать боту (Telegram sendData)']] },
+      { k: 'mode', label: 'Что делать с данными', type: 'select', options: [['message', 'Только показать сообщение'], ['webhook', 'Отправить на вебхук (POST JSON)'], ['senddata', 'Передать боту (Telegram sendData)'], ['nocodb', 'Записать строку в NocoDB']] },
+      { k: 'ncTable', label: 'ID таблицы NocoDB (для записи)', type: 'text', when: p => p.mode === 'nocodb' },
+      { k: 'tgField', label: 'Колонка для ID пользователя Telegram (необязательно)', type: 'text', when: p => p.mode === 'nocodb' },
       { k: 'webhook', label: 'Адрес вебхука (для режима «вебхук»)', type: 'url', placeholder: 'https://ваш-сервер/hook' },
       { k: 'errorText', label: 'Сообщение при ошибке отправки', type: 'text' },
     ],
     info: 'Вебхук получает JSON: поля формы, данные пользователя Telegram и initData. Данные пользователя из браузера можно подделать — проверяйте initData на своём сервере. API-токен PuzzleBot в страницу не вставляйте: его увидит любой.',
     defaults: { props: { successText: 'Спасибо! Заявка принята.', errorText: 'Не удалось отправить. Попробуйте ещё раз.', mode: 'message', webhook: '' }, style: { layout: 'stack', gap: 12 } },
     render(n, ctx) {
-      const mode = CSS.pick(n.props.mode, ['message', 'webhook', 'senddata']) || 'message';
+      const mode = CSS.pick(n.props.mode, ['message', 'webhook', 'senddata', 'nocodb']) || 'message';
       const hk = checkUrl(n.props.webhook, { allowAnchor: false });
       const hook = mode === 'webhook' && hk.ok && /^https:/.test(hk.url) ? ` data-ps-hook="${escAttr(hk.url)}"` : '';
       const ok = `<div class="ps-form-ok" role="status" hidden>${T(n.props.successText, ctx)}</div><div class="ps-form-err" role="alert" hidden>${T(n.props.errorText || 'Не удалось отправить', ctx)}</div>`;
-      return `<form ${at(n, ctx, 'ps-box ps-form', (ctx.mode === 'edit' ? ' data-pscont="column"' : '') + ` data-ps-form="${mode}"${hook} novalidate`)}>${kids(n, ctx)}${ok}</form>`;
+      const nct = mode === 'nocodb' && /^[A-Za-z0-9_-]{3,64}$/.test(n.props.ncTable || '') ? ` data-ps-nct="${escAttr(n.props.ncTable)}"${/^[^"<>]{1,80}$/.test(n.props.tgField || '') ? ` data-ps-tgf="${escAttr(n.props.tgField)}"` : ''}` : '';
+      return `<form ${at(n, ctx, 'ps-box ps-form', (ctx.mode === 'edit' ? ' data-pscont="column"' : '') + ` data-ps-form="${mode}"${hook}${nct} novalidate`)}>${kids(n, ctx)}${ok}</form>`;
     },
   },
 
@@ -1975,13 +2012,13 @@ const COMP = {
       { k: 'label', label: 'Подпись', type: 'text' },
       { k: 'placeholder', label: 'Подсказка внутри', type: 'text' },
       { k: 'kind', label: 'Тип', type: 'select', options: [['text', 'Текст'], ['email', 'Email'], ['tel', 'Телефон'], ['number', 'Число']] },
-      { k: 'name', label: 'Имя поля (латиницей)', type: 'text' },
+      { k: 'name', label: 'Имя поля (для NocoDB — как название колонки)', type: 'text' },
       { k: 'required', label: 'Обязательное', type: 'toggle' },
     ],
     defaults: { props: { label: 'Ваше имя', placeholder: 'Например, Анна', kind: 'text', name: 'name', required: true } },
     render(n, ctx) {
       const id = 'ps-f-' + n.id, kind = CSS.pick(n.props.kind, ['text', 'email', 'tel', 'number']) || 'text';
-      const name = String(n.props.name || '').replace(/[^A-Za-z0-9_-]/g, '') || 'field_' + n.id;
+      const name = String(n.props.name || '').replace(/[^\p{L}\p{N}_\- ]/gu, '').trim().slice(0, 80) || 'field_' + n.id;
       return `<div ${at(n, ctx, 'ps-field')}>${n.props.label ? `<label for="${id}">${T(n.props.label, ctx)}${n.props.required ? ' <span class="ps-req">*</span>' : ''}</label>` : ''}<input id="${id}" name="${name}" type="${kind}" placeholder="${TA(n.props.placeholder, ctx)}"${n.props.required ? ' required' : ''}${kind === 'tel' ? ' autocomplete="tel"' : kind === 'email' ? ' autocomplete="email"' : ''}${ctx.mode === 'edit' ? ' tabindex="-1"' : ''}></div>`;
     },
   },
@@ -1992,13 +2029,13 @@ const COMP = {
       { k: 'label', label: 'Подпись', type: 'text' },
       { k: 'placeholder', label: 'Подсказка внутри', type: 'text' },
       { k: 'rows', label: 'Высота в строках', type: 'number', min: 2, max: 12 },
-      { k: 'name', label: 'Имя поля (латиницей)', type: 'text' },
+      { k: 'name', label: 'Имя поля (для NocoDB — как название колонки)', type: 'text' },
       { k: 'required', label: 'Обязательное', type: 'toggle' },
     ],
     defaults: { props: { label: 'Комментарий', placeholder: 'Опишите задачу', rows: 4, name: 'comment', required: false } },
     render(n, ctx) {
       const id = 'ps-f-' + n.id;
-      const name = String(n.props.name || '').replace(/[^A-Za-z0-9_-]/g, '') || 'field_' + n.id;
+      const name = String(n.props.name || '').replace(/[^\p{L}\p{N}_\- ]/gu, '').trim().slice(0, 80) || 'field_' + n.id;
       return `<div ${at(n, ctx, 'ps-field')}>${n.props.label ? `<label for="${id}">${T(n.props.label, ctx)}${n.props.required ? ' <span class="ps-req">*</span>' : ''}</label>` : ''}<textarea id="${id}" name="${name}" rows="${clamp(parseInt(n.props.rows) || 4, 2, 12)}" placeholder="${TA(n.props.placeholder, ctx)}"${n.props.required ? ' required' : ''}${ctx.mode === 'edit' ? ' tabindex="-1"' : ''}></textarea></div>`;
     },
   },
@@ -2008,13 +2045,13 @@ const COMP = {
     fields: [
       { k: 'label', label: 'Подпись', type: 'text' },
       { k: 'options', label: 'Варианты (каждый с новой строки)', type: 'textarea', rows: 5 },
-      { k: 'name', label: 'Имя поля (латиницей)', type: 'text' },
+      { k: 'name', label: 'Имя поля (для NocoDB — как название колонки)', type: 'text' },
       { k: 'required', label: 'Обязательное', type: 'toggle' },
     ],
     defaults: { props: { label: 'Услуга', options: 'Консультация\nДизайн\nНастройка бота', name: 'service', required: false } },
     render(n, ctx) {
       const id = 'ps-f-' + n.id;
-      const name = String(n.props.name || '').replace(/[^A-Za-z0-9_-]/g, '') || 'field_' + n.id;
+      const name = String(n.props.name || '').replace(/[^\p{L}\p{N}_\- ]/gu, '').trim().slice(0, 80) || 'field_' + n.id;
       const opts = String(n.props.options || '').split(/\r?\n/).filter(x => x.trim()).map(o => `<option>${escHtml(o.trim())}</option>`).join('');
       return `<div ${at(n, ctx, 'ps-field')}>${n.props.label ? `<label for="${id}">${T(n.props.label, ctx)}</label>` : ''}<div class="ps-select"><select id="${id}" name="${name}"${n.props.required ? ' required' : ''}${ctx.mode === 'edit' ? ' tabindex="-1"' : ''}>${opts}</select>${svgI('chevron-down', 16)}</div></div>`;
     },
@@ -2025,7 +2062,7 @@ const COMP = {
     fields: [{ k: 'label', label: 'Текст', type: 'textarea' }, { k: 'name', label: 'Имя поля', type: 'text' }, { k: 'required', label: 'Обязательная', type: 'toggle' }],
     defaults: { props: { label: 'Согласен с условиями обработки данных', name: 'agree', required: true } },
     render(n, ctx) {
-      const name = String(n.props.name || '').replace(/[^A-Za-z0-9_-]/g, '') || 'agree';
+      const name = String(n.props.name || '').replace(/[^\p{L}\p{N}_\- ]/gu, '').trim().slice(0, 80) || 'agree';
       return `<label ${at(n, ctx, 'ps-check')}><input type="checkbox" name="${name}"${n.props.required ? ' required' : ''}${ctx.mode === 'edit' ? ' tabindex="-1"' : ''}><span class="ps-check-b">${svgI('check', 14)}</span><span>${T(n.props.label, ctx)}</span></label>`;
     },
   },
@@ -2421,6 +2458,7 @@ const ACTION_DEFS = [
   { id: 'show', g: 1, label: 'Показать блок', params: [{ k: 'value', label: 'Какой блок', type: 'node', req: true }], info: 'Делает видимым блок, у которого включено «Скрыт, пока не покажут» (Настройки → Дополнительно).' },
   { id: 'hide', g: 1, label: 'Скрыть блок', params: [{ k: 'value', label: 'Какой блок', type: 'node', req: true }] },
   { id: 'toggle', g: 1, label: 'Показать / скрыть блок', params: [{ k: 'value', label: 'Какой блок', type: 'node', req: true }], info: 'Каждое нажатие переключает видимость: «Подробнее» → раскрыть описание, повторно — свернуть.' },
+  { id: 'addcart', g: 1, label: 'Добавить в корзину', params: [{ k: 'name', label: 'Название товара (пусто — взять из карточки)', type: 'text' }, { k: 'price', label: 'Цена (пусто — найти в карточке)', type: 'text' }, { k: 'id', label: 'Артикул (необязательно)', type: 'text' }], info: 'Если поля пустые, название берётся из заголовка карточки, а цена — из текста с ₽ / $ / €. Так кнопка работает и в «Списке из NocoDB». На странице нужен блок «Корзина» или «Счётчик корзины».' },
   { id: 'scrolltop', g: 1, label: 'Прокрутить наверх' },
   { id: 'screen', g: 0, label: 'Перейти на экран проекта', params: [{ k: 'value', label: 'Экран', type: 'screen', req: true }, { k: 'arrive', label: 'Что сделать после перехода', type: 'select', options: [['', 'Просто открыть экран'], ['sheet', 'Открыть шторку'], ['anchor', 'Прокрутить к блоку'], ['show', 'Показать скрытый блок']], def: '' }, { k: 'target', label: 'Что именно', type: 'arrive' }],
     info: 'Связь между экранами проекта. В редакторе её видно стрелкой между мокапами. В PuzzleBot переход идёт через goto_web_page — у каждого экрана укажите ссылку на его страницу Mini App.' },
@@ -2598,6 +2636,7 @@ const JS_FREE_ACTIONS = new Set(['none', 'url', 'goto', 'anchor', 'tg', 'bot', '
 
 /* ---------- Код обработчиков (в итоговую страницу попадают только используемые) ---------- */
 const ACT_JS = {
+  addcart: `addcart: function (p, el) { if (window.__psCartAdd) window.__psCartAdd(p, el); else toast('Корзина не настроена'); }`,
   history: `history: function () { var st = window.__psScr || []; if (st.length) { var prev = st.pop(), all = document.querySelectorAll('[data-ps-screen]'); for (var i = 0; i < all.length; i++) all[i].hidden = all[i].getAttribute('data-ps-screen') !== prev; window.scrollTo(0, 0); return; } if (window.history.length > 1) window.history.back(); else if (tg && tg.close) tg.close(); }`,
   screen: `screen: function (p) { var all = document.querySelectorAll('[data-ps-screen]'); for (var j = 0; j < all.length; j++) if (!all[j].hidden) { (window.__psScr = window.__psScr || []).push(all[j].getAttribute('data-ps-screen')); break; } for (var i = 0; i < all.length; i++) all[i].hidden = all[i].getAttribute('data-ps-screen') !== p.value; window.scrollTo(0, 0); try { window.dispatchEvent(new CustomEvent('ps-arrive', { detail: { to: p.value, type: p.arrive || '', target: p.target || '' } })); } catch (er) {} }`,
   sheet: `sheet: function (p) { sheetOpen(p.value); }`,
@@ -2641,6 +2680,386 @@ const ACT_JS = {
   haptic: `haptic: function (p) { hap(p.value || 'medium'); }`,
   info: `info: function (p) { if (!need()) return; var u = tg.initDataUnsafe || {}, m = { user: u.user || {}, chat: u.chat || {}, theme: tg.themeParams || {}, version: { version: tg.version, platform: tg.platform, colorScheme: tg.colorScheme }, viewport: { height: tg.viewportHeight, stable: tg.viewportStableHeight, expanded: tg.isExpanded, fullscreen: tg.isFullscreen, safeArea: tg.safeAreaInset } }; say(JSON.stringify(m[p.value] || m.version, null, 2)); }`,
 };
+
+/* ===== 04b-components2.js ===== */
+/* ============================================================
+   04b · НОВЫЕ БЛОКИ: корзина, квиз, слайдер, поиск, карта
+   + языки [ru]…[en]…, условия показа по переменным.
+   Каждый блок с флагом feat включает свой кусок скрипта (RUNTIME_EXT)
+   только если он есть на странице.
+   ============================================================ */
+const LANG_RE = /\[(ru|en|uk|kk|uz|be|de|es|fr|it|pt|tr|ar|zh|ja|ko|pl|az|hy|ka|ky|tg|tk)\]/;
+function hasLang(s) { return typeof s === 'string' && LANG_RE.test(s); }
+/* «[ru]Привет[en]Hello» → { ru: 'Привет', en: 'Hello' } */
+function splitLang(s) {
+  const out = {}; const re = /\[([a-z]{2})\]([\s\S]*?)(?=\[[a-z]{2}\]|$)/g; let m, any = false;
+  const pre = s.split(/\[[a-z]{2}\]/)[0];
+  while ((m = re.exec(s))) { if (LANG_RE.test('[' + m[1] + ']')) { out[m[1]] = (pre || '') + m[2]; any = true; } }
+  return any ? out : null;
+}
+const COND_OPS = [['filled', 'не пустая'], ['empty', 'пустая'], ['eq', 'равна'], ['ne', 'не равна'], ['has', 'содержит'], ['gt', 'больше (число)'], ['lt', 'меньше (число)']];
+
+Object.assign(COMP, {
+  cart: {
+    label: 'Корзина', icon: 'cart', feat: 'cart',
+    usage: 'Список товаров, которые пользователь добавил кнопкой с действием «Добавить в корзину». Удобно класть в шторку.',
+    fields: [
+      { k: 'title', label: 'Заголовок', type: 'text' },
+      { k: 'currency', label: 'Валюта', type: 'text' },
+      { k: 'empty', label: 'Текст пустой корзины', type: 'text' },
+      { k: 'checkout', label: 'Текст кнопки оформления', type: 'text' },
+      { k: 'mode', label: 'Что делать при оформлении', type: 'select', options: [['senddata', 'Передать заказ боту (sendData)'], ['webhook', 'Отправить на вебхук (POST JSON)'], ['nocodb', 'Записать в таблицу NocoDB'], ['bot', 'Открыть бота с кодом заказа'], ['message', 'Только показать сообщение']] },
+      { k: 'webhook', label: 'Вебхук (для режима «вебхук»)', type: 'url', when: p => p.mode === 'webhook' },
+      { k: 'ncTable', label: 'ID таблицы заказов NocoDB', type: 'text', when: p => p.mode === 'nocodb' },
+      { k: 'bot', label: 'Юзернейм бота (для режима «открыть бота»)', type: 'text', when: p => p.mode === 'bot' },
+      { k: 'done', label: 'Сообщение после оформления', type: 'text' },
+    ],
+    info: 'Корзина хранится в браузере пользователя (localStorage) и не теряется при перезагрузке. Цены считаются на странице — окончательную сумму проверяйте на стороне бота.',
+    defaults: { props: { title: 'Корзина', currency: '₽', empty: 'Корзина пуста', checkout: 'Оформить заказ', mode: 'senddata', webhook: '', ncTable: '', bot: '', done: 'Заказ оформлен! Мы свяжемся с вами.' }, style: { gap: 12 } },
+    render(n, ctx) {
+      const p = n.props;
+      const mode = CSS.pick(p.mode, ['senddata', 'webhook', 'nocodb', 'bot', 'message']) || 'senddata';
+      const hk = checkUrl(p.webhook, { allowAnchor: false });
+      const attrs = ` data-ps-cart data-ps-cur="${TA(p.currency || '₽', ctx)}" data-ps-mode="${mode}"${mode === 'webhook' && hk.ok && /^https:/.test(hk.url) ? ` data-ps-hook="${escAttr(hk.url)}"` : ''}${mode === 'nocodb' && /^[A-Za-z0-9_-]{3,64}$/.test(p.ncTable || '') ? ` data-ps-nct="${escAttr(p.ncTable)}"` : ''}${mode === 'bot' && /^[A-Za-z0-9_]{4,64}$/.test(String(p.bot || '').replace('@', '')) ? ` data-ps-bot="${escAttr(String(p.bot).replace('@', ''))}"` : ''}`;
+      const demo = ctx.mode === 'edit' || ctx.varMode === 'sample';
+      const rows = demo ? `<div class="ps-cart-i"><span class="ps-cart-n">Кроссовки Air</span><span class="ps-cart-q"><button type="button">−</button><b>1</b><button type="button">+</button></span><span class="ps-cart-p">9 990 ${T(p.currency, ctx)}</span></div><div class="ps-cart-i"><span class="ps-cart-n">Кеды Classic</span><span class="ps-cart-q"><button type="button">−</button><b>2</b><button type="button">+</button></span><span class="ps-cart-p">9 980 ${T(p.currency, ctx)}</span></div>` : '';
+      return `<div ${at(n, ctx, 'ps-cart', attrs)}>${p.title ? `<div class="ps-cart-t">${T(p.title, ctx)}</div>` : ''}<div class="ps-cart-list">${rows}</div><div class="ps-cart-empty"${demo ? ' hidden' : ''}>${T(p.empty, ctx)}</div><div class="ps-cart-sum"><span>Итого</span><b data-ps-cart-total>${demo ? '19 970 ' + T(p.currency, ctx) : '0'}</b></div><button type="button" class="ps-btn ps-btn--primary ps-btn--md ps-btn--full" data-ps-cart-go>${T(p.checkout, ctx)}</button><div class="ps-form-ok" data-ps-cart-done hidden>${T(p.done, ctx)}</div></div>`;
+    },
+  },
+  cartBadge: {
+    label: 'Счётчик корзины', icon: 'bag', feat: 'cart', action: true,
+    usage: 'Показывает, сколько товаров в корзине и на какую сумму. Обычно открывает шторку с корзиной.',
+    fields: [{ k: 'text', label: 'Подпись', type: 'text' }, { k: 'currency', label: 'Валюта', type: 'text' }],
+    defaults: { props: { text: 'Корзина', currency: '₽' }, action: { type: 'none' } },
+    render(n, ctx) {
+      const ap = actionParts(n.action, ctx);
+      const demo = ctx.mode === 'edit' || ctx.varMode === 'sample';
+      return `<${ap.tag} ${at(n, ctx, 'ps-btn ps-btn--secondary ps-btn--md ps-cart-badge')}${ap.attrs} data-ps-cart-badge data-ps-cur="${TA(n.props.currency || '₽', ctx)}">${svgI('cart', 18)}<span>${T(n.props.text, ctx)}</span><b data-ps-cart-count>${demo ? '3' : '0'}</b></${ap.tag}>`;
+    },
+  },
+  quiz: {
+    label: 'Квиз / опрос', icon: 'help', feat: 'quiz',
+    usage: 'Вопросы по одному на экране, подсчёт правильных ответов и результат. Результат можно передать боту.',
+    fields: [
+      { k: 'items', label: 'Вопросы', type: 'items', itemLabel: 'q', fields: [{ k: 'q', label: 'Вопрос', type: 'text', vars: true }, { k: 'a1', label: 'Ответ 1', type: 'text' }, { k: 'a2', label: 'Ответ 2', type: 'text' }, { k: 'a3', label: 'Ответ 3', type: 'text' }, { k: 'a4', label: 'Ответ 4', type: 'text' }, { k: 'right', label: 'Правильный ответ (1–4, 0 — опрос без правильного)', type: 'number' }], add: { q: 'Новый вопрос', a1: 'Да', a2: 'Нет', a3: '', a4: '', right: 1 } },
+      { k: 'good', label: 'Результат: хорошо (от порога)', type: 'text' },
+      { k: 'bad', label: 'Результат: ниже порога', type: 'text' },
+      { k: 'pass', label: 'Порог, % правильных', type: 'range', min: 0, max: 100, step: 5 },
+      { k: 'send', label: 'Передать результат боту (sendData)', type: 'toggle' },
+      { k: 'again', label: 'Текст кнопки «Пройти ещё раз»', type: 'text' },
+    ],
+    defaults: { props: { items: [{ q: 'Сколько дней в неделе?', a1: '5', a2: '7', a3: '10', a4: '', right: 2 }, { q: 'Какого цвета небо днём?', a1: 'Зелёное', a2: 'Голубое', a3: '', a4: '', right: 2 }], good: 'Отлично! Вы знаете тему.', bad: 'Есть что подтянуть — попробуйте ещё раз.', pass: 60, send: false, again: 'Пройти ещё раз' }, style: { bg: 'token:surface', radius: 'theme', pt: 16, pr: 16, pb: 16, pl: 16 } },
+    render(n, ctx) {
+      const p = n.props, items = (p.items || []).filter(it => it && it.q);
+      if (!items.length) return ctx.mode === 'edit' ? `<div ${at(n, ctx, 'ps-edit-img-empty')}>Добавьте вопросы в панели свойств</div>` : '';
+      const steps = items.map((it, i) => {
+        const opts = [it.a1, it.a2, it.a3, it.a4].map((a, k) => a ? `<button type="button" class="ps-quiz-a" data-k="${k + 1}">${T(a, ctx)}</button>` : '').join('');
+        return `<div class="ps-quiz-s" data-r="${clamp(parseInt(it.right) || 0, 0, 4)}"${i && ctx.mode !== 'edit' ? ' hidden' : ''}${i && ctx.mode === 'edit' ? ' hidden' : ''}><div class="ps-quiz-n">Вопрос ${i + 1} из ${items.length}</div><div class="ps-quiz-q">${T(it.q, ctx)}</div><div class="ps-quiz-as">${opts}</div></div>`;
+      }).join('');
+      return `<div ${at(n, ctx, 'ps-quiz', ` data-ps-quiz data-pass="${clamp(parseInt(p.pass) || 0, 0, 100)}"${p.send ? ' data-send' : ''}`)}><div class="ps-quiz-bar"><i></i></div>${steps}<div class="ps-quiz-res" hidden><div class="ps-quiz-score"></div><div class="ps-quiz-good" hidden>${T(p.good, ctx)}</div><div class="ps-quiz-bad" hidden>${T(p.bad, ctx)}</div><button type="button" class="ps-btn ps-btn--secondary ps-btn--md ps-btn--full ps-quiz-again">${T(p.again, ctx)}</button></div>${ctx.mode === 'edit' && items.length > 1 ? `<div class="ps-edit-note">+ ещё ${items.length - 1} ${items.length - 1 === 1 ? 'вопрос' : 'вопроса'} — в панели свойств</div>` : ''}</div>`;
+    },
+  },
+  slider: {
+    label: 'Слайдер баннеров', icon: 'gallery', feat: 'slider',
+    usage: 'Промо-баннеры листаются пальцем и сами по таймеру. Каждый баннер может вести по ссылке.',
+    fields: [
+      { k: 'items', label: 'Слайды', type: 'items', itemLabel: 'title', fields: [{ k: 'src', label: 'Картинка', type: 'image' }, { k: 'title', label: 'Заголовок', type: 'text', vars: true }, { k: 'text', label: 'Текст', type: 'text', vars: true }, { k: 'link', label: 'Ссылка (необязательно)', type: 'url' }], add: { src: '', title: 'Новый слайд', text: '', link: '' } },
+      { k: 'auto', label: 'Автопрокрутка, секунд (0 — выкл.)', type: 'range', min: 0, max: 10, step: 1 },
+      { k: 'ratio', label: 'Пропорции', type: 'select', options: [['16/9', '16:9'], ['2/1', '2:1'], ['3/2', '3:2'], ['1/1', '1:1'], ['4/5', '4:5']] },
+      { k: 'dots', label: 'Точки внизу', type: 'toggle' },
+    ],
+    defaults: { props: { items: [], auto: 4, ratio: '16/9', dots: true }, style: { radius: 'theme' } },
+    render(n, ctx) {
+      const p = n.props;
+      let items = (p.items || []).filter(it => it && (it.src || it.title));
+      if (!items.length) items = [{ src: artImage(11, ['#5b7cfa', '#8a5cf6', '#1d2340'], 'banner'), title: 'Скидка −30%', text: 'Только до воскресенья' }, { src: artImage(23, ['#22d3a5', '#5b7cfa', '#10302a'], 'banner'), title: 'Новинки недели', text: 'Смотрите первыми' }];
+      const ratio = CSS.pick(p.ratio, ['16/9', '2/1', '3/2', '1/1', '4/5']) || '16/9';
+      const slides = items.map((it, i) => {
+        const c = checkUrl(it.src, { allowData: true, allowAnchor: false });
+        const bg = c.ok && c.url ? `background-image:url('${escAttr(c.url)}')` : 'background:var(--ps-grad)';
+        const lk = checkUrl(it.link, { allowAnchor: true });
+        const tag = lk.ok && lk.url ? 'a' : 'div';
+        const href = tag === 'a' ? ` href="${escAttr(lk.url)}"${/^https?:/.test(lk.url) ? ' target="_blank" rel="noopener noreferrer"' + (ctx.js ? ' data-ps-act="link"' : '') : ''}` : '';
+        return `<${tag} class="ps-sl-s" style="${bg};aspect-ratio:${ratio}"${href}><div class="ps-sl-c">${it.title ? `<b>${T(it.title, ctx)}</b>` : ''}${it.text ? `<span>${T(it.text, ctx)}</span>` : ''}</div></${tag}>`;
+      }).join('');
+      const dots = p.dots && items.length > 1 ? `<div class="ps-sl-d">${items.map((_, i) => `<i${i ? '' : ' class="on"'}></i>`).join('')}</div>` : '';
+      return `<div ${at(n, ctx, 'ps-sl', ` data-ps-slider data-auto="${clamp(parseInt(p.auto) || 0, 0, 10)}"`)}><div class="ps-sl-t">${slides}</div>${dots}</div>`;
+    },
+  },
+  search: {
+    label: 'Поиск по списку', icon: 'search', feat: 'search',
+    usage: 'Поле поиска и кнопки-категории над списком: прячут карточки, в которых нет нужного текста.',
+    fields: [
+      { k: 'target', label: 'Какой список фильтровать', type: 'nodepick' },
+      { k: 'placeholder', label: 'Подсказка в поле', type: 'text' },
+      { k: 'chips', label: 'Категории через запятую (необязательно)', type: 'text' },
+      { k: 'none', label: 'Текст, если ничего не найдено', type: 'text' },
+    ],
+    info: 'Ищет по тексту карточек — работает и со «Списком из NocoDB», и с обычной сеткой. Категория — это слово, которое должно быть в тексте карточки.',
+    defaults: { props: { target: '', placeholder: 'Поиск', chips: '', none: 'Ничего не найдено' }, style: { gap: 8 } },
+    render(n, ctx) {
+      const p = n.props;
+      const chips = String(p.chips || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 12);
+      return `<div ${at(n, ctx, 'ps-search', ` data-ps-search="${escAttr(p.target || '')}"`)}><label class="ps-search-f">${svgI('search', 16)}<input type="search" placeholder="${TA(p.placeholder, ctx)}" aria-label="${TA(p.placeholder || 'Поиск', ctx)}"></label>${chips.length ? `<div class="ps-search-c"><button type="button" class="on" data-chip="">Все</button>${chips.map(c => `<button type="button" data-chip="${TA(c, ctx)}">${T(c, ctx)}</button>`).join('')}</div>` : ''}<div class="ps-search-none" hidden>${T(p.none, ctx)}</div></div>`;
+    },
+  },
+  map: {
+    label: 'Карта', icon: 'map-pin',
+    usage: 'Карта по адресу и кнопка «Проложить маршрут»: кафе, салон, пункт выдачи.',
+    fields: [
+      { k: 'address', label: 'Адрес или координаты', type: 'text', vars: true },
+      { k: 'provider', label: 'Карты', type: 'seg', options: [['yandex', 'Яндекс'], ['google', 'Google']] },
+      { k: 'zoom', label: 'Приближение', type: 'range', min: 3, max: 19, step: 1 },
+      { k: 'height', label: 'Высота, px', type: 'range', min: 160, max: 600, step: 10 },
+      { k: 'route', label: 'Кнопка «Проложить маршрут»', type: 'toggle' },
+      { k: 'routeText', label: 'Текст кнопки', type: 'text', when: p => p.route },
+    ],
+    defaults: { props: { address: 'Москва, Красная площадь, 1', provider: 'yandex', zoom: 15, height: 260, route: true, routeText: 'Проложить маршрут' }, style: { radius: 'theme', gap: 10 } },
+    render(n, ctx) {
+      const p = n.props;
+      const addr = String(p.address || '').trim();
+      if (!addr) return ctx.mode === 'edit' ? `<div ${at(n, ctx, 'ps-edit-img-empty')}>${svgI('map-pin', 24)}<span>Укажите адрес</span></div>` : '';
+      const a = ctx.varMode === 'sample' || ctx.mode === 'edit' ? encodeURIComponent(addr.replace(VAR_RE, (m, k) => varSample(ctx.project, k))) : encKeepVars(addr);
+      const z = clamp(parseInt(p.zoom) || 15, 3, 19), hgt = clamp(parseInt(p.height) || 260, 160, 600);
+      const g = p.provider === 'google';
+      const src = g ? `https://maps.google.com/maps?q=${a}&z=${z}&output=embed` : `https://yandex.ru/map-widget/v1/?text=${a}&z=${z}`;
+      const route = g ? `https://www.google.com/maps/dir/?api=1&destination=${a}` : `https://yandex.ru/maps/?rtext=~${a}&rtt=auto`;
+      const frame = ctx.mode === 'edit' ? `<div class="ps-map-f ps-map-ph" style="height:${hgt}px">${svgI('map-pin', 28)}<span>${escHtml(addr)}</span><small>${g ? 'Google' : 'Яндекс'} Карты · видны в «Просмотре»</small></div>` : `<iframe class="ps-map-f" src="${escAttr(src)}" style="height:${hgt}px" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Карта" allowfullscreen></iframe>`;
+      return `<div ${at(n, ctx, 'ps-map')}>${frame}${p.route ? `<a class="ps-btn ps-btn--secondary ps-btn--md ps-btn--full" href="${escAttr(route)}" target="_blank" rel="noopener noreferrer"${ctx.js ? ' data-ps-act="link"' : ''}>${svgI('map-pin', 18)}<span>${T(p.routeText || 'Проложить маршрут', ctx)}</span></a>` : ''}</div>`;
+    },
+  },
+});
+
+/* в каталог */
+(() => {
+  const grp = name => CATALOG.find(g => g.cat === name);
+  const add = (cat, items) => { const g = grp(cat); if (g) g.items.push(...items); };
+  add('Кнопки и переходы', [{ id: 'cartBtn', label: 'Кнопка «В корзину»', icon: 'cart', make: () => mk('button', { text: 'В корзину', variant: 'primary', icon: 'plus', iconPos: 'left' }, {}, null, { action: { type: 'addcart' } }) }]);
+  add('Картинки и медиа', [{ id: 'slider', label: 'Слайдер баннеров', icon: 'gallery', make: () => mk('slider') }, { id: 'map', label: 'Карта', icon: 'map-pin', make: () => mk('map') }]);
+  add('Данные и списки', [{ id: 'search', label: 'Поиск по списку', icon: 'search', make: () => mk('search') }]);
+  add('Формы', [{ id: 'quiz', label: 'Квиз / опрос', icon: 'help', make: () => mk('quiz') }]);
+  CATALOG.splice(CATALOG.findIndex(g => g.cat === 'Формы'), 0, { cat: 'Магазин', hint: 'Корзина и заказ', items: [
+    { id: 'shopKit', label: 'Корзина в шторке', icon: 'cart', make: () => mk('cartBadge', {}, {}, null, { action: { type: 'none' } }), after: 'shopKit' },
+    { id: 'cart', label: 'Корзина', icon: 'bag', make: () => mk('cart') },
+    { id: 'cartBadge', label: 'Счётчик корзины', icon: 'cart', make: () => mk('cartBadge', {}, {}, null, { action: { type: 'none' } }) },
+    { id: 'cartBtn2', label: 'Кнопка «В корзину»', icon: 'plus', make: () => mk('button', { text: 'В корзину', variant: 'primary', icon: 'plus', iconPos: 'left' }, {}, null, { action: { type: 'addcart' } }) },
+  ] });
+})();
+
+/* ---------- скрипты новых блоков: попадают в код, только если блок есть на странице ---------- */
+const RUNTIME_EXT = {
+  cart: (pid) => `
+  /* корзина: localStorage, счётчик, оформление */
+  (function () {
+    var KEY = 'ps-cart-${pid}', items = [];
+    try { items = JSON.parse(localStorage.getItem(KEY) || '[]') || []; } catch (e) { items = []; }
+    function save() { try { localStorage.setItem(KEY, JSON.stringify(items)); } catch (e) {} draw(); }
+    function num(s) { var m = String(s || '').replace(/\\s|&nbsp;/g, '').replace(',', '.').match(/-?\\d+(\\.\\d+)?/); return m ? parseFloat(m[0]) : 0; }
+    function money(v, cur) { return (Math.round(v * 100) / 100).toLocaleString('ru-RU') + (cur ? ' ' + cur : ''); }
+    function count() { var c = 0; items.forEach(function (i) { c += i.q; }); return c; }
+    function total() { var s = 0; items.forEach(function (i) { s += i.q * i.p; }); return s; }
+    function draw() {
+      var carts = root.querySelectorAll('[data-ps-cart]');
+      for (var c = 0; c < carts.length; c++) {
+        var C = carts[c], cur = C.getAttribute('data-ps-cur') || '', L = C.querySelector('.ps-cart-list');
+        L.innerHTML = '';
+        items.forEach(function (it, i) {
+          var row = document.createElement('div'); row.className = 'ps-cart-i';
+          var n = document.createElement('span'); n.className = 'ps-cart-n'; n.textContent = it.n;
+          var q = document.createElement('span'); q.className = 'ps-cart-q';
+          var m = document.createElement('button'); m.type = 'button'; m.textContent = '−'; m.setAttribute('aria-label', 'Меньше'); m.onclick = function () { it.q--; if (it.q <= 0) items.splice(i, 1); hap('light'); save(); };
+          var b = document.createElement('b'); b.textContent = it.q;
+          var pl = document.createElement('button'); pl.type = 'button'; pl.textContent = '+'; pl.setAttribute('aria-label', 'Больше'); pl.onclick = function () { it.q++; hap('light'); save(); };
+          q.appendChild(m); q.appendChild(b); q.appendChild(pl);
+          var pr = document.createElement('span'); pr.className = 'ps-cart-p'; pr.textContent = money(it.q * it.p, cur);
+          row.appendChild(n); row.appendChild(q); row.appendChild(pr); L.appendChild(row);
+        });
+        var e = C.querySelector('.ps-cart-empty'); if (e) e.hidden = items.length > 0;
+        var t = C.querySelector('[data-ps-cart-total]'); if (t) t.textContent = money(total(), cur);
+        var g = C.querySelector('[data-ps-cart-go]'); if (g) g.disabled = !items.length;
+      }
+      var bs = root.querySelectorAll('[data-ps-cart-badge]');
+      for (var k = 0; k < bs.length; k++) { var cn = bs[k].querySelector('[data-ps-cart-count]'); if (cn) cn.textContent = count(); bs[k].classList.toggle('has', count() > 0); }
+    }
+    window.__psCartAdd = function (p, el) {
+      var name = p.name, price = p.price;
+      if (!name || price === undefined || price === '') {
+        var card = el.closest('.ps-box, [data-nc-item]') || el.parentNode;
+        if (!name) { var hd = card && card.querySelector('h1,h2,h3,h4,h5,h6,.ps-h'); name = hd ? hd.textContent.trim() : 'Товар'; }
+        if (price === undefined || price === '') { var tx = card ? card.textContent : ''; var mm = tx.match(/(\\d[\\d\\s.,]*)\\s*(₽|руб|\\$|€|⭐)/); price = mm ? mm[1] : '0'; }
+      }
+      var id = p.id || name, f = null;
+      items.forEach(function (i) { if (i.id === id) f = i; });
+      if (f) f.q++; else items.push({ id: id, n: String(name).slice(0, 120), p: num(price), q: 1 });
+      save(); hap('success'); toast('Добавлено в корзину: ' + String(name).slice(0, 40));
+    };
+    root.addEventListener('click', function (e) {
+      var go = e.target.closest ? e.target.closest('[data-ps-cart-go]') : null;
+      if (!go || !root.contains(go) || !items.length) return;
+      var C = go.closest('[data-ps-cart]'), mode = C.getAttribute('data-ps-mode'), done = C.querySelector('[data-ps-cart-done]');
+      var order = { items: items.map(function (i) { return { id: i.id, name: i.n, price: i.p, qty: i.q }; }), total: total(), currency: C.getAttribute('data-ps-cur') || '', created_at: new Date().toISOString(), tg_user: tg && tg.initDataUnsafe ? tg.initDataUnsafe.user || null : null };
+      function ok() { items = []; save(); if (done) done.hidden = false; hap('success'); }
+      function fail() { hap('error'); toast('Не удалось оформить заказ. Попробуйте ещё раз.'); }
+      if (mode === 'senddata') { if (tg && tg.sendData) { tg.sendData(JSON.stringify(order).slice(0, 4096)); ok(); } else toast('Оформление работает в Telegram (кнопка клавиатуры бота)'); return; }
+      if (mode === 'webhook' && C.getAttribute('data-ps-hook')) { go.disabled = true; fetch(C.getAttribute('data-ps-hook'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ order: order, tg_init_data: tg ? tg.initData || '' : '' }) }).then(function (r) { if (!r.ok) throw 0; ok(); }).catch(fail).then(function () { go.disabled = false; }); return; }
+      if (mode === 'nocodb' && C.getAttribute('data-ps-nct') && window.__psNcWrite) { go.disabled = true; window.__psNcWrite(C.getAttribute('data-ps-nct'), { 'Заказ': JSON.stringify(order.items), 'Сумма': order.total, 'Пользователь': order.tg_user ? String(order.tg_user.id) : '' }).then(ok, fail).then(function () { go.disabled = false; }); return; }
+      if (mode === 'bot' && C.getAttribute('data-ps-bot')) { var code = 'order_' + Date.now().toString(36); var u = 'https://t.me/' + C.getAttribute('data-ps-bot') + '?start=' + code; if (tg && tg.openTelegramLink) tg.openTelegramLink(u); else window.open(u, '_blank'); ok(); return; }
+      ok();
+    });
+    draw();
+  })();`,
+  quiz: () => `
+  /* квиз */
+  (function () {
+    var qs = root.querySelectorAll('[data-ps-quiz]');
+    for (var i = 0; i < qs.length; i++) (function (Q) {
+      var steps = Q.querySelectorAll('.ps-quiz-s'), res = Q.querySelector('.ps-quiz-res'), bar = Q.querySelector('.ps-quiz-bar i'), cur = 0, right = 0, answers = [];
+      function show(k) { for (var s = 0; s < steps.length; s++) steps[s].hidden = s !== k; if (bar) bar.style.width = Math.round(k / steps.length * 100) + '%'; }
+      function finish() {
+        for (var s = 0; s < steps.length; s++) steps[s].hidden = true; if (bar) bar.style.width = '100%';
+        var graded = 0; for (var g = 0; g < steps.length; g++) if (+steps[g].getAttribute('data-r')) graded++;
+        var pct = graded ? Math.round(right / graded * 100) : 100, pass = +Q.getAttribute('data-pass');
+        res.hidden = false; res.querySelector('.ps-quiz-score').textContent = graded ? 'Правильных ответов: ' + right + ' из ' + graded : 'Спасибо за ответы!';
+        res.querySelector('.ps-quiz-good').hidden = pct < pass; res.querySelector('.ps-quiz-bad').hidden = pct >= pass;
+        hap(pct >= pass ? 'success' : 'warning');
+        if (Q.hasAttribute('data-send') && tg && tg.sendData) tg.sendData(JSON.stringify({ quiz: answers, right: right, total: graded, percent: pct }));
+      }
+      Q.addEventListener('click', function (e) {
+        var a = e.target.closest('.ps-quiz-a');
+        if (a && Q.contains(a)) {
+          var st = a.closest('.ps-quiz-s'), r = +st.getAttribute('data-r'), k = +a.getAttribute('data-k');
+          if (st.classList.contains('done')) return; st.classList.add('done');
+          answers.push(k); if (r && k === r) right++;
+          if (r) { a.classList.add(k === r ? 'ok' : 'bad'); var ra = st.querySelector('[data-k="' + r + '"]'); if (ra) ra.classList.add('ok'); } else a.classList.add('ok');
+          hap(r ? (k === r ? 'success' : 'error') : 'selection');
+          setTimeout(function () { cur++; if (cur < steps.length) show(cur); else finish(); }, r ? 700 : 250);
+        }
+        if (e.target.closest('.ps-quiz-again')) {
+          cur = 0; right = 0; answers = []; res.hidden = true;
+          for (var s = 0; s < steps.length; s++) { steps[s].classList.remove('done'); var bs = steps[s].querySelectorAll('.ps-quiz-a'); for (var b = 0; b < bs.length; b++) bs[b].classList.remove('ok', 'bad'); }
+          show(0);
+        }
+      });
+      show(0);
+    })(qs[i]);
+  })();`,
+  slider: () => `
+  /* слайдер: точки и автопрокрутка */
+  (function () {
+    var ss = root.querySelectorAll('[data-ps-slider]');
+    for (var i = 0; i < ss.length; i++) (function (S) {
+      var t = S.querySelector('.ps-sl-t'), dots = S.querySelectorAll('.ps-sl-d i'), n = t.children.length, auto = +S.getAttribute('data-auto'), timer = 0, idx = 0;
+      function go(k) { idx = (k + n) % n; t.scrollTo({ left: idx * t.clientWidth, behavior: 'smooth' }); }
+      t.addEventListener('scroll', function () { var k = Math.round(t.scrollLeft / Math.max(1, t.clientWidth)); if (k !== idx) idx = k; for (var d = 0; d < dots.length; d++) dots[d].classList.toggle('on', d === idx); }, { passive: true });
+      for (var d = 0; d < dots.length; d++) (function (d) { dots[d].addEventListener('click', function () { go(d); restart(); }); })(d);
+      function restart() { clearInterval(timer); if (auto && n > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) timer = setInterval(function () { go(idx + 1); }, auto * 1000); }
+      t.addEventListener('pointerdown', function () { clearInterval(timer); }); t.addEventListener('pointerup', restart);
+      restart();
+    })(ss[i]);
+  })();`,
+  search: () => `
+  /* поиск и категории по списку */
+  (function () {
+    var ss = root.querySelectorAll('[data-ps-search]');
+    for (var i = 0; i < ss.length; i++) (function (S) {
+      var inp = S.querySelector('input'), none = S.querySelector('.ps-search-none'), chip = '';
+      function target() { var id = S.getAttribute('data-ps-search'); return id ? root.querySelector('.ps-' + id) : null; }
+      function items() { var T = target(); if (!T) return []; var it = T.querySelectorAll(':scope > [data-nc-item]'); if (it.length) return it; var host = T.querySelector(':scope > template') ? null : T; return host ? host.children : []; }
+      function run() {
+        var q = (inp.value || '').trim().toLowerCase(), c = chip.toLowerCase(), shown = 0, list = items();
+        for (var k = 0; k < list.length; k++) { var el = list[k]; if (el.classList.contains('ps-nc-msg') || el.tagName === 'TEMPLATE') continue; var tx = el.textContent.toLowerCase(); var ok = (!q || tx.indexOf(q) >= 0) && (!c || tx.indexOf(c) >= 0); el.style.display = ok ? '' : 'none'; if (ok) shown++; }
+        if (none) none.hidden = shown > 0 || (!q && !c);
+      }
+      inp.addEventListener('input', run);
+      S.addEventListener('click', function (e) { var b = e.target.closest('[data-chip]'); if (!b) return; chip = b.getAttribute('data-chip'); var all = S.querySelectorAll('[data-chip]'); for (var k = 0; k < all.length; k++) all[k].classList.toggle('on', all[k] === b); hap('selection'); run(); });
+      setTimeout(run, 50);
+    })(ss[i]);
+  })();`,
+  i18n: () => `
+  /* языки: [ru]…[en]… — показываем язык пользователя Telegram */
+  (function () {
+    var u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user, lang = String((u && u.language_code) || navigator.language || 'ru').slice(0, 2).toLowerCase();
+    var groups = root.querySelectorAll('[data-ps-l]');
+    for (var i = 0; i < groups.length; i++) {
+      var g = groups[i], opts = g.querySelectorAll(':scope > [data-ps-lang]'), has = false;
+      for (var k = 0; k < opts.length; k++) if (opts[k].getAttribute('data-ps-lang') === lang) has = true;
+      for (var j = 0; j < opts.length; j++) opts[j].hidden = has ? opts[j].getAttribute('data-ps-lang') !== lang : j !== 0;
+    }
+    root.setAttribute('lang', lang);
+  })();`,
+  cond: () => `
+  /* условия показа по переменным PuzzleBot */
+  (function () {
+    var cs = root.querySelectorAll('[data-ps-cond]');
+    for (var i = 0; i < cs.length; i++) {
+      var el = cs[i], c = {}; try { c = JSON.parse(el.getAttribute('data-ps-cond')); } catch (e) {}
+      var ve = root.querySelector('[data-ps-cv="' + c.id + '"]'), v = ve ? ve.textContent.trim() : '';
+      if (/^\\{\\{.*\\}\\}$/.test(v)) v = '';
+      var a = v.toLowerCase(), b = String(c.val || '').toLowerCase(), na = parseFloat(v.replace(',', '.')), nb = parseFloat(String(c.val || '').replace(',', '.')), r;
+      if (c.op === 'eq') r = a === b; else if (c.op === 'ne') r = a !== b; else if (c.op === 'has') r = a.indexOf(b) >= 0; else if (c.op === 'gt') r = na > nb; else if (c.op === 'lt') r = na < nb; else if (c.op === 'empty') r = !v; else r = !!v;
+      el.classList.toggle('ps-cond-ok', !!r);
+    }
+  })();`,
+  ncwrite: () => `
+  /* запись в NocoDB (формы и заказы) */
+  window.__psNcWrite = function (table, data) {
+    var cfg = window.__psNcCfg || {};
+    if (!cfg.host || !cfg.token) return Promise.reject(new Error('no nocodb'));
+    return fetch(cfg.host + '/api/v2/tables/' + encodeURIComponent(table) + '/records', { method: 'POST', headers: { 'xc-token': cfg.token, 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+  };`,
+};
+const EXT_CSS = (R, pid) => `
+/* ---- Корзина ---- */
+${R} .ps-cart { display: flex; flex-direction: column; gap: 12px; }
+${R} .ps-cart-t { font-family: var(--ps-font-h); font-size: 19px; font-weight: 700; }
+${R} .ps-cart-list { display: flex; flex-direction: column; gap: 8px; }
+${R} .ps-cart-i { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--ps-radius-sm); background-color: var(--ps-surface2); font-size: 14px; }
+${R} .ps-cart-n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+${R} .ps-cart-q { display: inline-flex; align-items: center; gap: 8px; }
+${R} .ps-cart-q button { width: 28px; height: 28px; border: 0; border-radius: 50%; background-color: var(--ps-surface); color: var(--ps-text); font-size: 16px; cursor: pointer; }
+${R} .ps-cart-p { font-weight: 700; white-space: nowrap; }
+${R} .ps-cart-empty { color: var(--ps-muted); font-size: 14px; text-align: center; padding: 12px 0; }
+${R} .ps-cart-sum { display: flex; justify-content: space-between; align-items: baseline; font-size: 16px; padding-top: 4px; border-top: 1px solid var(--ps-border); }
+${R} .ps-cart-sum b { font-size: 20px; }
+${R} .ps-cart-badge b { min-width: 22px; height: 22px; padding: 0 6px; display: inline-grid; place-items: center; border-radius: 999px; background-color: var(--ps-primary); color: var(--ps-on-primary); font-size: 12px; }
+/* ---- Квиз ---- */
+${R} .ps-quiz { display: flex; flex-direction: column; gap: 14px; }
+${R} .ps-quiz-bar { height: 4px; border-radius: 4px; background-color: var(--ps-surface2); overflow: hidden; }
+${R} .ps-quiz-bar i { display: block; height: 100%; width: 0; background: var(--ps-grad); transition: width .3s ease; }
+${R} .ps-quiz-n { color: var(--ps-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+${R} .ps-quiz-q { font-family: var(--ps-font-h); font-size: 18px; font-weight: 700; margin: 4px 0 12px; }
+${R} .ps-quiz-as { display: flex; flex-direction: column; gap: 8px; }
+${R} .ps-quiz-a { padding: 12px 14px; border: 1.5px solid var(--ps-border); border-radius: var(--ps-radius-sm); background-color: var(--ps-surface); color: var(--ps-text); font: inherit; font-size: 15px; text-align: left; cursor: pointer; transition: border-color .15s, background-color .15s; }
+${R} .ps-quiz-a.ok { border-color: var(--ps-success); background-color: var(--ps-success-t); }
+${R} .ps-quiz-a.bad { border-color: var(--ps-danger); background-color: var(--ps-danger-t); }
+${R} .ps-quiz-res { display: flex; flex-direction: column; gap: 10px; text-align: center; }
+${R} .ps-quiz-score { font-family: var(--ps-font-h); font-size: 20px; font-weight: 700; }
+/* ---- Слайдер ---- */
+${R} .ps-sl { position: relative; overflow: hidden; }
+${R} .ps-sl-t { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: inherit; }
+${R} .ps-sl-t::-webkit-scrollbar { display: none; }
+${R} .ps-sl-s { position: relative; flex: 0 0 100%; scroll-snap-align: start; display: flex; align-items: flex-end; background-size: cover; background-position: center; color: #fff; text-decoration: none; border-radius: inherit; }
+${R} .ps-sl-c { display: flex; flex-direction: column; gap: 2px; width: 100%; padding: 16px; background: linear-gradient(transparent, rgba(0,0,0,.55)); border-radius: 0 0 inherit inherit; }
+${R} .ps-sl-c b { font-size: 18px; } ${R} .ps-sl-c span { font-size: 13px; opacity: .9; }
+${R} .ps-sl-d { position: absolute; left: 0; right: 0; bottom: 8px; display: flex; justify-content: center; gap: 6px; pointer-events: none; }
+${R} .ps-sl-d i { width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.55); transition: width .2s; pointer-events: auto; cursor: pointer; }
+${R} .ps-sl-d i.on { width: 18px; background: #fff; }
+/* ---- Поиск ---- */
+${R} .ps-search { display: flex; flex-direction: column; gap: 8px; }
+${R} .ps-search-f { display: flex; align-items: center; gap: 8px; padding: 0 12px; height: 44px; border: 1px solid var(--ps-border); border-radius: var(--ps-radius-sm); background-color: var(--ps-surface); color: var(--ps-muted); }
+${R} .ps-search-f input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: var(--ps-text); font: inherit; font-size: 15px; }
+${R} .ps-search-c { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+${R} .ps-search-c button { flex: none; padding: 7px 14px; border: 0; border-radius: 999px; background-color: var(--ps-surface2); color: var(--ps-muted); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+${R} .ps-search-c button.on { background-color: var(--ps-primary); color: var(--ps-on-primary); }
+${R} .ps-search-none { color: var(--ps-muted); font-size: 14px; text-align: center; padding: 12px 0; }
+/* ---- Карта ---- */
+${R} .ps-map { display: flex; flex-direction: column; gap: 10px; }
+${R} .ps-map-f { display: block; width: 100%; border: 0; border-radius: inherit; background-color: var(--ps-surface2); }
+${R} .ps-map-ph { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--ps-muted); text-align: center; padding: 12px; }
+/* ---- Условия показа и языки ---- */
+${R} .ps-cond:not(.ps-cond-ok) { display: none !important; }
+${R} .ps-edit-cond { outline: 1.5px dashed #a855f7; outline-offset: 2px; }
+${R} .ps-edit-note { font-size: 12px; color: var(--ps-muted); text-align: center; }`;
 
 /* ===== 05-generator.js ===== */
 /* ============================================================
@@ -3067,6 +3486,7 @@ ${R} .ps-sheet-sp { height: 6px; flex: none; }
 ${R} .ps-sheet-x { position: absolute; top: 12px; right: 12px; z-index: 2; width: 32px; height: 32px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background-color: var(--ps-surface2); color: var(--ps-muted); cursor: pointer; }
 ${R} .ps-sheet-t { padding-right: 40px; font-family: var(--ps-font-h); font-size: 19px; font-weight: 700; flex: none; }
 @media (prefers-reduced-motion: reduce) { ${R} .ps-sheet, ${R} .ps-sheet-bg { transition: none; } }
+${EXT_CSS(R, pid)}
 /* ---- NocoDB ---- */
 ${R} [data-nc]:not([data-nc-done]):empty::after { content: "…"; opacity: .5; }
 ${R} .ps-nc-msg { color: var(--ps-muted); font-size: 14px; padding: 8px 0; }
@@ -3182,7 +3602,7 @@ ${R} .ps-tguser-u, ${R} .ps-tguser-s { font-size: 13px; color: var(--ps-muted); 
 ${R} .ps-avatar img[hidden], ${R} .ps-avatar span[hidden] { display: none; }
 ${R} .ps-mainbtn-w { position: sticky; bottom: 0; z-index: 30; margin-top: auto; padding: 10px 0 calc(10px + max(env(safe-area-inset-bottom, 0px), var(--tg-safe-area-inset-bottom, 0px))); background: linear-gradient(to top, var(--ps-bg) 70%, transparent); }
 ${R} .ps-mainbtn-w[hidden] { display: none; }
-${R} .ps-toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); z-index: 1001; transform: translateX(-50%); max-width: calc(100vw - 32px); padding: 10px 16px; border-radius: 12px; background: var(--ps-text); color: var(--ps-bg); font-size: 14px; font-weight: 600; text-align: center; box-shadow: ${SHADOWS.md}; animation: ps-${pid}-up .2s ease both; }
+${R} .ps-toast { position: fixed; left: 16px; right: 16px; margin: 0 auto; width: fit-content; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); z-index: 1001; max-width: calc(100vw - 32px); padding: 10px 16px; border-radius: 12px; background: var(--ps-text); color: var(--ps-bg); font-size: 14px; font-weight: 600; text-align: center; box-shadow: ${SHADOWS.md}; animation: ps-${pid}-up .2s ease both; }
 /* ---- Анимации появления ---- */
 @keyframes ps-${pid}-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes ps-${pid}-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
@@ -3198,12 +3618,14 @@ ${R} .ps-anim-left { animation: ps-${pid}-left .6s cubic-bezier(.2,.7,.2,1) both
 }
 
 /* ---------- Правила для конкретных узлов ---------- */
+const GEN = { presets: {} };
 function nodeRules(n, R, tokens, out) {
   if (n.hidden) return;
   const def = COMP[n.type];
   if (!def) return;
   const sel = `${R} .ps-${n.id}`;
-  const st = n.style || {};
+  const pre = n.preset && GEN.presets && GEN.presets[n.preset];
+  const st = pre ? { ...(pre.style || {}), ...(n.style || {}) } : (n.style || {});
   let base;
   if (n.type === 'page') {
     // фон страницы — на корень, отступы и gap — на внутренний контейнер
@@ -3266,6 +3688,12 @@ function scanFeatures(root) {
     const a = n.action || {};
     if (a.type === 'copy') { f.copy = true; f.js = true; }
     if (n.type === 'sheet') { f.sheets = true; f.js = true; }
+    const cdef = COMP[n.type];
+    if (cdef && cdef.feat) { f[cdef.feat] = true; f.js = true; }
+    if (a.type === 'addcart') { f.cart = true; f.js = true; }
+    if (n.adv && n.adv.cond && n.adv.cond.key) { f.cond = true; f.js = true; }
+    if ((n.type === 'form' || n.type === 'cart') && n.props && n.props.mode === 'nocodb') { f.ncwrite = true; f.js = true; }
+    for (const v of Object.values(n.props || {})) { if (hasLang(v) || (Array.isArray(v) && v.some(it => it && typeof it === 'object' && Object.values(it).some(hasLang)))) { f.i18n = true; f.js = true; } }
     if (n.type === 'page' && n.back && n.back.on) {
       f.back = true; f.js = true; f.tg = true;
       const ba = n.back.act;
@@ -3475,6 +3903,12 @@ ${feat.sheets ? `  /* шторки: открытие, закрытие крес�
     var msg = f.querySelector('.ps-form-ok'), err = f.querySelector('.ps-form-err');
     if (err) err.hidden = true;
     if (f.getAttribute('data-ps-form') === 'senddata' && tg && tg.sendData) { tg.sendData(JSON.stringify(data)); return; }
+    if (f.getAttribute('data-ps-form') === 'nocodb' && f.getAttribute('data-ps-nct') && window.__psNcWrite) {
+      var nb = f.querySelector('[type=submit]'); if (nb) nb.disabled = true;
+      var tf = f.getAttribute('data-ps-tgf'); if (tf && tg && tg.initDataUnsafe && tg.initDataUnsafe.user) data[tf] = String(tg.initDataUnsafe.user.id);
+      window.__psNcWrite(f.getAttribute('data-ps-nct'), data).then(function () { if (msg) msg.hidden = false; haptic('ok'); f.reset(); }, function () { if (err) err.hidden = false; haptic('err'); }).then(function () { if (nb) nb.disabled = false; });
+      return;
+    }
     var hook = f.getAttribute('data-ps-hook');
     if (f.getAttribute('data-ps-form') === 'webhook' && hook) {
       var btn = f.querySelector('[type=submit]'); if (btn) btn.disabled = true;
@@ -3488,7 +3922,8 @@ ${feat.sheets ? `  /* шторки: открытие, закрытие крес�
     if (msg) msg.hidden = false;
     haptic('ok');
     f.reset();
-  });` : ''}${feat.main ? `
+  });` : ''}${feat.ncwrite ? `
+  window.__psNcCfg = ${JSON.stringify(opt.ncw || {}).replace(/</g, '\\u003c')};` : ''}${Object.keys(RUNTIME_EXT).filter(k => feat[k]).map(k => RUNTIME_EXT[k](String(pid).replace(/s\d+$/, ''), feat, opt)).join('')}${feat.main ? `
   /* кнопка, закреплённая внизу: MainButton Telegram */
   (function () {
     var mb = root.querySelector('[data-ps-main]');
@@ -3703,6 +4138,7 @@ function generate(project, opts = {}) {
   if (opts.noAnim) html = html.replace(/ ps-anim-(fade|up|zoom|left)/g, '');
   // CSS
   const out = { base: [], hover: [], tablet: [], desktop: [], hideMobile: [], hideTablet: [], hideDesktop: [] };
+  GEN.presets = project.page.presets || {};
   nodeRules(project.root, R, tokens, out);
   let css = baseCss(R, pid, page, tokens) + '\n/* ---- Блоки страницы ---- */\n' + out.base.join('\n');
   if (out.hover.length) css += `\n@media (hover: hover) {\n${out.hover.join('\n')}\n}`;
@@ -3712,7 +4148,7 @@ function generate(project, opts = {}) {
   if (out.hideTablet.length) css += `\n@media (min-width: ${BP.tablet}px) and (max-width: ${BP.desktop - 0.02}px) { ${out.hideTablet.join(', ')} { display: none !important; } }`;
   if (out.hideDesktop.length) css += `\n@media (min-width: ${BP.desktop}px) { ${out.hideDesktop.join(', ')} { display: none !important; } }`;
   const fonts = new Set([tokens.font, tokens.headingFont, ...feat.fonts].filter(Boolean));
-  const js = includeJs ? [feat.js ? runtimeJs(pid, feat, { haptics: project.page.haptics !== false, hapticType: project.page.hapticType || 'light', tgTheme: tokens.adaptive === 'tg', acts: [...feat.acts], screenId: (project.screens || []).length && project.root.scr ? project.root.scr.id : '', flow: project.root.flow, nc: feat.nc.size && mode === 'export' && opts.varMode !== 'sample' ? ncRuntimeConf(project, feat.nc) : null }) : '', feat.fill ? fillJs(pid, embedHex(project)) : ''].filter(Boolean).join('\n') : '';
+  const js = includeJs ? [feat.js ? runtimeJs(pid, feat, { haptics: project.page.haptics !== false, hapticType: project.page.hapticType || 'light', tgTheme: tokens.adaptive === 'tg', acts: [...feat.acts], screenId: (project.screens || []).length && project.root.scr ? project.root.scr.id : '', flow: project.root.flow, ncw: feat.ncwrite ? { host: ncHost(project), token: (ncConf(project) || {}).token || '' } : null, nc: feat.nc.size && mode === 'export' && opts.varMode !== 'sample' ? ncRuntimeConf(project, feat.nc) : null }) : '', feat.fill ? fillJs(pid, embedHex(project)) : ''].filter(Boolean).join('\n') : '';
   if (mode !== 'edit' && !opts.minify && opts.pretty !== false) html = beautifyHtml(html);
   if (opts.minify) css = minifyCss(css);
   return { html, css, js, fonts: [...fonts], fontsHref: googleFontsHref([...fonts]), feat, tokens, pid, embed: page.embedMode, hostHex: embedHex(project) };
@@ -3863,6 +4299,8 @@ function validateImport(raw) {
     for (const k of ['hover', 'press', 'anim', 'hide', 'action', 'adv']) if (n[k] && typeof n[k] === 'object') out[k] = sanitizeValue(n[k]);
     if (n.bp && typeof n.bp === 'object') { out.bp = {}; for (const b of ['tablet', 'desktop']) if (n.bp[b]) out.bp[b] = sanitizeValue(n.bp[b]); }
     if (typeof n.name === 'string') out.name = n.name.slice(0, 80);
+    if (typeof n.preset === 'string' && /^[a-z0-9]{2,16}$/i.test(n.preset)) out.preset = n.preset;
+    if (typeof n.note === 'string' && n.note.trim()) out.note = n.note.slice(0, 500);
     if (typeof n.anchor === 'string' && /^[a-z0-9_-]{1,40}$/i.test(n.anchor)) out.anchor = n.anchor;
     if (n.locked) out.locked = true;
     if (n.hidden) out.hidden = true;
@@ -3892,8 +4330,9 @@ function validateImport(raw) {
   if (Array.isArray(pageIn.customVars)) page.customVars = pageIn.customVars.filter(v => v && /^[A-Za-z0-9_]{1,40}$/.test(v.key)).slice(0, 100).map(v => ({ key: v.key, desc: String(v.desc || '').slice(0, 120), sample: String(v.sample || '').slice(0, 200) }));
   const p = newProject({ name: (typeof data.name === 'string' && data.name.trim() ? data.name.trim().slice(0, 80) : 'Импортированная страница'), root });
   p.page = page;
-  for (const k of ['embed', 'hostPreview', 'hapticType']) if (typeof pageIn[k] === 'string') p.page[k] = pageIn[k].slice(0, 30);
+  for (const k of ['embed', 'hostPreview', 'hapticType', 'lang']) if (typeof pageIn[k] === 'string') p.page[k] = pageIn[k].slice(0, 30);
   if (pageIn.haptics === false) p.page.haptics = false;
+  if (pageIn.presets && typeof pageIn.presets === 'object') { p.page.presets = {}; for (const [k, v] of Object.entries(pageIn.presets).slice(0, 60)) if (/^[a-z0-9]{2,16}$/i.test(k) && v && typeof v === 'object') p.page.presets[k] = { name: String(v.name || 'Стиль').slice(0, 40), style: sanitizeValue(v.style || {}) || {} }; }
   if (pageIn.nocodb && typeof pageIn.nocodb === 'object') {
     const nc = pageIn.nocodb, host = String(nc.host || '');
     p.page.nocodb = { host: /^https:\/\/[^\s"'<>]{3,200}$/.test(host) ? host : NC_HOST_DEFAULT, token: '', cache: {}, sources: [] };
@@ -4850,7 +5289,10 @@ const UI = {
   },
 
   _pop: null,
-  closePop() { if (UI._pop) { UI._pop.remove(); UI._pop = null; } },
+  closePop() {
+    if (UI._popOff) { document.removeEventListener('pointerdown', UI._popOff, true); UI._popOff = null; }
+    if (UI._pop) { UI._pop.remove(); UI._pop = null; }
+  },
   popover(anchor, content, { cls = '', align = 'start' } = {}) {
     UI.closePop();
     const p = h('div', { class: 'pop ' + cls }, content);
@@ -4864,7 +5306,10 @@ const UI = {
     p.style.left = x + 'px'; p.style.top = y + 'px';
     UI._pop = p;
     setTimeout(() => {
-      const off = e => { if (!p.contains(e.target) && e.target !== anchor && !anchor.contains(e.target)) { UI.closePop(); document.removeEventListener('pointerdown', off, true); } };
+      if (UI._pop !== p) return; // уже закрыт
+      // слушатель «клик снаружи» привязан к этому окну и снимается вместе с ним
+      const off = e => { if (!p.contains(e.target) && e.target !== anchor && !anchor.contains(e.target)) UI.closePop(); };
+      UI._popOff = off;
       document.addEventListener('pointerdown', off, true);
     }, 0);
     return p;
@@ -5367,6 +5812,8 @@ body { background: #fff; }
 .psx-showbox [data-pscont]:not(.ps-root) { outline: 1px dashed rgba(110,106,255,.35); outline-offset: -1px; }
 .ps-edit-modal-prev { margin-top: 10px; padding: 10px; border: 1.5px dashed rgba(127,127,127,.5); border-radius: 14px; }
 .ps-edit-modal-prev .ps-modal-box { animation: none !important; box-shadow: none !important; }
+[data-psnote] { position: relative; }
+[data-psnote]::before { content: "💬"; position: absolute; top: -10px; right: -6px; z-index: 50; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; background: #ffd75e; box-shadow: 0 1px 4px rgba(0,0,0,.25); font-size: 11px; line-height: 1; pointer-events: none; }
 .ps-edit-ghost { display: contents; }
 .ps-edit-ghost > * { opacity: .45; pointer-events: none; filter: saturate(.7); }
 .ps-edit-nc { background: rgba(34,170,120,.16); box-shadow: inset 0 0 0 1px rgba(34,170,120,.55); }
@@ -5538,6 +5985,16 @@ const Screens = {
     const bar = h('div', { class: 'scr-bar', hidden: true }, thumb, h('span', { class: 'scr-bar-tip' }, '⇆ Потяните или прокрутите колёсиком'));
     wrap.append(bar);
     this.bar = bar; this.thumb = thumb;
+    // мини-карта экранов: видно всю схему и где вы сейчас
+    this.mini = h('div', { class: 'scr-mini', hidden: true, title: 'Мини-карта: нажмите, чтобы перейти' });
+    this.mini.addEventListener('pointerdown', e => {
+      const k = this._mk || 1, r = this.mini.getBoundingClientRect();
+      const go = ev => strip.scrollTo({ left: (ev.clientX - r.left) / k - strip.clientWidth / 2, top: (ev.clientY - r.top) / k - strip.clientHeight / 2 });
+      go(e); this.mini.setPointerCapture(e.pointerId);
+      const mv = ev => go(ev), up = () => { this.mini.removeEventListener('pointermove', mv); this.mini.removeEventListener('pointerup', up); };
+      this.mini.addEventListener('pointermove', mv); this.mini.addEventListener('pointerup', up);
+    });
+    wrap.append(this.mini);
     const geo = () => { const sw = strip.scrollWidth, cw = strip.clientWidth, tw = bar.clientWidth, th = Math.max(56, tw * cw / Math.max(sw, 1)); return { sw, cw, tw, th, max: Math.max(1, sw - cw) }; };
     let drag = null;
     thumb.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); thumb.setPointerCapture(e.pointerId); drag = { x: e.clientX, s: strip.scrollLeft }; bar.classList.add('drag'); });
@@ -5564,7 +6021,19 @@ const Screens = {
     strip.addEventListener('pointerup', pend); strip.addEventListener('pointercancel', pend);
     strip.addEventListener('scroll', () => this.updateBar(), { passive: true });
   },
+  drawMini() {
+    const strip = this.strip, m = this.mini; if (!strip || !m) return;
+    const cols = Object.values(this.frames);
+    const show = cols.length > 1 && !strip.classList.contains('narrow') && (strip.scrollWidth > strip.clientWidth + 2 || strip.scrollHeight > strip.clientHeight + 2);
+    m.hidden = !show; if (!show) return;
+    const W = 170, k = W / Math.max(strip.scrollWidth, 1); this._mk = k;
+    m.style.width = W + 'px'; m.style.height = Math.max(36, strip.scrollHeight * k) + 'px';
+    m.innerHTML = '';
+    for (const f of cols) m.append(h('i', { class: 'mm-s' + (f.id === this.active ? ' on' : ''), style: { left: f.col.offsetLeft * k + 'px', top: f.box.offsetTop * k + 'px', width: f.box.offsetWidth * k + 'px', height: f.box.offsetHeight * k + 'px' } }, String((f.index || 0) + 1)));
+    m.append(h('b', { class: 'mm-v', style: { left: strip.scrollLeft * k + 'px', top: strip.scrollTop * k + 'px', width: strip.clientWidth * k + 'px', height: Math.min(strip.clientHeight, strip.scrollHeight) * k + 'px' } }));
+  },
   updateBar() {
+    this.drawMini();
     const strip = this.strip, bar = this.bar; if (!strip || !bar) return;
     const sw = strip.scrollWidth, cw = strip.clientWidth;
     const need = sw > cw + 2 && !strip.classList.contains('narrow');
@@ -6027,6 +6496,11 @@ const Editor = {
     const node = it.make();
     this.insert(node, where);
     if (it.after === 'qr') this.askQr(node.id);
+    if (it.after === 'shopKit') {
+      const sh = this.newSheet(false);
+      this.act('Корзина в шторке', p => { const s = findNode(p.root, sh.id); if (s) { s.node.props.title = 'Корзина'; s.node.name = 'Корзина'; s.node.children = [mk('cart', { title: '' })]; } const b = findNode(p.root, node.id); if (b) b.node.action = { type: 'sheet', value: sh.id }; }, { panel: true });
+      UI.toast('Готово: счётчик открывает шторку с корзиной. Кнопкам товаров дайте действие «Добавить в корзину».', { icon: 'check', ms: 5000 });
+    }
     if (it.after === 'nc') {
       const srcs = ncSources(S.project);
       if (!srcs.length) { UI.toast('Подключите NocoDB и создайте источник — затем выберите его в свойствах блока', { ms: 4500 }); NCUI.open(); }
@@ -6222,6 +6696,8 @@ const Editor = {
     S.project.applied = this.snap();
     S.project.appliedAt = Date.now();
     this.saveNow().then(() => this.updateDirty());
+    Versions.add('Применено').catch(() => {});
+    if (Cloud.conf().auto && Cloud.ready()) Cloud.push().then(() => UI.toast('Отправлено в облако NocoDB', { icon: 'check' }), e => UI.toast('Облако: ' + e.message, { err: true, ms: 5000 }));
     UI.toast('Изменения применены — код экспорта обновлён', { icon: 'check' });
     if (typeof Puzzlo !== 'undefined') Puzzlo.mood('like', 2400);
   },
@@ -6419,6 +6895,13 @@ const Editor = {
       isMobile() ? { label: 'Устройство: ' + DEVICES[S.device].label, icon: DEVICES[S.device].icon, fn: () => this.setDevice(S.device === 'mobile' ? 'tablet' : S.device === 'tablet' ? 'desktop' : 'mobile') } : null,
       { label: S.settings.showBoxes ? 'Скрыть границы контейнеров' : 'Показать границы контейнеров', icon: 'square', fn: () => { S.settings.showBoxes = !S.settings.showBoxes; App.saveSettings(); Canvas.render(); } },
       { label: S.settings.varMode === 'sample' ? 'Показывать ключи переменных' : 'Показывать примеры значений', icon: 'variable', fn: () => { S.settings.varMode = S.settings.varMode === 'sample' ? 'raw' : 'sample'; App.saveSettings(); Canvas.render(); } },
+      '-',
+      { label: 'Проверка качества', icon: 'shield', fn: () => QA.dialog() },
+      { label: 'Заметки', icon: 'message', fn: () => QA.notes() },
+      { label: 'История версий', icon: 'clock', fn: () => Versions.dialog() },
+      { label: 'Сохранить как мой шаблон', icon: 'bookmark', fn: () => MyTpl.saveCurrent() },
+      { label: 'Облако NocoDB', icon: 'upload', fn: () => Cloud.dialog() },
+      { label: 'Тестовый набор для PuzzleBot', icon: 'zap', fn: () => TestKit.create() },
       '-',
       { label: 'AI-генерация', icon: 'wand', fn: () => ExportUI.ai() },
       { label: 'Импорт JSON в этот проект', icon: 'upload', fn: () => ExportUI.importDialog(true) },
@@ -7021,6 +7504,11 @@ const Inspector = {
       case 'number': return field(f.label, this.num(b, { min: f.min ?? 0, max: f.max ?? 999, unit: f.unit || '' }));
       case 'range': return field(f.label, this.range(b, { min: f.min, max: f.max, step: f.step || 1, unit: f.unit || '' }));
       case 'select': return field(f.label, selectEl(f.options, b.get(), v => b.set(f.num ? parseInt(v) : v)));
+      case 'nodepick': {
+        const opts = [];
+        walk(S.project.root, (x, par, i, depth) => { if (x.id === 'page' || x.id === S.sel) return; if (COMP[x.type] && (COMP[x.type].container || x.type === 'ncList')) opts.push([x.id, '\u00a0\u00a0'.repeat(Math.max(0, depth - 1)) + nodeLabel(x).slice(0, 34)]); });
+        return field(f.label, selectEl([['', '— выберите контейнер или список —'], ...opts], b.get() || '', v => b.set(v)), { hint: 'Выбирайте контейнер с карточками (сетку) или «Список из NocoDB».' });
+      }
       case 'ncsource': {
         const srcs = ncSources(S.project);
         return field(f.label, h('div', { class: 'fld' },
@@ -7128,6 +7616,17 @@ const Inspector = {
     out.push(branch('ok', f.on === 'load' ? 'Действие' : 'Если успешно', 'ok'));
     if (f.on !== 'load') out.push(branch('fail', 'Если нет или отказ', 'no'));
     out.push(h('div', { class: 'hint' }, 'Вне Telegram проверки Face ID, телефона и геолокации идут по ветке «Если нет». В «Просмотре» сценарий тоже запускается.'));
+    return out;
+  },
+
+  /* ---------- языки страницы ---------- */
+  langCtl() {
+    const langs = new Set();
+    for (const r of allScreens(S.project)) walk(r, n => { for (const v of Object.values(n.props || {})) { const scan = x => { if (hasLang(x)) Object.keys(splitLang(x) || {}).forEach(l => langs.add(l)); }; if (Array.isArray(v)) v.forEach(it => it && typeof it === 'object' && Object.values(it).forEach(scan)); else scan(v); } });
+    const out = [h('div', { class: 'hint' }, 'Пишите текст на нескольких языках прямо в поле: [ru]Привет[en]Hello. Пользователь увидит язык своего Telegram; если такого нет — первый вариант.')];
+    if (!langs.size) { out.push(h('div', { class: 'hint box' }, 'Пока на странице один язык.')); return out; }
+    const list = [...langs];
+    out.push(field('Язык на холсте', segmented(list.map(l => [l, l.toUpperCase()]), S.project.page.lang && langs.has(S.project.page.lang) ? S.project.page.lang : list[0], v => Editor.act('Язык холста', p => { p.page.lang = v; }, { struct: false }))));
     return out;
   },
 
@@ -7326,7 +7825,9 @@ const Inspector = {
         body.append(this.sec('content', 'Содержимое', c, { open: true }));
       } else body.append(h('div', { class: 'empty-tab' }, def.container ? 'Это контейнер: его содержимое — вложенные блоки. Расположение, фон и отступы — во вкладке «Настройки».' : 'У этого блока нет текста. Оформление — во вкладке «Настройки».'));
       if (def.container) body.append(this.sec('layout', 'Раскладка', this.layoutCtl(n), { open: true }));
+      body.append(this.sec('note', 'Заметка', this.noteCtl(n), { open: !!n.note, mark: !!n.note }));
     } else if (tab === 'style') {
+      body.append(this.sec('preset', 'Стиль-шаблон', this.presetCtl(n), { open: !!n.preset, mark: !!n.preset }));
       if (def.container) body.append(this.sec('layout', 'Раскладка', this.layoutCtl(n), { open: true }));
       body.append(this.sec('size', 'Размер и отступы', this.sizeCtl(n)));
       body.append(this.sec('type', 'Текст', this.typeCtl(n)));
@@ -7472,6 +7973,53 @@ const Inspector = {
         h('button', { class: 'btn sm', disabled: !(n.bp && n.bp.desktop), onclick: () => resetBp('desktop') }, 'Сбросить для ПК')),
     ];
   },
+  /* ---------- стиль-шаблон: один стиль на много блоков ---------- */
+  presetCtl(n) {
+    const pres = S.project.page.presets || {};
+    const cur = n.preset && pres[n.preset];
+    const used = id => { let c = 0; for (const r of allScreens(S.project)) walk(r, x => { if (x.preset === id) c++; }); return c; };
+    const sameType = Object.entries(pres);
+    const out = [h('div', { class: 'hint' }, 'Сохраните оформление блока как шаблон и подключайте его к другим блокам. Изменили шаблон — поменялись все блоки с ним, на всех экранах.')];
+    out.push(field('Шаблон этого блока', selectEl([['', '— без шаблона —'], ...sameType.map(([id, p]) => [id, p.name + ' · блоков: ' + used(id)])], n.preset || '', v => Editor.setProp(n.id, ['preset'], v, null, { panel: true }))));
+    const row = h('div', { class: 'btn-row' });
+    row.append(h('button', { class: 'btn sm', onclick: async () => {
+      const name = await UI.prompt({ title: 'Новый стиль-шаблон', label: 'Название, например «Кнопка основная» или «Карточка товара»', value: nodeLabel(n).split(':')[0], ok: 'Создать' });
+      if (!name) return;
+      const id = 'st' + uid(5);
+      Editor.act('Новый стиль-шаблон', p => { p.page.presets = p.page.presets || {}; const x = findNode(p.root, n.id).node; p.page.presets[id] = { name: name.slice(0, 40), style: { ...((x.preset && p.page.presets[x.preset] || {}).style || {}), ...(x.style || {}) } }; x.preset = id; x.style = {}; }, { panel: true });
+      UI.toast('Шаблон «' + name + '» создан. Подключайте его к другим блокам здесь же.', { icon: 'check' });
+    } }, ic('plus', 14), 'Создать из этого блока'));
+    if (cur) {
+      row.append(h('button', { class: 'btn sm', title: 'Перенести стили этого блока в шаблон — изменятся все блоки с ним', onclick: () => {
+        Editor.act('Обновление стиль-шаблона', p => { const x = findNode(p.root, n.id).node; const pr = p.page.presets[x.preset]; pr.style = { ...(pr.style || {}), ...(x.style || {}) }; x.style = {}; }, { panel: true });
+        UI.toast('Шаблон обновлён — изменились все блоки с ним', { icon: 'check' });
+      } }, ic('refresh', 14), 'Обновить шаблон'));
+      row.append(h('button', { class: 'btn sm ghost', onclick: () => Editor.act('Отвязать шаблон', p => { const x = findNode(p.root, n.id).node; x.style = { ...((p.page.presets[x.preset] || {}).style || {}), ...(x.style || {}) }; delete x.preset; }, { panel: true }) }, 'Отвязать'));
+      out.push(h('div', { class: 'hint box' }, 'Подключён шаблон «' + cur.name + '». Правки в «Настройках» ниже меняют только этот блок. Чтобы изменить все блоки с шаблоном — поменяйте здесь и нажмите «Обновить шаблон».'));
+    }
+    out.push(row);
+    return out;
+  },
+  noteCtl(n) {
+    const ta = h('textarea', { class: 'inp', rows: 3, placeholder: 'Например: «Заменить фото после съёмки» — видно только в редакторе', 'data-novar': '' });
+    ta.value = n.note || '';
+    ta.addEventListener('input', () => Editor.setProp(n.id, ['note'], ta.value, n.id + ':note', { struct: false }));
+    return [ta, h('div', { class: 'hint' }, 'Заметка не попадает в код. На холсте у блока появится значок 💬, все заметки — в меню «⋯» → «Заметки».')];
+  },
+  condCtl(n) {
+    const c = (n.adv && n.adv.cond) || {};
+    const set = (patch, panel) => Editor.setProp(n.id, ['adv', 'cond'], { ...((Editor.node(n.id).adv || {}).cond || {}), ...patch }, n.id + ':cond', { panel: !!panel });
+    const key = h('input', { class: 'inp mono', value: c.key || '', placeholder: 'например, VIP', 'data-novar': '' });
+    key.addEventListener('input', debounce(() => { const v = key.value.replace(/[{}\s]/g, '').toUpperCase(); if (!v) Editor.setProp(n.id, ['adv', 'cond'], '', null, { panel: true }); else set({ key: v }, !c.key); }, 400));
+    const out = [field('Показывать, только если переменная PuzzleBot…', key, { hint: 'Пусто — блок виден всем. Значение подставит PuzzleBot, проверка — на странице.' })];
+    if (c.key) {
+      const val = h('input', { class: 'inp', value: c.val || '', placeholder: 'да' });
+      val.addEventListener('input', debounce(() => set({ val: val.value }), 400));
+      out.push(h('div', { class: 'grid2' }, field('Условие', selectEl(COND_OPS, c.op || 'filled', v => set({ op: v }, true))), !['filled', 'empty'].includes(c.op || 'filled') ? field('Значение', val) : h('span')),
+        h('div', { class: 'hint' }, 'В редакторе такой блок обведён фиолетовым пунктиром. Пример: {{VIP}} равна «да» — блок увидят только VIP.'));
+    }
+    return out;
+  },
   advCtl(n) {
     const ad = n.adv || {};
     const A = k => ({ get: () => (Editor.node(n.id).adv || {})[k], set: (v, key) => Editor.setProp(n.id, ['adv', k], v, key) });
@@ -7483,6 +8031,7 @@ const Inspector = {
     css.value = ad.css || ''; chk();
     css.addEventListener('input', () => { chk(); Editor.setProp(n.id, ['adv', 'css'], css.value, n.id + ':css'); });
     return [
+      ...this.condCtl(n),
       toggle('Скрыт, пока не покажут действием', !!ad.off, v => Editor.setProp(n.id, ['adv', 'off'], v ? 1 : '', null, { panel: true })),
       ...(ad.off ? [h('div', { class: 'hint' }, 'Блок появится, когда пользователь нажмёт кнопку с действием «Показать блок» или «Показать / скрыть блок». В редакторе он показан полупрозрачным.')] : []),
       field('Показывать на', seg('os', [['', 'Везде'], ['ios', 'Только iOS'], ['android', 'Только Android']]),
@@ -7564,6 +8113,7 @@ const Inspector = {
     body.append(this.sec('back', 'Кнопка «Назад» Telegram', this.backCtl(), { open: !!(S.project.root.back && S.project.root.back.on), mark: !!(S.project.root.back && S.project.root.back.on) }));
     body.append(this.sec('flow', 'При открытии страницы', this.flowCtl(), { open: !!(S.project.root.flow && S.project.root.flow.on), mark: !!(S.project.root.flow && S.project.root.flow.on) }));
     body.append(this.sec('tgapp', 'Telegram', this.telegramCtl()));
+    body.append(this.sec('langs', 'Языки', this.langCtl()));
     // Темы
     const tgrid = h('div', { class: 'two' });
     for (const [id, t] of Object.entries(THEMES)) {
@@ -7811,12 +8361,13 @@ const Home = {
     const q = h('input', { class: 'inp', placeholder: 'Поиск шаблона', value: S.tplQuery, 'data-novar': '', 'aria-label': 'Поиск шаблонов' });
     const used = new Set(TEMPLATES.map(t => t.cat));
     const cats = TPL_CATS.filter(([id]) => id === 'all' || used.has(id));
-    const chips = h('div', { class: 'chips scrollx' }, [['fav', '★ Избранные'], ...cats].map(([id, l]) => h('button', { class: 'chip' + (S.tplCat === id ? ' on' : ''), onclick: () => { S.tplCat = id; this.render(); } }, l)));
+    const chips = h('div', { class: 'chips scrollx' }, [['my', 'Мои шаблоны'], ['fav', '★ Избранные'], ...cats].map(([id, l]) => h('button', { class: 'chip' + (S.tplCat === id ? ' on' : ''), onclick: () => { S.tplCat = id; this.render(); } }, l)));
     main.append(this.head('Шаблоны', `${TEMPLATES.length} готовых страниц. При выборе создаётся независимая копия.`), h('div', { class: 'toolbar' }, h('div', { class: 'search' }, ic('search', 15), q)), h('div', { style: { marginBottom: '18px' } }, chips));
     const grid = h('div', { class: 'grid-cards' });
     main.append(grid);
     const draw = () => {
       grid.innerHTML = '';
+      if (S.tplCat === 'my') { MyTpl.drawInto(grid); return; }
       const qq = S.tplQuery.trim().toLowerCase();
       const list = TEMPLATES.filter(t => (S.tplCat === 'all' || (S.tplCat === 'fav' ? S.favTpl.includes(t.id) : t.cat === S.tplCat)) && (!qq || (t.name + ' ' + t.desc).toLowerCase().includes(qq)));
       if (!list.length) { grid.style.display = 'block'; grid.append(h('div', { class: 'empty' }, ic('grid', 24), h('h3', null, S.tplCat === 'fav' ? 'Нет избранных шаблонов' : 'Ничего не найдено'), h('p', null, S.tplCat === 'fav' ? 'Нажмите звёздочку на карточке шаблона.' : 'Попробуйте другой запрос.'))); return; }
@@ -8255,6 +8806,7 @@ const KB_CATS = [
   { id: 'start', title: 'Начало работы', icon: 'rocket', mascot: true },
   { id: 'editor', title: 'Редактор', icon: 'grid' },
   { id: 'telegram', title: 'Кнопки и Telegram', icon: 'send' },
+  { id: 'shop', title: 'Магазин и блоки', icon: 'cart' },
   { id: 'vars', title: 'Переменные', icon: 'variable' },
   { id: 'puzzlebot', title: 'Размещение в PuzzleBot', icon: 'bot' },
   { id: 'integr', title: 'Интеграции', icon: 'link' },
@@ -8302,6 +8854,19 @@ const KB = [
 
 ## Puzzlo AI
 - Ответы печатаются, а шаблон собирается на глазах. [Подробнее](kb:ai-how)
+
+## Магазин и блоки
+- **Корзина** со счётчиком и оформлением заказа. [Подробнее](kb:cart)
+- **Квиз / опрос**, **слайдер баннеров**, **поиск по списку**, **карта**. [Подробнее](kb:blocks-new)
+- **Языки** [ru]…[en]… и **условия показа** по переменным. [Подробнее](kb:langs) · [Условия](kb:cond)
+- **Запись в NocoDB** из формы и корзины. [Подробнее](kb:ncwrite)
+
+## Удобство
+- **Стиль-шаблоны** — один стиль на много блоков. [Подробнее](kb:presets)
+- **Заметки** к блокам, **проверка качества** с автоисправлением. [Подробнее](kb:quality)
+- **Мини-карта** экранов. [Подробнее](kb:canvas-nav)
+- **История версий**, **мои шаблоны**, **облако NocoDB**. [Подробнее](kb:versions)
+- **Тестовый набор для PuzzleBot**. [Подробнее](kb:testkit)
 
 ## Приложение
 - Иконка приложения, фавикон и установка как приложение (PWA). [Подробнее](kb:pwa)` },
@@ -8369,6 +8934,7 @@ Ctrl + колесо мыши (на Mac — ⌘ + колесо) тоже меня
 - **Перетаскивание пустого места** мышью — как в Figma.
 - **Внутри телефона** колесо листает саму страницу Mini App.
 - Полоса появляется, только когда мокапы не помещаются на экран.
+- **Мини-карта** справа внизу (когда экранов больше одного): прямоугольники — экраны, синяя рамка — то, что видно сейчас. Нажмите или тяните по ней, чтобы перейти.
 
 [[Несколько экранов|kb:screens]]` },
   { id: 'mockup', cat: 'editor', title: 'Мокап телефона', body: `Холст выглядит как Telegram на iPhone: статус-бар, шапка Mini App с названием и «⋯», полоска «домой».
@@ -8520,6 +9086,81 @@ Ctrl + колесо мыши (на Mac — ⌘ + колесо) тоже меня
 
 [[Настройки страницы|page]]` },
 
+  { id: 'cart', cat: 'shop', title: 'Корзина и оформление заказа', body: `## Быстрый старт
+1. Каталог → «Магазин» → **«Корзина в шторке»**: появится счётчик корзины, который открывает шторку с корзиной.
+2. Кнопкам товаров дайте действие **«Добавить в корзину»** (группа «Элементы страницы») или возьмите блок «Кнопка «В корзину»».
+3. Если поля действия пустые, название берётся из заголовка карточки, а цена — из текста с ₽ / $ / €. Поэтому кнопка работает и в «Списке из NocoDB».
+
+## Оформление заказа
+Блок «Корзина» → «Что делать при оформлении»:
+- **Передать заказ боту (sendData)** — JSON заказа придёт боту. Работает, если Mini App открыт кнопкой клавиатуры бота.
+- **Вебхук** — POST JSON на ваш сервер.
+- **Записать в таблицу NocoDB** — строка с колонками «Заказ», «Сумма», «Пользователь». [Подробнее](kb:ncwrite)
+- **Открыть бота с кодом заказа** — t.me/бот?start=order_….
+
+Корзина хранится в браузере пользователя и общая для всех экранов проекта. Сумма считается на странице — проверяйте её на стороне бота.` },
+  { id: 'blocks-new', cat: 'shop', title: 'Квиз, слайдер, поиск, карта', body: `## Квиз / опрос
+Каталог → «Формы» → «Квиз / опрос». Вопросы с 2–4 ответами; «Правильный ответ» 0 — опрос без правильных. Порог в % решает, какой результат показать. Результат можно передать боту (sendData).
+
+## Слайдер баннеров
+«Картинки и медиа» → «Слайдер баннеров». Слайды листаются пальцем и сами по таймеру, у каждого может быть ссылка.
+
+## Поиск по списку
+«Данные и списки» → «Поиск по списку». Выберите, какой контейнер или «Список из NocoDB» фильтровать. Категории через запятую — кнопки-фильтры по слову в карточке.
+
+## Карта
+«Картинки и медиа» → «Карта». Адрес (можно с переменной), Яндекс или Google, приближение, высота и кнопка «Проложить маршрут». На холсте показана заглушка, сама карта — в «Просмотре» и в Telegram.` },
+  { id: 'langs', cat: 'shop', title: 'Несколько языков', body: `Пишите варианты прямо в любом текстовом поле:
+
+\`[ru]Купить[en]Buy[uk]Купити\`
+
+- Пользователь увидит язык своего Telegram. Если такого варианта нет — первый.
+- На холсте язык выбирается в панели «Страница» → «Языки».
+- Работает в текстах, кнопках, подсказках полей, пунктах списков.` },
+  { id: 'cond', cat: 'shop', title: 'Условия показа по переменным', body: `Блок → «Настройки» → «Дополнительно» → **«Показывать, только если переменная PuzzleBot…»**.
+
+Примеры:
+- \`VIP\` равна «да» — блок только для VIP;
+- \`BALANCE\` больше 0 — кнопка «Вывести»;
+- \`PHONE\` пустая — форма «Оставьте телефон».
+
+В редакторе такой блок обведён фиолетовым пунктиром. Значение подставляет PuzzleBot, проверка идёт на странице — для секретных данных это не защита, а удобство.` },
+  { id: 'ncwrite', cat: 'integr', title: 'Запись в NocoDB из формы и корзины', body: `Форма → «Что делать с данными» → **«Записать строку в NocoDB»** → ID таблицы. Имена полей формы должны совпадать с названиями колонок. «Колонка для ID пользователя Telegram» — куда записать ID того, кто отправил.
+
+Корзина в режиме NocoDB пишет колонки «Заказ» (JSON), «Сумма», «Пользователь».
+
+## Важно
+Для записи токену нужны права редактора — а токен виден в коде страницы. Любой пользователь сможет добавлять и менять строки. Используйте отдельную базу только для заявок и токен пользователя с ролью Editor только в ней. Надёжнее — вебхук на свой сервер или исходящий запрос PuzzleBot.` },
+  { id: 'presets', cat: 'editor', title: 'Стиль-шаблоны', body: `Один стиль на много блоков — как классы в CSS.
+
+1. Оформите блок (цвет, отступы, скругление, шрифт).
+2. «Настройки» → **«Стиль-шаблон»** → «Создать из этого блока».
+3. У других блоков выберите этот шаблон в том же списке.
+
+Чтобы изменить все блоки сразу: поменяйте стиль у любого блока с шаблоном и нажмите «Обновить шаблон». «Отвязать» — блок сохранит вид, но перестанет зависеть от шаблона. Шаблоны общие для всех экранов проекта.` },
+  { id: 'quality', cat: 'editor', title: 'Проверка качества и заметки', body: `## Проверка качества
+Меню «⋯» → **«Проверка качества»** (или скажите Puzzlo «проверь страницу»). Проверяются все экраны: мелкий шрифт, плохой контраст, маленькие кнопки, кнопки без действия, картинки без описания, пустые ссылки, тяжёлые картинки, несколько H1. Оценка от 0 до 100. «Исправить автоматически» чинит то, что можно, — отменяется через Ctrl+Z.
+
+## Заметки
+Блок → «Контент» → **«Заметка»**. Видна только в редакторе: на холсте значок 💬. Все заметки — меню «⋯» → «Заметки».` },
+  { id: 'versions', cat: 'projects', title: 'Версии, мои шаблоны и облако', body: `## История версий
+Каждое «Применить» сохраняет версию (до 30 последних). Меню «⋯» → **«История версий»**: открыть версию как черновик или скачать её JSON.
+
+## Мои шаблоны
+Меню «⋯» → **«Сохранить как мой шаблон»**. Шаблон появится в «Шаблоны» → «Мои шаблоны». Его можно скачать файлом и отправить другому человеку.
+
+## Облако NocoDB
+Меню «⋯» → **«Облако NocoDB»**. Создайте таблицу «Проекты» с колонками project_id, name, data (длинный текст), updated. Укажите ID таблицы и токен — проект сохранится в NocoDB и откроется на любом устройстве. Можно включить отправку при каждом «Применить». Токен облака хранится только в браузере и не попадает в код страниц.` },
+  { id: 'testkit', cat: 'puzzlebot', title: 'Тестовый набор для PuzzleBot', body: `Меню «⋯» → **«Тестовый набор для PuzzleBot»**. Создаётся проект из двух экранов, где каждый пункт проверяет одну функцию в настоящем мини-приложении:
+
+1. данные пользователя Telegram и переменные PuzzleBot;
+2. вибрация и окна Telegram;
+3. шторка и закрытие кнопкой «Назад»;
+4. переход между экранами и действие после перехода;
+5. goto_web_page и gotoWebPage() (если указали ссылку на вторую страницу);
+6. кнопка внизу экрана (MainButton) и кнопка «Назад» Telegram.
+
+Экспортируйте, вставьте в PuzzleBot, откройте в Telegram и отметьте, что сработало. Это быстрый способ узнать, какие функции поддерживает ваш PuzzleBot.` },
   { id: 'vars-how', cat: 'vars', title: 'Переменные PuzzleBot', body: `Переменные пишутся в двойных фигурных скобках: \`{{FIRST_NAME_TEXT}}\`. PuzzleBot подставляет значения, когда показывает страницу.
 
 - Начните вводить \`{{\` в любом поле или прямо на холсте — появится подсказка.
@@ -8793,6 +9434,9 @@ const PZ_SECTIONS = [
   [/призыв|cta/, 's-cta', 'призыв к действию'], [/нижн(ее|юю|яя) (меню|навигац)/, 's-bnav', 'нижняя навигация'],
 ];
 const PZ_BLOCKS = [
+  [/корзин/, 'shopKit', 'корзину в шторке'], [/квиз|опрос|викторин/, 'quiz', 'квиз'], [/слайдер|карусел|баннер(ы|ов)/, 'slider', 'слайдер баннеров'],
+  [/карт[уа](?![а-яё])|как добраться|адрес на карте/, 'map', 'карту'], [/поиск/, 'search', 'поиск по списку'], [/шторк/, 'sheetbtn', 'кнопку со шторкой'],
+  [/qr-?код|кьюар-?код/, 'qr', 'QR-код'], [/кнопк[ау] внизу|mainbutton|главн(ую|ая) кнопк/, 'mainBtn', 'кнопку внизу экрана'],
   [/таймер|обратн(ый|ого) отсч/, 'timer', 'таймер'], [/подели/, 'shareBtn', 'кнопка «Поделиться»'], [/\bqr\b|кьюар/, 'qrBtn', 'сканер QR'],
   [/геолок|местополож/, 'locBtn', 'геолокация'], [/face ?id|биометр|отпечат/, 'bioBtn', 'Face ID'], [/галере/, 'gallery', 'галерея'],
   [/видео/, 'video', 'видео'], [/аккордеон/, 'accordion', 'аккордеон'], [/вкладк/, 'tabs', 'вкладки'], [/прогресс/, 'progress', 'прогресс'],
@@ -8926,7 +9570,7 @@ const PuzzloAI = {
         const sec = SECTIONS.find(x => x.id === s[1]);
         if (sec) { Editor.insert(sec.make(), { parent: 'page', index: null }); done.push('добавил «' + s[2] + '»'); }
       }
-      for (const b of this.findAll(PZ_BLOCKS, t)) { const it = catalogFind(b[1]); if (it) { Editor.insert(it.make(), { parent: 'page', index: null }); done.push('добавил ' + b[2]); } }
+      for (const b of this.findAll(PZ_BLOCKS, t)) { const it = catalogFind(b[1]); if (it) { if (it.after && it.after !== 'qr') Editor.addFromCatalog(b[1], { parent: 'page', index: null }); else Editor.insert(it.make(), { parent: 'page', index: null }); done.push('добавил ' + b[2]); } }
     }
     return { done };
   },
@@ -8936,9 +9580,19 @@ const PuzzloAI = {
     if (!t.trim()) return { text: 'Напишите, что сделать.' };
     if (/^(привет|здравствуй|хай|добр)/.test(t) && t.length < 25) return { text: 'Привет! Я Puzzlo. Опишите страницу, которую нужно собрать, — например, «магазин с товарами в тёмном стиле».', mood: 'wave' };
     if (/что ты умеешь|помощ|help|команды|как пользоват/.test(t)) return {
-      text: 'Могу помочь собрать страницу:\n- создать страницу по описанию: магазин, тарифы, профиль, игра, курс, FAQ, заявка, промо и другие;\n- добавить секции: баннер, каталог, тарифы, отзывы, контакты, форму, таймер, кнопку «Поделиться»;\n- добавить товары списком: «Футболка 999 ₽, Кружка 490 ₽»;\n- сменить тему и цвет: «сделай тёмным», «зелёный цвет», «тема Telegram»;\n- удалить блок, переименовать проект, открыть экспорт или просмотр.\n\nЯ работаю на правилах, без интернета и нейросети: понимаю простые фразы. Любое действие можно отменить.',
+      text: 'Могу помочь собрать страницу:\n- создать страницу по описанию: магазин, тарифы, профиль, игра, курс, FAQ, заявка, промо и другие;\n- добавить секции: баннер, каталог, тарифы, отзывы, контакты, форму, таймер, кнопку «Поделиться»;\n- добавить товары списком: «Футболка 999 ₽, Кружка 490 ₽»;\n- сменить тему и цвет: «сделай тёмным», «зелёный цвет», «тема Telegram»;\n- удалить блок, переименовать проект, открыть экспорт или просмотр;\n- добавить корзину, квиз, слайдер, карту, поиск, QR-код, шторку, кнопку внизу экрана;\n- «проверь страницу» и «исправь всё», «примени изменения», «новый экран», «версии», «облако», «тестовый набор».\n\nЯ работаю на правилах, без интернета и нейросети: понимаю простые фразы. Любое действие можно отменить.',
       btns: [['Открыть базу знаний', 'kb:ai-how']], mood: 'wave',
     };
+    if (S.view === 'editor') {
+      if (/провер(ь|ка|ить).{0,12}(страниц|качеств|ошибк)|аудит/.test(t)) { const list = QA.run(S.project); QA.dialog(); return { text: list.length ? `Нашёл замечаний: ${list.length}. Открыл список — нажмите на замечание, чтобы перейти к блоку, или «Исправить автоматически».` : 'Проверил все экраны — замечаний нет. Отличная страница!', mood: list.length ? 'error' : 'like' }; }
+      if (/исправ(ь|и|ить).{0,10}(вс[её]|ошибк|замечан)/.test(t)) { const n = QA.fixAll(S.project); return { text: n ? 'Исправил автоматически: ' + n + '. Остальное нужно поправить вручную — скажите «проверь страницу».' : 'Автоматически исправлять нечего.', mood: 'like', btns: [['Отменить', 'undo']] }; }
+      if (/примени(ть)?|опубликуй/.test(t) && /изменени|правк|вс[её]/.test(t)) { Editor.applyAsk(); return { text: 'Открыл подтверждение — нажмите ✓, чтобы применить изменения.' }; }
+      if (/верси/.test(t)) { Versions.dialog(); return { text: 'Открыл историю версий. Версия сохраняется при каждом «Применить».' }; }
+      if (/нов(ый|ого) экран|добав(ь|ить) экран/.test(t)) { Editor.addScreen(); return { text: 'Добавил экран рядом. Свяжите экраны кнопкой с действием «Перейти на экран проекта».', mood: 'like' }; }
+      if (/сохрани.{0,12}шаблон|мой шаблон/.test(t)) { MyTpl.saveCurrent(); return { text: 'Введите название — шаблон появится в «Шаблоны» → «Мои шаблоны».' }; }
+    }
+    if (/облак/.test(t)) { Cloud.dialog(); return { text: 'Открыл облако NocoDB: там можно сохранить проект и открыть его на другом устройстве.' }; }
+    if (/тестов(ый|ую)? (набор|страниц)|протестир/.test(t)) { TestKit.create(); return { text: 'Создаю тестовый набор: он проверит в PuzzleBot переходы, кнопки Telegram, шторки и экраны.', mood: 'like' }; }
     if (/отмени|верни как было|undo/.test(t)) { if (S.view === 'editor') { Editor.undo(); return { text: 'Отменил последнее действие.', mood: 'like' }; } return { text: 'Сейчас нечего отменять: проект не открыт.' }; }
     if (/экспорт|дай код|скопир.* код|html.?код/.test(t)) { if (S.view === 'editor') { ExportUI.open(); return { text: 'Открыл экспорт. Режим «PuzzleBot: один блок» подходит для блока «HTML код».', mood: 'like' }; } return { text: 'Сначала откройте проект — тогда покажу код.', btns: [['Мои проекты', 'projects']] }; }
     if (/просмотр|предпросмотр|покажи как/.test(t) && S.view === 'editor') { Editor.preview(); return { text: 'Открыл просмотр. Закрыть — кнопка «Редактор» или Esc.' }; }
@@ -9402,6 +10056,291 @@ const NCUI = {
     if (n && def && def.text && !n.locked) { Editor.setProp(n.id, ['props', def.text], ((n.props[def.text] || '') + ' ' + ref).trim(), null, { panel: true }); return; }
     if (/attachment/i.test(f.uidt || '')) Editor.insert(mk('image', { src: ref }));
     else Editor.insert(mk('text', { text: f.title + ': ' + ref }));
+  },
+};
+
+/* ===== 14e-quality.js ===== */
+/* ============================================================
+   14e · ПРОВЕРКА КАЧЕСТВА СТРАНИЦЫ + ЗАМЕТКИ
+   Читаемость, контраст, размеры касания, подписи картинок, пустые ссылки.
+   Часть замечаний можно исправить одной кнопкой.
+   ============================================================ */
+function hexRgb(c) { const m = /^#([0-9a-f]{6})$/i.exec(String(c || '').trim()); if (!m) return null; const n = parseInt(m[1], 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+function relLum(rgb) { const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f(rgb[0]) + 0.7152 * f(rgb[1]) + 0.0722 * f(rgb[2]); }
+function contrast(a, b) { const l1 = relLum(a), l2 = relLum(b); return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05); }
+
+const QA = {
+  /* цвет из стиля: #hex или токен темы */
+  color(v, tokens) { if (!v) return null; const s = String(v); if (s.startsWith('token:')) return hexRgb(tokens[s.slice(6)]); return hexRgb(s); },
+  run(project) {
+    const out = [];
+    const tokens = themeTokens(project.page);
+    let curScr = null;
+    const add = (level, text, scr, id, fix) => out.push({ level, text, scr: curScr, id, fix });
+    for (const r of allScreens(project)) {
+      const sn = r.scr.name; curScr = r.scr.id;
+      let h1 = 0;
+      const pageBg = this.color(tokens.bg, tokens) || [255, 255, 255];
+      walk(r, (n, par) => {
+        if (n.hidden || n.type === 'page') return n.hidden ? false : undefined;
+        const st = { ...(((project.page.presets || {})[n.preset] || {}).style || {}), ...(n.style || {}) };
+        const L = nodeLabel(n);
+        const fs = parseFloat(st.fs);
+        if (fs && fs < 12) add('warn', `«${L}»: шрифт ${fs}px — мелко для телефона`, sn, n.id, x => { x.style.fs = 13; });
+        const fg = this.color(st.color, tokens), bg = this.color(st.bg, tokens) || pageBg;
+        if (fg && contrast(fg, bg) < 3) add('warn', `«${L}»: текст плохо видно на фоне (контраст ${contrast(fg, bg).toFixed(1)})`, sn, n.id, x => { delete x.style.color; });
+        if (n.type === 'button') {
+          const hh = parseFloat(st.h);
+          if (hh && hh < 40) add('warn', `«${L}»: кнопка ниже 40px — по ней трудно попасть пальцем`, sn, n.id, x => { x.style.h = 44; });
+          if (!String(n.props.text || '').trim() && n.props.variant !== 'icon') add('warn', `«${L}»: у кнопки нет текста`, sn, n.id);
+          if (!n.action || !n.action.type || n.action.type === 'none') if (!n.props.mainBtn) add('info', `«${L}»: кнопка ничего не делает`, sn, n.id);
+        }
+        if (n.type === 'image' && n.props.src && !String(n.props.alt || '').trim()) add('info', `«${L}»: нет описания картинки (alt) для незрячих`, sn, n.id, x => { x.props.alt = x.name || 'Изображение'; });
+        if (n.type === 'heading' && (parseInt(n.props.level) || 2) === 1) h1++;
+        if (n.type === 'link' && n.action && n.action.type === 'url' && !String(n.action.value || '').trim()) add('warn', `«${L}»: пустая ссылка`, sn, n.id);
+        if ((n.type === 'text' || n.type === 'heading') && !String(n.props.text || '').trim()) add('info', `«${L}»: пустой текст`, sn, n.id);
+        if (n.type === 'image' && /^data:/.test(n.props.src || '') && n.props.src.length > 700000) add('warn', `«${L}»: картинка весит больше 500 КБ — страница будет грузиться медленно`, sn, n.id);
+      });
+      if (h1 > 1) add('info', `${sn}: заголовков H1 — ${h1}. Обычно H1 один на страницу`, sn, null);
+    }
+    return out;
+  },
+  fixAll(project) {
+    let n = 0;
+    const list = this.run(project).filter(i => i.fix && i.id);
+    Editor.act('Исправление по проверке качества', p => {
+      for (const it of list) { const r = allScreens(p).find(x => x.scr.id === it.scr); const f = r && findNode(r, it.id); if (f) { f.node.style = f.node.style || {}; it.fix(f.node); n++; } }
+    }, { panel: true });
+    return n;
+  },
+  dialog() {
+    const body = h('div', { class: 'qa' });
+    const draw = () => {
+      body.innerHTML = '';
+      const list = this.run(S.project);
+      const fixable = list.filter(i => i.fix).length;
+      const score = Math.max(0, 100 - list.reduce((s, i) => s + (i.level === 'warn' ? 8 : 3), 0));
+      body.append(h('div', { class: 'qa-score' }, h('b', { class: score >= 85 ? 'ok' : score >= 60 ? 'mid' : 'bad' }, String(score)), h('span', null, score >= 85 ? 'Страница в хорошем состоянии' : score >= 60 ? 'Есть что улучшить' : 'Много замечаний — стоит поправить')));
+      if (!list.length) body.append(h('div', { class: 'issue info' }, ic('check', 15), h('span', null, 'Замечаний нет')));
+      for (const it of list) body.append(h('button', { class: 'issue ' + it.level, onclick: () => { d.close(); const r = allScreens(S.project).find(x => x.scr.id === it.scr); if (r && it.id) Editor.switchScreen(r.scr.id, it.id); } }, ic(it.level === 'warn' ? 'info' : 'help', 15), h('span', { class: 'grow' }, it.text), it.fix ? h('small', { class: 'qa-fix' }, 'исправимо') : null));
+      fixBtn.disabled = !fixable; fixBtn.textContent = fixable ? 'Исправить автоматически (' + fixable + ')' : 'Нечего исправлять автоматически';
+    };
+    const fixBtn = h('button', { class: 'btn primary', onclick: () => { const n = this.fixAll(S.project); UI.toast('Исправлено: ' + n + '. Отменить — Ctrl+Z', { icon: 'check' }); draw(); } });
+    const d = UI.dialog({ title: 'Проверка качества', cls: 'mid', body: [h('p', { class: 'hint' }, 'Проверяю все экраны: размер шрифта, контраст, размер кнопок, подписи картинок, пустые ссылки и тексты. Нажмите на замечание, чтобы перейти к блоку.'), body], foot: [h('button', { class: 'btn', onclick: () => d.close() }, 'Закрыть'), fixBtn] });
+    draw();
+  },
+  notes() {
+    const list = [];
+    for (const r of allScreens(S.project)) walk(r, n => { if (n.note) list.push({ r, n }); });
+    const d = UI.dialog({ title: 'Заметки · ' + list.length, cls: 'mid', body: list.length ? list.map(({ r, n }) => h('button', { class: 'row-item note-row', onclick: () => { d.close(); Editor.switchScreen(r.scr.id, n.id); S.inspTab = 'content'; Inspector.render(); } }, h('span', { class: 'note-pin' }, '💬'), h('span', { class: 'grow' }, h('b', null, nodeLabel(n)), h('small', null, r.scr.name + ' · ' + n.note)))) : [h('div', { class: 'empty' }, h('p', null, 'Заметок пока нет. Выберите блок → «Контент» → «Заметка».'))] });
+  },
+};
+
+/* ===== 14f-projects-plus.js ===== */
+/* ============================================================
+   14f · ВЕРСИИ, МОИ ШАБЛОНЫ, ОБЛАКО NocoDB, ТЕСТОВЫЙ НАБОР
+   ============================================================ */
+
+/* ---------- История версий: каждое «Применить» = версия ---------- */
+const Versions = {
+  key(p) { return 'versions:' + p.id; },
+  async list(p = S.project) { return (await Store.kvGet(this.key(p), [])) || []; },
+  async add(label, p = S.project) {
+    const list = await this.list(p);
+    list.unshift({ id: uid(8), ts: Date.now(), label: label || 'Применено', snap: Editor.snap(p) });
+    await Store.kvSet(this.key(p), list.slice(0, 30));
+  },
+  async dialog() {
+    const list = await this.list();
+    const body = h('div', { class: 'ver-list' });
+    const d = UI.dialog({
+      title: 'История версий · ' + list.length, cls: 'mid',
+      body: [h('p', { class: 'hint' }, 'Версия сохраняется при каждом «Применить». Хранится до 30 последних версий в этом браузере. Откройте версию — она станет черновиком, текущий черновик можно вернуть через Ctrl+Z.'), body],
+      foot: [h('button', { class: 'btn', onclick: () => d.close() }, 'Закрыть'), h('button', { class: 'btn primary', onclick: async () => { await this.add('Сохранено вручную'); d.close(); UI.toast('Версия сохранена', { icon: 'check' }); } }, ic('bookmark', 14), 'Сохранить версию сейчас')],
+    });
+    if (!list.length) { body.append(h('div', { class: 'empty' }, h('p', null, 'Версий пока нет. Нажмите «Применить» на панели над холстом — появится первая.'))); return; }
+    list.forEach((v, i) => {
+      let info = '';
+      try { const s = JSON.parse(v.snap); info = `экранов: ${(s.screens || []).length}`; } catch (e) {}
+      body.append(h('div', { class: 'ver' },
+        h('span', { class: 'ver-dot' + (i === 0 ? ' last' : '') }),
+        h('span', { class: 'grow' }, h('b', null, v.label + (i === 0 ? ' · последняя' : '')), h('small', null, new Date(v.ts).toLocaleString('ru-RU') + (info ? ' · ' + info : ''))),
+        h('button', { class: 'btn sm', onclick: () => { d.close(); this.restore(v); } }, 'Открыть'),
+        h('button', { class: 'btn icon sm ghost', title: 'Скачать JSON версии', 'aria-label': 'Скачать JSON версии', onclick: () => { try { const s = JSON.parse(v.snap); ExportUI.download(JSON.stringify({ format: 'puzzle-studio', version: PROJECT_VERSION, project: { ...S.project, applied: undefined, name: s.name, page: { ...s.page, nocodb: s.page.nocodb ? { ...s.page.nocodb, token: '' } : undefined }, root: s.screens[0], screens: s.screens.slice(1), order: s.screens.map(r => r.scr.id) } }, null, 1), slugName(s.name) + '-' + new Date(v.ts).toISOString().slice(0, 16).replace(/[:T]/g, '-') + '.puzzle.json', 'application/json'); } catch (e) { UI.toast('Не удалось прочитать версию', { err: true }); } } }, ic('download', 14))));
+    });
+  },
+  restore(v) {
+    let s; try { s = JSON.parse(v.snap); } catch (e) { UI.toast('Версия повреждена', { err: true }); return; }
+    const roots = s.screens || [];
+    if (!roots.length) return;
+    Editor.act('Открыта версия от ' + new Date(v.ts).toLocaleString('ru-RU'), p => { p.name = s.name || p.name; p.page = clone(s.page); p.root = clone(roots[0]); p.screens = clone(roots.slice(1)); p.order = roots.map(r => r.scr.id); }, { panel: true });
+    S.sel = null; S.ws = 'page';
+    if (Editor.els.name) Editor.els.name.value = S.project.name;
+    Editor.syncScreens(true); Inspector.render();
+    UI.toast('Версия открыта как черновик. Нажмите «Применить», чтобы она попала в код.', { icon: 'check', ms: 4500 });
+  },
+};
+
+/* ---------- Мои шаблоны ---------- */
+const MyTpl = {
+  async list() { return (await Store.kvGet('myTemplates', [])) || []; },
+  async saveCurrent() {
+    if (!S.project) return;
+    const name = await UI.prompt({ title: 'Сохранить как мой шаблон', label: 'Название шаблона. Он появится в «Шаблонах» → «Мои шаблоны».', value: S.project.name, ok: 'Сохранить' });
+    if (!name) return;
+    const list = await this.list();
+    const data = JSON.parse(projectFileJson(S.project)).project;
+    delete data.applied;
+    list.unshift({ id: 't' + uid(7), name: name.slice(0, 60), ts: Date.now(), data });
+    await Store.kvSet('myTemplates', list.slice(0, 40));
+    UI.toast('Шаблон «' + name + '» сохранён', { icon: 'check' });
+  },
+  async use(t) {
+    const v = validateImport(JSON.stringify({ format: 'puzzle-studio', project: t.data }));
+    if (!v.ok) { UI.toast('Шаблон повреждён: ' + v.errors.join('; '), { err: true }); return; }
+    v.project.name = t.name;
+    await Home.persist(v.project);
+    Editor.open(v.project);
+  },
+  async remove(t) {
+    if (!(await UI.confirm({ title: 'Удалить шаблон «' + t.name + '»?', ok: 'Удалить', danger: true }))) return;
+    await Store.kvSet('myTemplates', (await this.list()).filter(x => x.id !== t.id));
+    Home.render();
+  },
+  async drawInto(grid) {
+    grid.innerHTML = '';
+    const list = await this.list();
+    if (!list.length) { grid.style.display = 'block'; grid.append(h('div', { class: 'empty' }, ic('bookmark', 24), h('h3', null, 'Своих шаблонов пока нет'), h('p', null, 'Откройте проект → «⋯» → «Сохранить как мой шаблон».'))); return; }
+    grid.style.display = '';
+    for (const t of list) {
+      const thumb = h('button', { class: 'pcard-thumb', 'aria-label': 'Использовать ' + t.name, onclick: () => this.use(t) });
+      requestAnimationFrame(() => { try { const v = validateImport(JSON.stringify({ project: t.data })); if (v.ok) thumbInto(thumb, v.project); } catch (e) {} });
+      grid.append(h('article', { class: 'pcard' }, thumb, h('div', { class: 'pcard-body' },
+        h('span', { class: 'tcard-cat' }, 'Мой шаблон'), h('div', { class: 'pcard-name' }, t.name), h('div', { class: 'tcard-desc' }, new Date(t.ts).toLocaleDateString('ru-RU')),
+        h('div', { class: 'tcard-actions' },
+          h('button', { class: 'btn sm', onclick: () => ExportUI.download(JSON.stringify({ format: 'puzzle-studio', version: PROJECT_VERSION, project: t.data }, null, 1), slugName(t.name) + '.puzzle.json', 'application/json') }, ic('download', 14), 'Файл'),
+          h('button', { class: 'btn sm ghost danger', onclick: () => this.remove(t) }, ic('trash', 14)),
+          h('button', { class: 'btn sm primary', onclick: () => this.use(t) }, 'Использовать')))));
+    }
+  },
+};
+
+/* ---------- Облако: проекты в таблице NocoDB ----------
+   Таблица: колонки project_id (SingleLineText), name (SingleLineText), data (LongText), updated (SingleLineText).
+   Токен облака хранится только в этом браузере и никогда не попадает в код страниц. */
+const Cloud = {
+  conf() { try { return JSON.parse(localStorage.getItem('ps-cloud') || 'null') || {}; } catch (e) { return {}; } },
+  save(c) { try { localStorage.setItem('ps-cloud', JSON.stringify(c)); } catch (e) {} },
+  ready() { const c = this.conf(); return !!(c.token && c.table); },
+  async req(method, path, body) {
+    const c = this.conf(), host = String(c.host || NC_HOST_DEFAULT).replace(/\/+$/, '');
+    let r;
+    try { r = await fetch(host + path, { method, headers: { 'xc-token': c.token, 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined }); }
+    catch (e) { throw { message: 'Нет связи с ' + host + ' (сеть или CORS). Откройте файл puzzle-studio.html в браузере.' }; }
+    if (r.status === 401 || r.status === 403) throw { message: 'Токен облака не подходит или у него нет прав на запись' };
+    if (r.status === 404) throw { message: 'Таблица не найдена — проверьте ID' };
+    let j = null; try { j = await r.json(); } catch (e) {}
+    if (!r.ok) throw { message: 'NocoDB: HTTP ' + r.status + (j && (j.msg || j.message) ? ' — ' + (j.msg || j.message) : '') };
+    return j;
+  },
+  async list() { const c = this.conf(); const j = await this.req('GET', `/api/v2/tables/${encodeURIComponent(c.table)}/records?fields=${encodeURIComponent('Id,project_id,name,updated')}&limit=200&sort=-updated`); return (j && j.list) || []; },
+  async push(p = S.project) {
+    const c = this.conf();
+    const data = projectFileJson(p);
+    if (data.length > 4.5e6) throw { message: 'Проект больше 4,5 МБ — уберите встроенные картинки (используйте ссылки)' };
+    const found = await this.req('GET', `/api/v2/tables/${encodeURIComponent(c.table)}/records?where=${encodeURIComponent('(project_id,eq,' + p.id + ')')}&limit=1&fields=Id`);
+    const row = { project_id: p.id, name: p.name, data, updated: new Date().toISOString() };
+    const ex = found && found.list && found.list[0];
+    if (ex) await this.req('PATCH', `/api/v2/tables/${encodeURIComponent(c.table)}/records`, [{ Id: ex.Id, ...row }]);
+    else await this.req('POST', `/api/v2/tables/${encodeURIComponent(c.table)}/records`, row);
+    c.last = Date.now(); this.save(c);
+  },
+  async pull(id) {
+    const c = this.conf();
+    const j = await this.req('GET', `/api/v2/tables/${encodeURIComponent(c.table)}/records/${encodeURIComponent(id)}`);
+    const v = validateImport(j && j.data || '');
+    if (!v.ok) throw { message: 'Проект в облаке повреждён: ' + v.errors.join('; ') };
+    let orig = null; try { orig = JSON.parse(j.data).project; } catch (e) {}
+    if (orig && /^p[a-z0-9]{6,16}$/i.test(orig.id || '')) v.project.id = orig.id; // тот же проект — перезапишется локальная копия
+    return v.project;
+  },
+  dialog() {
+    const c = this.conf();
+    const host = h('input', { class: 'inp', value: c.host || NC_HOST_DEFAULT, 'data-novar': '' });
+    const token = h('input', { class: 'inp', type: 'password', value: c.token || '', placeholder: 'Токен с правом записи', 'data-novar': '', autocomplete: 'off' });
+    const table = h('input', { class: 'inp mono', value: c.table || '', placeholder: 'ID таблицы проектов', 'data-novar': '' });
+    const st = h('div', { class: 'status-line' });
+    const listBox = h('div', { class: 'ver-list' });
+    const say = (t, cls) => { st.className = 'status-line ' + (cls || ''); st.textContent = t; };
+    let autoOn = !!c.auto;
+    const store = () => this.save({ ...this.conf(), host: host.value.trim() || NC_HOST_DEFAULT, token: token.value.trim(), table: table.value.trim(), auto: autoOn });
+    const refresh = async () => {
+      store(); listBox.innerHTML = '';
+      if (!this.ready()) { say('Укажите токен и ID таблицы', 'bad'); return; }
+      say('Загружаю список…');
+      try {
+        const rows = await this.list();
+        say('✓ Облако подключено. Проектов: ' + rows.length, 'ok');
+        for (const r of rows) listBox.append(h('div', { class: 'ver' }, h('span', { class: 'ver-dot' }), h('span', { class: 'grow' }, h('b', null, r.name || r.project_id), h('small', null, r.updated ? new Date(r.updated).toLocaleString('ru-RU') : '')),
+          h('button', { class: 'btn sm', onclick: async () => { try { say('Скачиваю…'); const p = await this.pull(r.Id); await Home.persist(p); d.close(); Editor.open(p); UI.toast('Проект загружен из облака', { icon: 'check' }); } catch (e) { say(e.message, 'bad'); } } }, 'Открыть')));
+      } catch (e) { say(e.message, 'bad'); }
+    };
+    const d = UI.dialog({
+      title: 'Облако NocoDB — проекты на всех устройствах', cls: 'mid',
+      body: [
+        h('p', { class: 'hint' }, 'Проекты сохраняются в вашу таблицу NocoDB — их можно открыть на другом компьютере или телефоне.'),
+        h('ol', { class: 'steps' },
+          h('li', null, 'В NocoDB создайте таблицу «Проекты» с колонками: project_id (текст), name (текст), data (длинный текст), updated (текст).'),
+          h('li', null, 'Скопируйте ID таблицы и создайте токен (Account settings → Tokens).'),
+          h('li', null, 'Вставьте их сюда и нажмите «Проверить».')),
+        field('Адрес NocoDB', host), field('Токен облака', token, { hint: 'Хранится только в этом браузере и никогда не попадает в код страниц.' }), field('ID таблицы проектов', table),
+        toggle('Отправлять в облако при каждом «Применить»', autoOn, v => { autoOn = v; store(); }),
+        h('div', { class: 'btn-row' },
+          h('button', { class: 'btn sm', onclick: refresh }, ic('refresh', 14), 'Проверить и показать проекты'),
+          S.project ? h('button', { class: 'btn sm primary', onclick: async () => { store(); if (!this.ready()) { say('Укажите токен и ID таблицы', 'bad'); return; } say('Отправляю…'); try { await this.push(); say('✓ «' + S.project.name + '» сохранён в облаке', 'ok'); refresh(); } catch (e) { say(e.message, 'bad'); } } }, ic('upload', 14), 'Сохранить текущий проект') : null),
+        st, listBox,
+      ],
+      foot: [h('button', { class: 'btn', onclick: () => { store(); d.close(); } }, 'Готово')],
+    });
+    if (this.ready()) refresh();
+  },
+};
+
+/* ---------- Тестовый набор: страница для проверки функций в настоящем PuzzleBot ---------- */
+const TestKit = {
+  async create() {
+    const link = await UI.prompt({ title: 'Тестовый набор для PuzzleBot', label: 'Набор проверит переходы, кнопки Telegram, шторки и экраны внутри настоящего мини-приложения. Вставьте ссылку на ВТОРУЮ страницу вашего Mini App (для проверки переходов) — или оставьте пустым.', placeholder: 'https://t.me/имя_бота?startapp=ID', ok: 'Создать набор' });
+    if (link === null) return;
+    const id2 = parseGoto(link);
+    const step = (title, text, btn) => B.card({ gap: 8 }, [B.h(title, 4), B.muted(text), btn].filter(Boolean));
+    const sheet = mk('sheet', { title: 'Тест шторки' }, {}, [B.t('Шторка открылась. Закройте её: крестиком, касанием снаружи, свайпом за чёлку или системной кнопкой «Назад».'), mk('button', { text: 'Закрыть кнопкой', variant: 'secondary' }, {}, null, { action: { type: 'sheetclose' } })], { name: 'Тест шторки' });
+    const s2 = newRoot([B.h('Экран 2', 2), B.muted('Если вы здесь — переход между экранами работает. Шторка ниже должна была открыться сама.'), mk('button', { text: '← Назад', variant: 'secondary' }, {}, null, { action: { type: 'history' } })]);
+    s2.scr = { id: 's' + uid(6), name: 'Экран 2' };
+    const sheet2 = mk('sheet', { title: 'Прибыли на экран 2' }, {}, [B.t('Эта шторка открылась после перехода — «действие после перехода» работает.')], { name: 'Шторка экрана 2' });
+    s2.children.push(sheet2);
+    const items = [
+      B.h('Тест PuzzleBot', 1), B.muted('Откройте эту страницу в Telegram и пройдите пункты. Отмечайте, что сработало, — так станет понятно, какие функции работают в вашем PuzzleBot.'),
+      step('1. Данные Telegram', 'Ниже должно быть ваше имя и фото из Telegram.', mk('tguser')),
+      step('2. Переменная PuzzleBot', 'Должно быть имя, а не {{FIRST_NAME_TEXT}}: Привет, {{FIRST_NAME_TEXT}}!', null),
+      step('3. Вибрация', 'Нажмите — телефон должен слегка завибрировать.', mk('button', { text: 'Проверить вибрацию', variant: 'secondary' }, {}, null, { action: { type: 'haptic', value: 'success' } })),
+      step('4. Окно Telegram', 'Должно появиться системное окно Telegram.', mk('button', { text: 'Показать окно', variant: 'secondary' }, {}, null, { action: { type: 'alert', value: 'Окна Telegram работают ✓' } })),
+      step('5. Шторка', 'Должна выехать снизу. В шапке Telegram появится «Назад».', mk('button', { text: 'Открыть шторку', variant: 'secondary' }, {}, null, { action: { type: 'sheet', value: sheet.id } })),
+      step('6. Экран проекта + действие после перехода', 'Откроется «Экран 2», на нём сама выедет шторка. Для режима «Отдельные страницы» укажите ссылку Экрана 2 над мокапом.', mk('button', { text: 'Перейти на экран 2', variant: 'secondary' }, {}, null, { action: { type: 'screen', value: s2.scr.id, arrive: 'sheet', target: sheet2.id } })),
+      id2 ? step('7. goto_web_page', 'Переход через атрибут PuzzleBot на вашу вторую страницу.', mk('button', { text: 'goto_web_page', variant: 'secondary' }, {}, null, { action: { type: 'goto', value: id2 } })) : null,
+      id2 ? step('8. gotoWebPage()', 'Переход через функцию PuzzleBot.', mk('button', { text: 'gotoWebPage()', variant: 'secondary' }, {}, null, { action: { type: 'app', value: id2 } })) : null,
+      step('9. Кнопка внизу экрана', 'Внизу Telegram должна быть синяя кнопка «Тест MainButton». Нажмите её.', mk('button', { text: 'Тест MainButton', variant: 'primary', mainBtn: true, mainHide: true }, {}, null, { action: { type: 'alert', value: 'MainButton работает ✓' } })),
+      step('10. Кнопка «Назад» Telegram', 'В шапке Telegram должно быть «Назад» вместо «Закрыть». Нажатие покажет сообщение.', null),
+      step('11. Диагностика блока', 'Скопируйте код диагностики (Экспорт → Фон в PuzzleBot) в отдельный HTML-блок — он покажет, как PuzzleBot выводит страницу.', null),
+      sheet,
+    ].filter(Boolean);
+    const root = newRoot(items);
+    root.back = { on: true, act: { type: 'alert', value: 'Кнопка «Назад» Telegram работает ✓' } };
+    const p = newProject({ name: 'Тест PuzzleBot', themeId: 'telegram', root });
+    root.scr = { id: 's' + uid(6), name: 'Тесты' };
+    p.screens = [s2]; p.order = [root.scr.id, s2.scr.id];
+    await Home.persist(p);
+    Editor.open(p);
+    UI.toast('Набор готов. Экспорт → «Отдельные страницы» или «Всё в одном блоке» → вставьте в PuzzleBot и откройте в Telegram.', { icon: 'check', ms: 6000 });
   },
 };
 
