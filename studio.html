@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Puzzle Studio</title>
 <meta name="description" content="Визуальный конструктор страниц для Telegram Mini Apps и PuzzleBot">
+<link rel="icon" type="image/png" href="https://i.postimg.cc/sDSvD5Pt/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADZJ4AAoaqa-Eo.png">
+<link rel="apple-touch-icon" href="https://i.postimg.cc/sDSvD5Pt/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADZJ4AAoaqa-Eo.png">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%20%22Puzzle%20Studio%22%2C%20%22short_name%22%3A%20%22Puzzle%20Studio%22%2C%20%22lang%22%3A%20%22ru%22%2C%20%22description%22%3A%20%22%D0%92%D0%B8%D0%B7%D1%83%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9%20%D0%BA%D0%BE%D0%BD%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D0%BE%D1%80%20%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%20%D0%B4%D0%BB%D1%8F%20PuzzleBot%20%D0%B8%20Telegram%20Mini%20Apps%22%2C%20%22start_url%22%3A%20%22.%22%2C%20%22scope%22%3A%20%22.%22%2C%20%22display%22%3A%20%22standalone%22%2C%20%22background_color%22%3A%20%22%23f5f6f8%22%2C%20%22theme_color%22%3A%20%22%234b8df8%22%2C%20%22icons%22%3A%20%5B%7B%22src%22%3A%20%22https%3A//i.postimg.cc/sDSvD5Pt/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADZJ4AAoaqa-Eo.png%22%2C%20%22sizes%22%3A%20%22192x192%22%2C%20%22type%22%3A%20%22image/png%22%2C%20%22purpose%22%3A%20%22any%22%7D%2C%20%7B%22src%22%3A%20%22https%3A//i.postimg.cc/sDSvD5Pt/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADZJ4AAoaqa-Eo.png%22%2C%20%22sizes%22%3A%20%22512x512%22%2C%20%22type%22%3A%20%22image/png%22%2C%20%22purpose%22%3A%20%22any%20maskable%22%7D%5D%7D">
+<meta name="theme-color" content="#4b8df8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Puzzle Studio">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
@@ -740,6 +747,15 @@ body { font-size: 13.5px; }
 @keyframes pzFade { from { opacity: 0; transform: translateY(4px); } }
 @media (prefers-reduced-motion: reduce) { .pz-caret, .pz-dots i { animation: none; } }
 
+/* ---------- Рабочие области: страница и шторки ---------- */
+.ws-bar { display: flex; align-items: center; gap: 4px; min-width: 0; overflow-x: auto; scrollbar-width: none; padding: 2px; }
+.ws-bar::-webkit-scrollbar { display: none; }
+.ws-t, .ws-add { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px; border: 1px solid transparent; border-radius: 8px; background: none; color: var(--muted); font-size: 13px; font-weight: 500; white-space: nowrap; flex: none; }
+.ws-t:hover, .ws-add:hover { background: var(--panel3); color: var(--text); }
+.ws-t.on { background: var(--panel); border-color: var(--line2); color: var(--accent); box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+.ws-add { color: var(--accent); }
+.stage-bar { gap: 12px; }
+
 </style>
 </head>
 <body>
@@ -748,7 +764,7 @@ body { font-size: 13.5px; }
 (function () {
 "use strict";
 /* ===== 00-assets (сгенерировано build.py) ===== */
-const MASCOT = {"logo": "https://i.postimg.cc/4x5MGhjw/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADZJ4AAoaqa-Eo.gif", "error": "https://i.postimg.cc/pXvqdLfS/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADQ7AAAjexa-Uo.gif", "heart": "https://i.postimg.cc/zXDKMbSY/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADCqs-AAh-QAAWl-K.gif", "like": "https://i.postimg.cc/dQ6T8QMS/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADa-Ks-AAr87YEo.gif", "wave": "https://i.postimg.cc/nr9bccqz/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADt-LQAAvlka-Eo.gif"};
+const MASCOT = {"logo": "https://i.postimg.cc/4x5MGhjw/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADZJ4AAoaqa-Eo.gif", "error": "https://i.postimg.cc/pXvqdLfS/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADQ7AAAjexa-Uo.gif", "heart": "https://i.postimg.cc/zXDKMbSY/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADCqs-AAh-QAAWl-K.gif", "like": "https://i.postimg.cc/dQ6T8QMS/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADa-Ks-AAr87YEo.gif", "wave": "https://i.postimg.cc/nr9bccqz/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADt-LQAAvlka-Eo.gif", "icon": "https://i.postimg.cc/sDSvD5Pt/s-4drqtqhgfn-by-Gimme-Sticker-Bot-Ag-ADZJ4AAoaqa-Eo.png"};
 const MASCOT_EMBEDDED = [];
 /* ===== 01-util.js ===== */
 /* ============================================================
@@ -1059,6 +1075,8 @@ const ICONS = {
   vk: '<path d="M3 7h3c.5 4 2 6 4 6.5V7h3v3.5c1.5-.3 3-2 3.5-3.5H20c-.5 2.5-2.5 4.5-4 5.3 1.5.7 3.5 2.5 4.5 4.7h-3.2c-.8-1.7-2.3-3-4.3-3.3V17h-.5C7 17 3.5 13 3 7z"/>',
   website: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   logo: '<path d="M5 5h8a3 3 0 0 1 3 3v1h-4a2 2 0 0 0-2 2v4H8a3 3 0 0 1-3-3z"/><path d="M19 19h-8a3 3 0 0 1-3-3v-1h4a2 2 0 0 0 2-2V9h2a3 3 0 0 1 3 3z"/>',
+  qr: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 17h3v3h-3"/>',
+  sheet: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 12h18"/><path d="M10 15h4"/>',
   wand: '<path d="m4 20 11-11M14 4v2M19 9h2M17.5 5.5 19 4M17.5 12.5 19 14M10 5.5 8.5 4"/>',
 };
 
@@ -1239,7 +1257,8 @@ function rich(src, ctx) {
 function at(n, ctx, cls, extra = '') {
   const os = n.adv && n.adv.os;
   const osCls = os === 'ios' ? ' block_android block-android' : os === 'android' ? ' block_ios block-ios' : '';
-  let a = `class="${cls} ps-${n.id}${osCls}${ctx.mode !== 'edit' && n.anim && n.anim.in && n.anim.in !== 'none' ? ' ps-anim-' + n.anim.in : ''}"`;
+  const off = n.adv && n.adv.off ? (ctx.mode === 'edit' ? ' ps-edit-off' : ' ps-off') : '';
+  let a = `class="${cls} ps-${n.id}${osCls}${off}${ctx.mode !== 'edit' && n.anim && n.anim.in && n.anim.in !== 'none' ? ' ps-anim-' + n.anim.in : ''}"`;
   if (n.anchor && /^[a-z0-9_-]+$/i.test(n.anchor)) a += ` id="ps-${n.anchor}"`;
   if (ctx.mode === 'edit') a += ` data-psid="${n.id}"`;
   return a + extra;
@@ -1354,6 +1373,7 @@ const COMP = {
       if (n.action && n.action.type && n.action.type !== 'none') {
         const ap = actionParts(n.action, ctx);
         if (ap.tag === 'a') return `<a ${at(n, ctx, 'ps-imglink')}${ap.attrs}><img class="ps-img" src="${escAttr(c.url)}" alt="${TA(p.alt, ctx)}" loading="lazy" decoding="async"${st}></a>`;
+        if (ap.js) return `<button ${at(n, ctx, 'ps-imglink')}${ap.attrs}><img class="ps-img" src="${escAttr(c.url)}" alt="${TA(p.alt, ctx)}" loading="lazy" decoding="async"${st}></button>`;
       }
       return `<img ${at(n, ctx, 'ps-img')} src="${escAttr(c.url)}" alt="${TA(p.alt, ctx)}" loading="lazy" decoding="async"${st}>`;
     },
@@ -1812,6 +1832,59 @@ const COMP = {
     },
   },
 
+  qr: {
+    label: 'QR-код', icon: 'qr',
+    fields: [
+      { k: 'url', label: 'Ссылка или текст для QR-кода', type: 'text', vars: true },
+      { k: 'size', label: 'Размер', type: 'range', min: 80, max: 600, step: 10 },
+      { k: 'color', label: 'Цвет кода', type: 'color' },
+      { k: 'bg', label: 'Фон кода', type: 'color' },
+      { k: 'margin', label: 'Поля вокруг', type: 'range', min: 0, max: 40, step: 2 },
+      { k: 'caption', label: 'Подпись под кодом', type: 'text' },
+    ],
+    info: 'Картинку рисует сервис api.qrserver.com по вашей ссылке. Переменные {{…}} PuzzleBot подставит до загрузки — у каждого пользователя будет свой код.',
+    defaults: { props: { url: '', size: 220, color: '#000000', bg: '#ffffff', margin: 10, caption: '' }, style: { self: 'center', radius: 'small' } },
+    render(n, ctx) {
+      const p = n.props;
+      const s = clamp(parseInt(p.size) || 220, 80, 600);
+      const hex = v => (/^#([0-9a-f]{6})$/i.exec(String(v || '')) || [])[1];
+      const data = String(p.url || '').trim();
+      if (!data) {
+        if (ctx.mode !== 'edit') return '';
+        return `<div ${at(n, ctx, 'ps-qr ps-edit-img-empty')} style="width:${s}px;max-width:100%;aspect-ratio:1/1">${svgI('qr', 28)}<span>Вставьте ссылку в панели свойств</span></div>`;
+      }
+      const q = ['size=' + s * 2 + 'x' + s * 2, 'data=' + encKeepVars(data)];
+      if (hex(p.color)) q.push('color=' + hex(p.color));
+      if (hex(p.bg)) q.push('bgcolor=' + hex(p.bg));
+      q.push('margin=' + clamp(parseInt(p.margin) || 0, 0, 40));
+      const src = 'https://api.qrserver.com/v1/create-qr-code/?' + q.join('&');
+      return `<figure ${at(n, ctx, 'ps-qr')}><img src="${escAttr(src)}" width="${s}" height="${s}" alt="QR-код" loading="lazy" decoding="async" style="width:${s}px">${p.caption ? `<figcaption>${T(p.caption, ctx)}</figcaption>` : ''}</figure>`;
+    },
+  },
+
+  sheet: {
+    label: 'Шторка', icon: 'sheet', container: true, sheet: true,
+    fields: [
+      { k: 'title', label: 'Заголовок шторки', type: 'text' },
+      { k: 'height', label: 'Высота', type: 'seg', options: [['auto', 'По содержимому'], ['half', 'Половина'], ['full', 'Весь экран']] },
+      { k: 'x', label: 'Крестик для закрытия', type: 'toggle' },
+      { k: 'tapOut', label: 'Закрывать касанием за пределами', type: 'toggle' },
+      { k: 'handle', label: 'Чёлка: потянуть вниз, чтобы закрыть', type: 'toggle' },
+    ],
+    info: 'Шторка выезжает снизу по нажатию кнопки с действием «Открыть шторку». Наполняйте её блоками, как обычную страницу.',
+    defaults: { props: { title: 'Шторка', height: 'auto', x: true, tapOut: true, handle: true }, style: { layout: 'stack', gap: 12, pt: 8, pr: 16, pb: 24, pl: 16 } },
+    render(n, ctx) {
+      const p = n.props;
+      const open = ctx.mode === 'edit' && ctx.openSheet === n.id;
+      if (ctx.mode === 'edit' && !open) return '';
+      const hg = CSS.pick(p.height, ['auto', 'half', 'full']) || 'auto';
+      const head = (p.handle ? '<div class="ps-sheet-h" data-ps-sheet-drag aria-hidden="true"><i></i></div>' : '<div class="ps-sheet-sp"></div>')
+        + (p.x ? `<button type="button" class="ps-sheet-x" data-ps-sheet-close aria-label="Закрыть">${svgI('x', 18)}</button>` : '')
+        + (p.title ? `<div class="ps-sheet-t">${T(p.title, ctx)}</div>` : '');
+      return `<div class="ps-sheet-o${open ? ' ps-open' : ''}" data-ps-sheet="${n.id}" aria-hidden="${open ? 'false' : 'true'}"><div class="ps-sheet-bg"${p.tapOut ? ' data-ps-sheet-close' : ''}></div><div ${at(n, ctx, 'ps-sheet ps-sheet--' + hg, ` role="dialog" aria-modal="true"${ctx.mode === 'edit' ? ' data-pscont="column"' : ''}`)}>${head}${kids(n, ctx)}</div></div>`;
+    },
+  },
+
   stars: {
     label: 'Рейтинг', icon: 'star',
     fields: [{ k: 'value', label: 'Оценка', type: 'range', min: 0, max: 5, step: 0.5 }, { k: 'caption', label: 'Подпись', type: 'text' }],
@@ -1845,6 +1918,8 @@ const USAGE = {
   accordion: 'Вопросы и ответы, правила, этапы — раскрываются по нажатию. Работает даже без JavaScript.',
   tabs: 'Несколько описаний на одном месте: «О товаре / Доставка / Отзывы». Работает без JavaScript.',
   modal: 'Окно поверх страницы: условия акции, подробности, предупреждение.',
+  qr: 'QR-код со ссылкой: на бота, канал, оплату, реферальную ссылку {{REF_LINK}}.',
+  sheet: 'Панель снизу поверх страницы: подробности товара, корзина, фильтры, форма. Открывается кнопкой.',
   notice: 'Заметное сообщение: подсказка, предупреждение, успешное действие.',
   timer: 'Обратный отсчёт до конца акции, старта события или окончания скидки.',
   gallery: 'Несколько фото лентой (листаются пальцем) или сеткой.',
@@ -1943,6 +2018,8 @@ const CATALOG = [
   { cat: 'PuzzleBot и Telegram', items: [
     { id: 'tgbtn', label: 'Кнопка Telegram', icon: 'send', make: () => mk('button', { text: 'Написать в поддержку', variant: 'secondary', icon: 'send', iconPos: 'left' }, {}, null, { action: { type: 'tg', value: 'https://t.me/' } }) },
     { id: 'botbtn', label: 'Кнопка «Запустить бота»', icon: 'bot', make: () => mk('button', { text: 'Открыть в боте', variant: 'primary', icon: 'bot', iconPos: 'left' }, {}, null, { action: { type: 'bot', bot: 'your_bot', value: 'menu' } }) },
+    { id: 'qr', label: 'QR-код', icon: 'qr', make: () => mk('qr'), after: 'qr' },
+    { id: 'sheetbtn', label: 'Кнопка + шторка', icon: 'sheet', make: () => mk('button', { text: 'Подробнее', variant: 'primary' }), after: 'sheet' },
     { id: 'closebtn', label: 'Кнопка «Закрыть»', icon: 'x', make: () => mk('button', { text: 'Вернуться в чат', variant: 'ghost' }, {}, null, { action: { type: 'close' } }) },
     { id: 'varText', label: 'Текст с переменной', icon: 'variable', make: () => mk('text', { text: 'Привет, {{FIRST_NAME_TEXT}}!' }) },
     { id: 'tguser', label: 'Пользователь Telegram', icon: 'avatar', make: () => mk('tguser') },
@@ -2003,13 +2080,19 @@ function artImage(seed, colors, kind = 'blobs') {
    Системные кнопки Telegram (MainButton, SecondaryButton, BackButton,
    SettingsButton) сознательно не используются.
    ============================================================ */
-const ACT_GROUPS = ['Переходы', 'Окно Mini App', 'Сообщения, оплата, Stories', 'Разрешения и устройство', 'Хранилища Telegram', 'Окна и вибрация', 'Другое'];
+const ACT_GROUPS = ['Переходы', 'Элементы страницы', 'Окно Mini App', 'Сообщения, оплата, Stories', 'Разрешения и устройство', 'Хранилища Telegram', 'Окна и вибрация', 'Другое'];
 const HAPTIC_OPTS = [['', 'Как на странице'], ['none', 'Без вибрации'], ['light', 'Лёгкая'], ['medium', 'Средняя'], ['heavy', 'Сильная'], ['rigid', 'Жёсткая'], ['soft', 'Мягкая'], ['success', 'Успех'], ['warning', 'Предупреждение'], ['error', 'Ошибка'], ['selection', 'Выбор']];
 const HAPTIC_KEYS = HAPTIC_OPTS.map(x => x[0]).filter(Boolean);
 const ONOFF = [['on', 'Включить'], ['off', 'Выключить']];
 
 const ACTION_DEFS = [
   { id: 'none', g: 0, label: 'Нет действия' },
+  { id: 'sheet', g: 1, label: 'Открыть шторку', params: [{ k: 'value', label: 'Какую шторку', type: 'sheet', req: true }], info: 'Шторка выезжает снизу поверх страницы. Её содержимое редактируется на отдельной рабочей области — кнопка «Редактировать шторку».' },
+  { id: 'sheetclose', g: 1, label: 'Закрыть шторку', info: 'Закрывает открытую шторку. Удобно для кнопок «Готово», «Отмена» внутри шторки.' },
+  { id: 'show', g: 1, label: 'Показать блок', params: [{ k: 'value', label: 'Какой блок', type: 'node', req: true }], info: 'Делает видимым блок, у которого включено «Скрыт, пока не покажут» (Настройки → Дополнительно).' },
+  { id: 'hide', g: 1, label: 'Скрыть блок', params: [{ k: 'value', label: 'Какой блок', type: 'node', req: true }] },
+  { id: 'toggle', g: 1, label: 'Показать / скрыть блок', params: [{ k: 'value', label: 'Какой блок', type: 'node', req: true }], info: 'Каждое нажатие переключает видимость: «Подробнее» → раскрыть описание, повторно — свернуть.' },
+  { id: 'scrolltop', g: 1, label: 'Прокрутить наверх' },
   { id: 'url', g: 0, label: 'Обычная ссылка', link: true, params: [{ k: 'value', label: 'Адрес', type: 'url', ph: 'https://example.com', req: true }, { k: 'newTab', label: 'Открывать во внешнем браузере', type: 'toggle', def: true }],
     info: 'Внутри Telegram откроется через openLink. Ссылки https://t.me/… открываются внутри Telegram.' },
   { id: 'goto', g: 0, label: 'Страница Mini App PuzzleBot (goto_web_page)', link: true, params: [{ k: 'value', label: 'Ссылка на страницу Mini App или её ID', type: 'text', ph: 'https://t.me/имя_бота?startapp=ID', req: true }, { k: 'win', label: 'Открыть в новом окне (gotoWebPage)', type: 'toggle', def: false }],
@@ -2025,45 +2108,45 @@ const ACTION_DEFS = [
   { id: 'addset', g: 0, label: 'Стикеры, эмодзи, тема, папка чатов', link: true, params: [{ k: 'kind', label: 'Что открыть', type: 'select', options: [['addstickers', 'Набор стикеров'], ['addemoji', 'Набор эмодзи'], ['addtheme', 'Тема Telegram'], ['addlist', 'Папка чатов'], ['addvoice', 'Набор голосов']], def: 'addstickers' }, { k: 'value', label: 'Имя набора (из ссылки t.me/add…/ИМЯ)', type: 'text', req: true }] },
   { id: 'tgpage', g: 0, label: 'Telegram Premium или Stars', link: true, params: [{ k: 'value', label: 'Что открыть', type: 'select', options: [['premium', 'Telegram Premium'], ['stars', 'Telegram Stars']], def: 'premium' }] },
 
-  { id: 'close', g: 1, label: 'Закрыть Mini App' },
-  { id: 'expand', g: 1, label: 'Развернуть окно по высоте' },
-  { id: 'fullscreen', g: 1, label: 'Полноэкранный режим', min: '8.0', params: [{ k: 'value', label: 'Режим', type: 'select', options: [['toggle', 'Переключить'], ['on', 'Включить'], ['off', 'Выключить']], def: 'toggle' }] },
-  { id: 'swipes', g: 1, label: 'Закрытие свайпом вниз', min: '7.7', params: [{ k: 'value', label: 'Свайп вниз', type: 'select', options: [['off', 'Отключить'], ['on', 'Включить']], def: 'off' }], info: 'Отключите, если на странице есть прокрутка, карусели или игры — тогда окно не закроется случайно.' },
-  { id: 'closeconfirm', g: 1, label: 'Спрашивать перед закрытием', min: '6.2', params: [{ k: 'value', label: 'Подтверждение', type: 'select', options: ONOFF, def: 'on' }], info: 'Полезно для форм: пользователь не потеряет введённые данные.' },
-  { id: 'orientation', g: 1, label: 'Ориентация экрана', min: '8.0', params: [{ k: 'value', label: 'Ориентация', type: 'select', options: [['lock', 'Зафиксировать текущую'], ['unlock', 'Разблокировать']], def: 'lock' }] },
-  { id: 'home', g: 1, label: 'Добавить на экран «Домой»', min: '8.0', info: 'Работает на Android и части iOS-устройств. Telegram сам покажет окно подтверждения.' },
-  { id: 'homestatus', g: 1, label: 'Проверить ярлык на экране «Домой»', min: '8.0' },
-  { id: 'hidekb', g: 1, label: 'Скрыть клавиатуру', min: '9.1' },
+  { id: 'close', g: 2, label: 'Закрыть Mini App' },
+  { id: 'expand', g: 2, label: 'Развернуть окно по высоте' },
+  { id: 'fullscreen', g: 2, label: 'Полноэкранный режим', min: '8.0', params: [{ k: 'value', label: 'Режим', type: 'select', options: [['toggle', 'Переключить'], ['on', 'Включить'], ['off', 'Выключить']], def: 'toggle' }] },
+  { id: 'swipes', g: 2, label: 'Закрытие свайпом вниз', min: '7.7', params: [{ k: 'value', label: 'Свайп вниз', type: 'select', options: [['off', 'Отключить'], ['on', 'Включить']], def: 'off' }], info: 'Отключите, если на странице есть прокрутка, карусели или игры — тогда окно не закроется случайно.' },
+  { id: 'closeconfirm', g: 2, label: 'Спрашивать перед закрытием', min: '6.2', params: [{ k: 'value', label: 'Подтверждение', type: 'select', options: ONOFF, def: 'on' }], info: 'Полезно для форм: пользователь не потеряет введённые данные.' },
+  { id: 'orientation', g: 2, label: 'Ориентация экрана', min: '8.0', params: [{ k: 'value', label: 'Ориентация', type: 'select', options: [['lock', 'Зафиксировать текущую'], ['unlock', 'Разблокировать']], def: 'lock' }] },
+  { id: 'home', g: 2, label: 'Добавить на экран «Домой»', min: '8.0', info: 'Работает на Android и части iOS-устройств. Telegram сам покажет окно подтверждения.' },
+  { id: 'homestatus', g: 2, label: 'Проверить ярлык на экране «Домой»', min: '8.0' },
+  { id: 'hidekb', g: 2, label: 'Скрыть клавиатуру', min: '9.1' },
 
-  { id: 'senddata', g: 2, label: 'Отправить данные боту (sendData)', params: [{ k: 'value', label: 'Данные (текст или JSON)', type: 'text', req: true }], info: 'По правилам Telegram работает, только если Mini App открыт кнопкой обычной клавиатуры бота. После отправки окно закрывается.' },
-  { id: 'inline', g: 2, label: 'Inline-режим бота', min: '6.7', params: [{ k: 'value', label: 'Текст запроса', type: 'text' }, { k: 'types', label: 'Где выбрать чат', type: 'select', options: [['', 'Текущий чат'], ['users', 'Пользователи'], ['groups', 'Группы'], ['channels', 'Каналы'], ['all', 'Любой чат']], def: '' }], info: 'Нужен включённый inline-режим у бота (@BotFather → /setinline).' },
-  { id: 'sharemsg', g: 2, label: 'Поделиться подготовленным сообщением', min: '8.0', params: [{ k: 'value', label: 'ID сообщения', type: 'text', req: true }], info: 'ID создаёт сервер методом Bot API savePreparedInlineMessage, он действует ограниченное время. Без своего сервера не работает.' },
-  { id: 'story', g: 2, label: 'Опубликовать в Stories', min: '7.8', params: [{ k: 'value', label: 'HTTPS-ссылка на фото или видео', type: 'url', req: true }, { k: 'text', label: 'Подпись (до 200 символов)', type: 'text' }, { k: 'wurl', label: 'Ссылка-виджет (видна только с Premium)', type: 'url' }, { k: 'wname', label: 'Название виджета (до 48 символов)', type: 'text' }] },
-  { id: 'download', g: 2, label: 'Скачать файл', min: '8.0', params: [{ k: 'value', label: 'HTTPS-ссылка на файл', type: 'url', req: true }, { k: 'name', label: 'Имя файла', type: 'text', ph: 'price.pdf', req: true }], info: 'Сервер файла должен отдавать заголовки Content-Disposition и Access-Control-Allow-Origin, иначе Telegram откажет.' },
-  { id: 'invoice', g: 2, label: 'Открыть счёт на оплату', min: '6.1', params: [{ k: 'value', label: 'Ссылка на счёт (https://t.me/$…)', type: 'url', req: true }], info: 'Ссылку создаёт сервер методом createInvoiceLink. Обычную оплату в PuzzleBot проще настроить в разделе «Магазин».' },
-  { id: 'requestchat', g: 2, label: 'Выбрать чат (requestChat)', min: '9.6', params: [{ k: 'value', label: 'ID запроса от сервера', type: 'text', req: true }], info: 'ID готовит сервер бота. Случайное значение не сработает.' },
-  { id: 'emoji', g: 2, label: 'Установить эмодзи-статус', min: '8.0', params: [{ k: 'value', label: 'custom_emoji_id', type: 'text', req: true }, { k: 'duration', label: 'На сколько', type: 'select', options: [['', 'Без срока'], ['3600', '1 час'], ['28800', '8 часов'], ['86400', '24 часа'], ['604800', '7 дней']], def: '' }], info: 'Telegram покажет окно подтверждения. Статус могут поставить только пользователи с Premium.' },
-  { id: 'emojiaccess', g: 2, label: 'Разрешить боту менять эмодзи-статус', min: '8.0', info: 'После разрешения бот сможет менять статус сам через Bot API (setUserEmojiStatus).' },
+  { id: 'senddata', g: 3, label: 'Отправить данные боту (sendData)', params: [{ k: 'value', label: 'Данные (текст или JSON)', type: 'text', req: true }], info: 'По правилам Telegram работает, только если Mini App открыт кнопкой обычной клавиатуры бота. После отправки окно закрывается.' },
+  { id: 'inline', g: 3, label: 'Inline-режим бота', min: '6.7', params: [{ k: 'value', label: 'Текст запроса', type: 'text' }, { k: 'types', label: 'Где выбрать чат', type: 'select', options: [['', 'Текущий чат'], ['users', 'Пользователи'], ['groups', 'Группы'], ['channels', 'Каналы'], ['all', 'Любой чат']], def: '' }], info: 'Нужен включённый inline-режим у бота (@BotFather → /setinline).' },
+  { id: 'sharemsg', g: 3, label: 'Поделиться подготовленным сообщением', min: '8.0', params: [{ k: 'value', label: 'ID сообщения', type: 'text', req: true }], info: 'ID создаёт сервер методом Bot API savePreparedInlineMessage, он действует ограниченное время. Без своего сервера не работает.' },
+  { id: 'story', g: 3, label: 'Опубликовать в Stories', min: '7.8', params: [{ k: 'value', label: 'HTTPS-ссылка на фото или видео', type: 'url', req: true }, { k: 'text', label: 'Подпись (до 200 символов)', type: 'text' }, { k: 'wurl', label: 'Ссылка-виджет (видна только с Premium)', type: 'url' }, { k: 'wname', label: 'Название виджета (до 48 символов)', type: 'text' }] },
+  { id: 'download', g: 3, label: 'Скачать файл', min: '8.0', params: [{ k: 'value', label: 'HTTPS-ссылка на файл', type: 'url', req: true }, { k: 'name', label: 'Имя файла', type: 'text', ph: 'price.pdf', req: true }], info: 'Сервер файла должен отдавать заголовки Content-Disposition и Access-Control-Allow-Origin, иначе Telegram откажет.' },
+  { id: 'invoice', g: 3, label: 'Открыть счёт на оплату', min: '6.1', params: [{ k: 'value', label: 'Ссылка на счёт (https://t.me/$…)', type: 'url', req: true }], info: 'Ссылку создаёт сервер методом createInvoiceLink. Обычную оплату в PuzzleBot проще настроить в разделе «Магазин».' },
+  { id: 'requestchat', g: 3, label: 'Выбрать чат (requestChat)', min: '9.6', params: [{ k: 'value', label: 'ID запроса от сервера', type: 'text', req: true }], info: 'ID готовит сервер бота. Случайное значение не сработает.' },
+  { id: 'emoji', g: 3, label: 'Установить эмодзи-статус', min: '8.0', params: [{ k: 'value', label: 'custom_emoji_id', type: 'text', req: true }, { k: 'duration', label: 'На сколько', type: 'select', options: [['', 'Без срока'], ['3600', '1 час'], ['28800', '8 часов'], ['86400', '24 часа'], ['604800', '7 дней']], def: '' }], info: 'Telegram покажет окно подтверждения. Статус могут поставить только пользователи с Premium.' },
+  { id: 'emojiaccess', g: 3, label: 'Разрешить боту менять эмодзи-статус', min: '8.0', info: 'После разрешения бот сможет менять статус сам через Bot API (setUserEmojiStatus).' },
 
-  { id: 'contact', g: 3, label: 'Запросить номер телефона', min: '6.9', info: 'Номер получает бот (в PuzzleBot — как контакт пользователя), страница его не видит.' },
-  { id: 'writeaccess', g: 3, label: 'Разрешить сообщения от бота', min: '6.9' },
-  { id: 'qr', g: 3, label: 'Сканер QR-кода', min: '6.4', params: [{ k: 'value', label: 'Подсказка в сканере', type: 'text', ph: 'Наведите камеру на QR-код' }, { k: 'then', label: 'Что сделать с результатом', type: 'select', options: [['open', 'Открыть, если это ссылка'], ['copy', 'Скопировать'], ['show', 'Показать']], def: 'open' }] },
-  { id: 'location', g: 3, label: 'Геолокация', min: '8.0', params: [{ k: 'then', label: 'Что сделать', type: 'select', options: [['map', 'Открыть на карте'], ['show', 'Показать координаты']], def: 'map' }], info: 'Координаты видит только эта страница. Чтобы получить их в боте, нужен свой сервер.' },
-  { id: 'bio', g: 3, label: 'Подтвердить по Face ID / отпечатку', min: '7.2', params: [{ k: 'value', label: 'Причина (видна пользователю)', type: 'text', ph: 'Подтвердите покупку' }, { k: 'url', label: 'Куда перейти после успеха', type: 'url' }], info: 'Проверка на устройстве. Это удобство, а не защита: результату нельзя доверять на сервере.' },
-  { id: 'biosettings', g: 3, label: 'Настройки биометрии Telegram', min: '7.2' },
-  { id: 'camera', g: 3, label: 'Проверить доступ к камере', info: 'Браузерная проверка getUserMedia. В некоторых клиентах Telegram камера недоступна.' },
-  { id: 'sensor', g: 3, label: 'Показания датчика', min: '8.0', params: [{ k: 'value', label: 'Датчик', type: 'select', options: [['Accelerometer', 'Акселерометр'], ['Gyroscope', 'Гироскоп'], ['DeviceOrientation', 'Ориентация устройства']], def: 'Accelerometer' }], info: 'Показывает текущие значения в окне. Для игр нужен свой код.' },
+  { id: 'contact', g: 4, label: 'Запросить номер телефона', min: '6.9', info: 'Номер получает бот (в PuzzleBot — как контакт пользователя), страница его не видит.' },
+  { id: 'writeaccess', g: 4, label: 'Разрешить сообщения от бота', min: '6.9' },
+  { id: 'qr', g: 4, label: 'Сканер QR-кода', min: '6.4', params: [{ k: 'value', label: 'Подсказка в сканере', type: 'text', ph: 'Наведите камеру на QR-код' }, { k: 'then', label: 'Что сделать с результатом', type: 'select', options: [['open', 'Открыть, если это ссылка'], ['copy', 'Скопировать'], ['show', 'Показать']], def: 'open' }] },
+  { id: 'location', g: 4, label: 'Геолокация', min: '8.0', params: [{ k: 'then', label: 'Что сделать', type: 'select', options: [['map', 'Открыть на карте'], ['show', 'Показать координаты']], def: 'map' }], info: 'Координаты видит только эта страница. Чтобы получить их в боте, нужен свой сервер.' },
+  { id: 'bio', g: 4, label: 'Подтвердить по Face ID / отпечатку', min: '7.2', params: [{ k: 'value', label: 'Причина (видна пользователю)', type: 'text', ph: 'Подтвердите покупку' }, { k: 'url', label: 'Куда перейти после успеха', type: 'url' }], info: 'Проверка на устройстве. Это удобство, а не защита: результату нельзя доверять на сервере.' },
+  { id: 'biosettings', g: 4, label: 'Настройки биометрии Telegram', min: '7.2' },
+  { id: 'camera', g: 4, label: 'Проверить доступ к камере', info: 'Браузерная проверка getUserMedia. В некоторых клиентах Telegram камера недоступна.' },
+  { id: 'sensor', g: 4, label: 'Показания датчика', min: '8.0', params: [{ k: 'value', label: 'Датчик', type: 'select', options: [['Accelerometer', 'Акселерометр'], ['Gyroscope', 'Гироскоп'], ['DeviceOrientation', 'Ориентация устройства']], def: 'Accelerometer' }], info: 'Показывает текущие значения в окне. Для игр нужен свой код.' },
 
-  { id: 'storage', g: 4, label: 'Сохранить, прочитать или удалить значение', min: '6.9', params: [{ k: 'store', label: 'Хранилище', type: 'select', options: [['CloudStorage', 'Облако Telegram (CloudStorage)'], ['DeviceStorage', 'Устройство (DeviceStorage, 9.0+)'], ['SecureStorage', 'Защищённое (SecureStorage, 9.0+)']], def: 'CloudStorage' }, { k: 'op', label: 'Действие', type: 'select', options: [['set', 'Сохранить'], ['get', 'Прочитать и показать'], ['remove', 'Удалить']], def: 'set' }, { k: 'key', label: 'Ключ (латиница, цифры, _ и -)', type: 'text', req: true }, { k: 'value', label: 'Значение (для «Сохранить»)', type: 'text' }],
+  { id: 'storage', g: 5, label: 'Сохранить, прочитать или удалить значение', min: '6.9', params: [{ k: 'store', label: 'Хранилище', type: 'select', options: [['CloudStorage', 'Облако Telegram (CloudStorage)'], ['DeviceStorage', 'Устройство (DeviceStorage, 9.0+)'], ['SecureStorage', 'Защищённое (SecureStorage, 9.0+)']], def: 'CloudStorage' }, { k: 'op', label: 'Действие', type: 'select', options: [['set', 'Сохранить'], ['get', 'Прочитать и показать'], ['remove', 'Удалить']], def: 'set' }, { k: 'key', label: 'Ключ (латиница, цифры, _ и -)', type: 'text', req: true }, { k: 'value', label: 'Значение (для «Сохранить»)', type: 'text' }],
     info: 'CloudStorage привязано к пользователю и боту и доступно на всех его устройствах. Подходит для настроек и избранного, но не для денег и секретов.' },
 
-  { id: 'alert', g: 5, label: 'Показать сообщение', min: '6.2', params: [{ k: 'value', label: 'Текст', type: 'text', req: true }] },
-  { id: 'popup', g: 5, label: 'Окно с выбором и переходом', min: '6.2', params: [{ k: 'title', label: 'Заголовок', type: 'text' }, { k: 'value', label: 'Текст (до 256 символов)', type: 'text', req: true }, { k: 'ok', label: 'Текст кнопки', type: 'text', ph: 'Продолжить' }, { k: 'url', label: 'Куда перейти при согласии', type: 'url' }] },
-  { id: 'haptic', g: 5, label: 'Только вибрация', min: '6.1', params: [{ k: 'value', label: 'Тип вибрации', type: 'select', options: HAPTIC_OPTS.slice(2), def: 'medium' }] },
+  { id: 'alert', g: 6, label: 'Показать сообщение', min: '6.2', params: [{ k: 'value', label: 'Текст', type: 'text', req: true }] },
+  { id: 'popup', g: 6, label: 'Окно с выбором и переходом', min: '6.2', params: [{ k: 'title', label: 'Заголовок', type: 'text' }, { k: 'value', label: 'Текст (до 256 символов)', type: 'text', req: true }, { k: 'ok', label: 'Текст кнопки', type: 'text', ph: 'Продолжить' }, { k: 'url', label: 'Куда перейти при согласии', type: 'url' }] },
+  { id: 'haptic', g: 6, label: 'Только вибрация', min: '6.1', params: [{ k: 'value', label: 'Тип вибрации', type: 'select', options: HAPTIC_OPTS.slice(2), def: 'medium' }] },
 
-  { id: 'copy', g: 6, label: 'Скопировать текст', params: [{ k: 'value', label: 'Что копировать', type: 'text', req: true }] },
-  { id: 'info', g: 6, label: 'Показать данные Telegram (отладка)', params: [{ k: 'value', label: 'Что показать', type: 'select', options: [['user', 'Пользователь'], ['theme', 'Параметры темы'], ['version', 'Версия и платформа'], ['viewport', 'Размеры окна'], ['chat', 'Текущий чат']], def: 'version' }] },
-  { id: 'submit', g: 6, label: 'Отправить форму', info: 'Работает только внутри блока «Форма».' },
+  { id: 'copy', g: 7, label: 'Скопировать текст', params: [{ k: 'value', label: 'Что копировать', type: 'text', req: true }] },
+  { id: 'info', g: 7, label: 'Показать данные Telegram (отладка)', params: [{ k: 'value', label: 'Что показать', type: 'select', options: [['user', 'Пользователь'], ['theme', 'Параметры темы'], ['version', 'Версия и платформа'], ['viewport', 'Размеры окна'], ['chat', 'Текущий чат']], def: 'version' }] },
+  { id: 'submit', g: 7, label: 'Отправить форму', info: 'Работает только внутри блока «Форма».' },
 ];
 const ACT = Object.fromEntries(ACTION_DEFS.map(d => [d.id, d]));
 const LINK_ONLY_GROUPS = [0];
@@ -2175,6 +2258,12 @@ const JS_FREE_ACTIONS = new Set(['none', 'url', 'goto', 'anchor', 'tg', 'bot', '
 
 /* ---------- Код обработчиков (в итоговую страницу попадают только используемые) ---------- */
 const ACT_JS = {
+  sheet: `sheet: function (p) { sheetOpen(p.value); }`,
+  sheetclose: `sheetclose: function (p, el) { var o = (el.closest && el.closest('.ps-sheet-o.ps-open')) || root.querySelector('.ps-sheet-o.ps-open'); if (o) sheetClose(o); }`,
+  show: `show: function (p) { var t = root.querySelector('.ps-' + p.value); if (t) { t.classList.remove('ps-off'); t.classList.add('ps-in'); } }`,
+  hide: `hide: function (p) { var t = root.querySelector('.ps-' + p.value); if (t) t.classList.add('ps-off'); }`,
+  toggle: `toggle: function (p) { var t = root.querySelector('.ps-' + p.value); if (t) { var off = t.classList.toggle('ps-off'); if (!off) t.classList.add('ps-in'); } }`,
+  scrolltop: `scrolltop: function () { window.scrollTo({ top: 0, behavior: 'smooth' }); }`,
   link: `link: function (p, el) { openUrl(el.getAttribute('href'), !p.same); }`,
   anchor: `anchor: function (p, el) { var t = document.getElementById(el.getAttribute('href').slice(1)); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }`,
   copy: `copy: function (p, el) { copyText(p.value || '', el); }`,
@@ -2621,6 +2710,30 @@ ${R} .ps-modal-box { position: relative; width: 100%; max-width: 440px; display:
 ${R} .ps-modal-t { font-family: var(--ps-font-h); font-size: 19px; font-weight: 700; }
 ${R} .ps-modal-x { margin-bottom: 6px; font-size: 14px; line-height: 1.55; color: var(--ps-muted); }
 @media (min-width: ${BP.tablet}px) { ${R} .ps-modal-o { align-items: center; } }
+/* ---- Шторка снизу ---- */
+${R} .ps-sheet-o { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: flex-end; justify-content: center; visibility: hidden; pointer-events: none; transition: visibility 0s linear .35s; }
+${R} .ps-sheet-o.ps-open { visibility: visible; pointer-events: auto; transition: none; }
+${R} .ps-sheet-bg { position: absolute; inset: 0; background: rgba(0,0,0,.5); opacity: 0; transition: opacity .3s ease; }
+${R} .ps-sheet-o.ps-open .ps-sheet-bg { opacity: 1; }
+${R} .ps-sheet { position: relative; box-sizing: border-box; width: 100%; max-width: 560px; max-height: 92vh; max-height: 92dvh; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; border-radius: calc(var(--ps-radius) + 6px) calc(var(--ps-radius) + 6px) 0 0; background-color: var(--ps-surface); color: var(--ps-text); padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -10px 40px rgba(0,0,0,.25); transform: translateY(105%); transition: transform .34s cubic-bezier(.2,.8,.2,1); }
+${R} .ps-sheet-o.ps-open .ps-sheet { transform: none; }
+${R} .ps-sheet--half { min-height: 50vh; }
+${R} .ps-sheet--full { height: 92vh; height: 92dvh; }
+${R} .ps-sheet-h { display: flex; justify-content: center; margin: -4px -16px -4px; padding: 6px 0 10px; cursor: grab; touch-action: none; flex: none; }
+${R} .ps-sheet-h i { width: 38px; height: 5px; border-radius: 3px; background: var(--ps-muted); opacity: .45; }
+${R} .ps-sheet-sp { height: 6px; flex: none; }
+${R} .ps-sheet-x { position: absolute; top: 12px; right: 12px; z-index: 2; width: 32px; height: 32px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background-color: var(--ps-surface2); color: var(--ps-muted); cursor: pointer; }
+${R} .ps-sheet-t { padding-right: 40px; font-family: var(--ps-font-h); font-size: 19px; font-weight: 700; flex: none; }
+@media (prefers-reduced-motion: reduce) { ${R} .ps-sheet, ${R} .ps-sheet-bg { transition: none; } }
+/* ---- QR-код ---- */
+${R} .ps-qr { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; max-width: 100%; }
+${R} .ps-qr img { display: block; max-width: 100%; height: auto; aspect-ratio: 1 / 1; border-radius: inherit; background: #fff; }
+${R} .ps-qr figcaption { font-size: 13px; color: var(--ps-muted); text-align: center; }
+/* ---- Взаимодействия: скрытые до действия блоки ---- */
+${R} .ps-off { display: none !important; }
+${R} .ps-in { animation: ps-${pid}-up .3s ease both; }
+${R} .ps-edit-off { opacity: .45; outline: 1.5px dashed var(--ps-muted); outline-offset: 2px; }
+${R} button.ps-imglink { display: block; padding: 0; border: 0; background: none; cursor: pointer; width: 100%; }
 /* ---- Уведомление ---- */
 ${R} .ps-notice { display: flex; align-items: flex-start; gap: 12px; padding: 14px; border: 1px solid transparent; border-radius: var(--ps-radius-sm); font-size: 14px; line-height: 1.5; }
 ${R} .ps-notice-t { margin-bottom: 2px; font-weight: 700; }
@@ -2806,6 +2919,7 @@ function scanFeatures(root) {
     f.nodes++;
     const a = n.action || {};
     if (a.type === 'copy') { f.copy = true; f.js = true; }
+    if (n.type === 'sheet') { f.sheets = true; f.js = true; }
     if (a.type === 'close') { f.tgClose = true; f.tg = true; f.js = true; }
     if (a.type === 'senddata') { f.tgSend = true; f.tg = true; f.js = true; }
     if (a.type && a.type !== 'none') {
@@ -2907,7 +3021,47 @@ function runtimeJs(pid, feat, opt = {}) {
   var H = {
     ${(opt.acts || []).map(k => ACT_JS[k]).filter(Boolean).join(',\n    ')}
   };
+${feat.sheets ? `  /* шторки: открытие, закрытие крестиком / касанием снаружи / свайпом за чёлку */
+  var sheetLock = '';
+  function sheetOpen(id) {
+    var o = root.querySelector('[data-ps-sheet="' + id + '"]');
+    if (!o) return;
+    var cur = root.querySelector('.ps-sheet-o.ps-open'); if (cur && cur !== o) sheetClose(cur, true);
+    o.classList.add('ps-open'); o.setAttribute('aria-hidden', 'false');
+    if (!sheetLock) { sheetLock = document.documentElement.style.overflow || 'auto'; document.documentElement.style.overflow = 'hidden'; }
+    hap('light');
+  }
+  function sheetClose(o, keepLock) {
+    o.classList.remove('ps-open'); o.setAttribute('aria-hidden', 'true');
+    var s = o.querySelector('.ps-sheet'); if (s) { s.style.transform = ''; s.style.transition = ''; }
+    if (!keepLock && sheetLock) { document.documentElement.style.overflow = sheetLock === 'auto' ? '' : sheetLock; sheetLock = ''; }
+  }
   root.addEventListener('click', function (e) {
+    var c = e.target.closest ? e.target.closest('[data-ps-sheet-close]') : null;
+    if (c && root.contains(c)) { var o = c.closest('.ps-sheet-o'); if (o) sheetClose(o); }
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { var o = root.querySelector('.ps-sheet-o.ps-open'); if (o) sheetClose(o); } });
+  (function () {
+    var drag = null;
+    function y(e) { return e.touches ? e.touches[0].clientY : e.clientY; }
+    function start(e) {
+      var h = e.target.closest ? e.target.closest('[data-ps-sheet-drag]') : null;
+      if (!h || !root.contains(h)) return;
+      var s = h.closest('.ps-sheet'); drag = { s: s, y0: y(e), dy: 0, t: Date.now() };
+      s.style.transition = 'none';
+    }
+    function move(e) { if (!drag) return; drag.dy = Math.max(0, y(e) - drag.y0); drag.s.style.transform = 'translateY(' + drag.dy + 'px)'; if (e.cancelable) e.preventDefault(); }
+    function end() {
+      if (!drag) return;
+      var d = drag; drag = null; d.s.style.transition = '';
+      var fast = d.dy > 40 && Date.now() - d.t < 250;
+      if (d.dy > Math.min(140, d.s.offsetHeight * 0.3) || fast) sheetClose(d.s.closest('.ps-sheet-o')); else d.s.style.transform = '';
+    }
+    root.addEventListener('touchstart', start, { passive: true }); root.addEventListener('mousedown', start);
+    document.addEventListener('touchmove', move, { passive: false }); document.addEventListener('mousemove', move);
+    document.addEventListener('touchend', end); document.addEventListener('mouseup', end);
+  })();
+` : ''}  root.addEventListener('click', function (e) {
     var el = e.target.closest ? e.target.closest('[data-ps-act], [goto_web_page], [data-ps-gotowp]') : null;
     if (el && root.contains(el)) {
       var hh = el.getAttribute('data-ps-h'); hap(hh === null ? DEFH : hh);
@@ -3028,7 +3182,7 @@ function generate(project, opts = {}) {
   if (tokens.adaptive) feat.js = true;
   if (project.page.haptics !== false && feat.tapables) feat.js = true;
   const includeJs = opts.js !== false && (feat.js || feat.fill);
-  const ctx = { mode, pid, project, js: includeJs || mode === 'edit', varMode: opts.varMode || 'raw', now: opts.now, scheme: opts.scheme };
+  const ctx = { mode, pid, project, js: includeJs || mode === 'edit', varMode: opts.varMode || 'raw', now: opts.now, scheme: opts.scheme, openSheet: opts.openSheet };
   if (mode !== 'edit' && opts.noAnim) ctx.mode = 'export';
   let html = renderNode(project.root, ctx);
   if (opts.noAnim) html = html.replace(/ ps-anim-(fade|up|zoom|left)/g, '');
@@ -3218,7 +3372,12 @@ function lintProject(project, opts = {}) {
       if (n.type === 'button' && t === 'none' && !p.disabled) add('info', `«${L}»: у кнопки нет действия`, n.id);
       if (d && t !== 'none') {
         for (const f of d.params || []) if (f.req && !String(a[f.k] ?? '').trim()) add('error', `«${L}»: в действии «${d.label}» не заполнено «${f.label}»`, n.id);
-        if (t === 'app') {
+        if (t === 'sheet') {
+          if (!(project.root.children || []).some(c => c.type === 'sheet' && c.id === a.value)) add('error', `«${L}»: шторка для открытия не найдена`, n.id);
+          if (opts.js === false) add('error', `«${L}»: шторки работают только с JavaScript`, n.id);
+        } else if (['show', 'hide', 'toggle'].includes(t)) {
+          if (!findNode(project.root, a.value)) add('error', `«${L}»: блок для действия не найден`, n.id);
+        } else if (t === 'app') {
           if (!parseGoto(a.value) && !a.bot) add('error', `«${L}»: не удалось найти ID Mini App — нужна ссылка с «startapp=»`, n.id);
           else add('info', `«${L}»: gotoWebPage — функция PuzzleBot, проверьте переход внутри мини-приложения`, n.id);
         } else if (t === 'goto') {
@@ -4673,7 +4832,7 @@ const Canvas = {
       // Сборка на глазах: показываем только первые buildN блоков страницы
       const bn = this.buildN;
       const proj = bn == null ? S.project : { ...S.project, root: { ...S.project.root, children: S.project.root.children.slice(0, bn) } };
-      const g = safe(() => generate(proj, { mode: 'edit', varMode: S.settings.varMode }), null);
+      const g = safe(() => generate(proj, { mode: 'edit', varMode: S.settings.varMode, openSheet: S.ws && S.ws !== 'page' ? S.ws : null }), null);
       if (!g) { UI.toast('Не удалось построить страницу. Последнее действие можно отменить.', { err: true }); return; }
       if (!this._vars || this._varsFor !== S.project.page.customVars) { this._vars = allVars(S.project).map(v => ({ k: v.key, d: v.desc })); this._varsFor = S.project.page.customVars; }
       deviceTheme(this.dev, S.project);
@@ -4785,7 +4944,7 @@ const Editor = {
   /* ---------- открыть / закрыть ---------- */
   open(project) {
     S.project = project;
-    S.sel = null; S.mpane = null;
+    S.sel = null; S.mpane = null; S.ws = 'page';
     S.collapsed = new Set();
     History.reset();
     project.openedAt = Date.now();
@@ -4841,6 +5000,8 @@ const Editor = {
     this.after(opts);
   },
   after(opts = {}) {
+    if (S.ws && S.ws !== 'page' && !this.node(S.ws)) S.ws = 'page'; // шторку удалили или отменили
+    this.renderWs();
     Canvas.render();
     if (opts.struct !== false) this.renderLayers();
     if (opts.panel) Inspector.render();
@@ -4868,7 +5029,11 @@ const Editor = {
 
   defaultTarget() {
     const n = this.node(S.sel);
-    if (!n) return { parent: 'page', index: null };
+    if (S.ws && S.ws !== 'page') {
+      // в шторке блоки добавляются внутрь шторки
+      if (!n || !this.sheetOf(n.id)) return { parent: S.ws, index: null };
+    }
+    if (!n || n.type === 'sheet' && S.ws === 'page') return { parent: 'page', index: null };
     if (COMP[n.type].container && !n.locked) return { parent: n.id, index: null };
     const f = findNode(S.project.root, n.id);
     return { parent: f.parent.id, index: f.index + 1 };
@@ -4877,7 +5042,7 @@ const Editor = {
     if (!node) return;
     const w = where || this.defaultTarget();
     this.act('Добавление блока', p => {
-      const par = findNode(p.root, w.parent);
+      const par = findNode(p.root, node.type === 'sheet' ? 'page' : w.parent);
       const target = par && COMP[par.node.type].container ? par.node : p.root;
       target.children = target.children || [];
       let idx = w.index;
@@ -4894,7 +5059,22 @@ const Editor = {
   addFromCatalog(id, where) {
     const it = catalogFind(id) || SECTIONS.find(s => s.id === id);
     if (!it) return;
-    this.insert(it.make(), where);
+    const node = it.make();
+    this.insert(node, where);
+    if (it.after === 'qr') this.askQr(node.id);
+    if (it.after === 'sheet') {
+      const sh = this.newSheet(false);
+      S.inspTab = 'actions';
+      this.setProp(node.id, ['action'], { type: 'sheet', value: sh.id }, null, { panel: true });
+      UI.toast('Кнопка откроет шторку. Чтобы наполнить шторку, нажмите её вкладку над холстом.', { icon: 'check', ms: 4500 });
+      this.renderWs();
+    }
+  },
+  askQr(id) {
+    return UI.prompt({ title: 'QR-код', label: 'Вставьте ссылку — из неё получится QR-код. Можно использовать переменные, например {{REF_LINK}}.', placeholder: 'https://t.me/имя_бота', ok: 'Создать QR-код' }).then(v => {
+      if (v === null || !v.trim()) return;
+      this.setProp(id, ['props', 'url'], v.trim(), null, { panel: true });
+    });
   },
   dropNew(parent, before, onId) {
     const d = S.dragNew; S.dragNew = null;
@@ -4922,6 +5102,7 @@ const Editor = {
     if (isAncestor(S.project.root, id, parentId)) { UI.toast('Нельзя переместить блок внутрь самого себя'); return; }
     const par = findNode(S.project.root, parentId);
     if (!par || !COMP[par.node.type].container) return;
+    if (f.node.type === 'sheet' && parentId !== 'page') { UI.toast('Шторка живёт на уровне страницы — внутрь блоков её не переместить'); return; }
     this.act('Перемещение', p => {
       const src = findNode(p.root, id);
       src.parent.children.splice(src.index, 1);
@@ -5025,8 +5206,44 @@ const Editor = {
     if (this.els.redo) this.els.redo.disabled = !History.redo.length;
   },
 
+  /* ---------- рабочие области: страница и шторки ---------- */
+  sheets() { return S.project ? S.project.root.children.filter(c => c.type === 'sheet') : []; },
+  sheetOf(id) {
+    if (!id || !S.project) return null;
+    for (const s of this.sheets()) { if (s.id === id) return s; let hit = false; walk(s, n => { if (n.id === id) { hit = true; return false; } }); if (hit) return s; }
+    return null;
+  },
+  setWs(ws, opts = {}) {
+    if (ws !== 'page' && !this.sheets().some(s => s.id === ws)) ws = 'page';
+    const changed = S.ws !== ws;
+    S.ws = ws;
+    if (changed && !opts.keepSel) { S.sel = ws === 'page' ? null : ws; Inspector.render(); }
+    this.renderWs();
+    Canvas.render();
+    this.renderLayers();
+    this.updateChip && this.updateChip();
+  },
+  renderWs() {
+    const bar = this.els.ws; if (!bar) return;
+    bar.innerHTML = '';
+    const tab = (id, label, icn) => h('button', { class: 'ws-t' + (S.ws === id ? ' on' : ''), role: 'tab', 'aria-selected': String(S.ws === id), onclick: () => { if (S.ws === id) { this.select(id === 'page' ? null : id); } else this.setWs(id); } }, ic(icn, 14), h('span', null, label));
+    bar.append(tab('page', 'Страница', 'file'));
+    for (const s of this.sheets()) bar.append(tab(s.id, nodeLabel(s).slice(0, 22), 'sheet'));
+    bar.append(h('button', { class: 'ws-add', title: 'Новая шторка', 'aria-label': 'Новая шторка', onclick: () => this.newSheet() }, ic('plus', 14), h('span', { class: 'hide-sm' }, 'Шторка')));
+  },
+  newSheet(open = true) {
+    const n = this.sheets().length + 1;
+    const sh = mk('sheet', { title: n > 1 ? 'Шторка ' + n : 'Подробнее' }, {}, [mk('text', { text: 'Наполните шторку блоками: добавьте их из вкладки «Добавить», пока открыта эта рабочая область.' }), mk('button', { text: 'Готово', variant: 'primary', full: true }, {}, null, { action: { type: 'sheetclose' } })], { name: n > 1 ? 'Шторка ' + n : 'Подробнее' });
+    this.act('Новая шторка', p => { p.root.children.push(sh); });
+    if (open) { this.setWs(sh.id); UI.toast('Шторка создана — это отдельная рабочая область. Вернуться к странице: вкладка «Страница» над холстом.', { icon: 'check', ms: 4200 }); }
+    return sh;
+  },
   select(id, opts = {}) {
     if (id === 'page') id = null;
+    // выбор блока в другой области — переключаем рабочую область
+    const sh = id ? this.sheetOf(id) : null;
+    const want = sh ? sh.id : (id ? 'page' : S.ws);
+    if (want !== S.ws) { S.ws = want; this.renderWs(); Canvas.render(); this.renderLayers(); }
     S.sel = id;
     if (!opts.fromCanvas) Canvas.select(id, opts.scroll !== false);
     else Canvas.select(id, false);
@@ -5090,7 +5307,7 @@ const Editor = {
     ], { align: 'end' }));
     const top = h('header', { class: 'top' },
       h('button', { class: 'btn icon ghost', title: 'К проектам', 'aria-label': 'К проектам', onclick: () => this.close() }, ic('arrow-left')),
-      h('span', { class: 'logo hide-sm' }, mascotImg('logo', 30), h('span', { class: 'logo-text hide-md' }, 'Puzzle Studio'), h('span', { class: 'logo-sl hide-md' }, '://')),
+      h('span', { class: 'logo hide-sm' }, mascotImg('icon', 30), h('span', { class: 'logo-text hide-md' }, 'Puzzle Studio'), h('span', { class: 'logo-sl hide-md' }, '://')),
       h('button', { class: 'crumb hide-sm', onclick: () => this.close() }, 'Мои проекты'), h('span', { class: 'crumb-sep hide-sm' }, '/'),
       E.name, E.save,
       h('div', { class: 'top-mid' }, E.undo, E.redo, h('span', { class: 'sep hide-sm' }), h('div', { class: 'hide-sm' }, E.dev)),
@@ -5103,8 +5320,8 @@ const Editor = {
     E.right = h('aside', { class: 'pane right', 'aria-label': 'Свойства' });
     const stage = h('section', { class: 'stage', 'aria-label': 'Холст' });
     E.info = h('span', { class: 'stage-info' });
-    stage.append(h('div', { class: 'stage-bar' }, E.info, h('div', { class: 'btn-row hide-sm', style: { flex: '0 0 auto' } },
-      h('button', { class: 'btn sm ghost', title: 'Выбрать страницу', onclick: () => this.select(null) }, ic('file', 14), 'Страница'))));
+    E.ws = h('div', { class: 'ws-bar', role: 'tablist', 'aria-label': 'Рабочая область' });
+    stage.append(h('div', { class: 'stage-bar' }, E.info, E.ws));
     Canvas.info = E.info;
     E.scrim = h('div', { class: 'sheet-scrim', onclick: () => this.setMpane(null) });
     E.chip = h('div', { class: 'sel-chip', hidden: true });
@@ -5122,6 +5339,7 @@ const Editor = {
     app.append(h('div', { class: 'ed' }, top, h('div', { class: 'ed-main' }, stage, E.rcol), E.chip, E.scrim, mnav));
     this.setRtab(S.rtab || 'add');
     Canvas.mount(stage);
+    this.renderWs();
     this.renderLeft();
     Inspector.render();
     this.setSave(Store.mode === 'memory' ? 'mem' : 'saved');
@@ -5380,7 +5598,12 @@ const Editor = {
       list.append(r);
       if (hasKids && !collapsed) n.children.forEach(c => row(c, depth + 1));
     };
-    row(S.project.root, 0);
+    if (S.ws && S.ws !== 'page') { const sh = this.node(S.ws); if (sh) row(sh, 0); }
+    else {
+      // страница без шторок: шторки — во вкладках над холстом
+      const root = S.project.root;
+      row({ ...root, children: root.children.filter(c => c.type !== 'sheet') }, 0);
+    }
     body.append(list);
     body.scrollTop = st;
   },
@@ -5731,6 +5954,8 @@ const Inspector = {
     const d = ACT[a.type];
     if (!d || a.type === 'none') return null;
     for (const f of d.params || []) if (f.req && !String(a[f.k] ?? '').trim()) return ['bad', 'Заполните поле «' + f.label + '»'];
+    if (a.type === 'sheet') return Editor.sheets().some(s => s.id === a.value) ? ['ok', '✓ Откроет шторку «' + nodeLabel(Editor.node(a.value)) + '»'] : ['bad', 'Выберите шторку'];
+    if (['show', 'hide', 'toggle'].includes(a.type)) return Editor.node(a.value) ? ['ok', '✓ Блок «' + nodeLabel(Editor.node(a.value)) + '»'] : ['bad', 'Выберите блок'];
     if (a.type === 'app') { const id = parseGoto(a.value); return id ? ['ok', `✓ gotoWebPage("${id}", ${a.win ? 'true' : 'false'})`] : ['bad', 'Не нашёл ID: нужна ссылка вида https://t.me/имя_бота?startapp=ID']; }
     if (a.type === 'goto') { const id = parseGoto(a.value); return id ? ['ok', '✓ <a goto_web_page="' + id + '">'] : ['bad', 'Не нашёл ID: нужна ссылка вида https://t.me/бот?startapp=ID']; }
     if (a.type === 'anchor') return null;
@@ -5746,6 +5971,22 @@ const Inspector = {
     const check = () => { const r = this.actionStatus(a); if (r) { status.className = 'status-line ' + r[0]; status.textContent = r[1]; } else status.textContent = ''; };
     const upd = (k, v) => { a[k] = v; set({ [k]: v }); check(); };
     for (const f of d.params || []) {
+      if (f.type === 'sheet') {
+        const sheets = Editor.sheets();
+        const row = h('div', { class: 'btn-row' });
+        if (sheets.length) out.push(field(f.label, selectEl([['', '— выберите —'], ...sheets.map(s => [s.id, nodeLabel(s)])], a.value || '', v => upd('value', v))));
+        else out.push(h('div', { class: 'hint box' }, 'Шторок пока нет — создайте первую.'));
+        row.append(h('button', { class: 'btn sm', onclick: () => { const sh = Editor.newSheet(false); upd('value', sh.id); Inspector.render(); } }, ic('plus', 14), 'Новая шторка'));
+        if (a.value && sheets.some(s => s.id === a.value)) row.append(h('button', { class: 'btn sm primary', onclick: () => Editor.setWs(a.value) }, ic('edit', 14), 'Редактировать шторку'));
+        out.push(row);
+        continue;
+      }
+      if (f.type === 'node') {
+        const opts = [];
+        walk(S.project.root, (x, par, i, depth) => { if (x.id === 'page' || x.type === 'sheet') return; opts.push([x.id, '\u00a0\u00a0'.repeat(Math.max(0, depth - 1)) + nodeLabel(x).slice(0, 34) + (x.adv && x.adv.off ? ' · скрыт' : '')]); });
+        out.push(field(f.label, selectEl([['', '— выберите блок —'], ...opts], a.value || '', v => upd('value', v)), { hint: 'Чтобы блок был скрыт до нажатия: выберите его → Настройки → Дополнительно → «Скрыт, пока не покажут».' }));
+        continue;
+      }
       if (f.type === 'anchor') {
         const anchors = anchorsList(S.project.root);
         if (!anchors.length) out.push(h('div', { class: 'hint box warn' }, 'На странице нет блоков с якорем. Выберите нужный блок → вкладка «Действия» → «Якорь».'));
@@ -5787,7 +6028,7 @@ const Inspector = {
     const a = { ...(n.action || { type: 'none' }) };
     if (a.type === 'miniapp') a.type = 'tg';
     const set = patch => Editor.setProp(n.id, ['action'], { ...(Editor.node(n.id).action || {}), ...patch }, n.id + ':action:' + Object.keys(patch).join(','));
-    const groups = n.type === 'image' || n.type === 'link' ? [0] : null;
+    const groups = n.type === 'link' || n.type === 'image' ? null : null;
     const pick = this.actionSelect(a.type || 'none', groups, v => {
       const d = ACT[v] || {};
       const next = { type: v, haptic: a.haptic, confirm: a.confirm };
@@ -5997,6 +6238,8 @@ const Inspector = {
     css.value = ad.css || ''; chk();
     css.addEventListener('input', () => { chk(); Editor.setProp(n.id, ['adv', 'css'], css.value, n.id + ':css'); });
     return [
+      toggle('Скрыт, пока не покажут действием', !!ad.off, v => Editor.setProp(n.id, ['adv', 'off'], v ? 1 : '', null, { panel: true })),
+      ...(ad.off ? [h('div', { class: 'hint' }, 'Блок появится, когда пользователь нажмёт кнопку с действием «Показать блок» или «Показать / скрыть блок». В редакторе он показан полупрозрачным.')] : []),
       field('Показывать на', seg('os', [['', 'Везде'], ['ios', 'Только iOS'], ['android', 'Только Android']]),
         { hint: 'PuzzleBot сам скрывает блоки с классами block_ios / block_android на нужной платформе. В конструкторе блок виден всегда.' }),
       field('Поворот', this.range(A('rot'), { min: -180, max: 180, unit: '°' })),
@@ -6205,7 +6448,7 @@ const Home = {
     app.innerHTML = '';
     const tabs = [['projects', 'Мои проекты', 'folder'], ['templates', 'Шаблоны', 'grid'], ['kb', 'База знаний', 'book'], ['mine', 'Мои компоненты', 'bookmark'], ['media', 'Медиатека', 'image'], ['settings', 'Настройки', 'settings']];
     const side = h('nav', { class: 'side scroll', 'aria-label': 'Разделы' },
-      h('div', { class: 'logo' }, mascotImg('logo', 34), h('span', { class: 'logo-text' }, 'Puzzle Studio'), h('span', { class: 'logo-sl' }, '://')),
+      h('div', { class: 'logo' }, mascotImg('icon', 34), h('span', { class: 'logo-text' }, 'Puzzle Studio'), h('span', { class: 'logo-sl' }, '://')),
       h('button', { class: 'btn primary', style: { marginBottom: '10px' }, onclick: () => this.newBlank() }, ic('plus', 16), 'Создать страницу'),
       tabs.map(([id, l, icn]) => h('button', { class: 'side-btn' + (S.homeTab === id ? ' on' : ''), onclick: () => { S.homeTab = id; this.render(); } }, ic(icn, 17), l)),
       h('div', { class: 'side-foot' },
