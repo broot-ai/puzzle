@@ -671,8 +671,8 @@ body { font-size: 13.5px; }
 .pz-mascot .mascot { width: 72px; height: 72px; }
 .pz-panel { position: relative; width: 400px; height: min(690px, calc(100vh - 36px)); display: flex; flex-direction: column; border-radius: 18px; background: linear-gradient(180deg, #2d6de0 0%, #3a84f0 55%, #4b93f4 100%); box-shadow: 0 24px 60px -16px rgba(20, 40, 90, .45); overflow: visible; animation: pzIn .22s cubic-bezier(.2,.8,.2,1); }
 @keyframes pzIn { from { opacity: 0; transform: translateY(14px) scale(.98); } }
-.pz-top { display: flex; flex-direction: column; gap: 8px; padding: 0 0 12px; flex: none; }
-.pz-head { padding: 0 14px; }
+.pz-top { display: flex; flex-direction: column; gap: 10px; padding: 0 14px 318px; overflow-y: auto; flex: 1; min-height: 0; scrollbar-width: none; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.pz-top::-webkit-scrollbar { display: none; }
 .pz-head { display: flex; align-items: center; justify-content: space-between; height: 56px; flex: none; color: #fff; }
 .pz-head b { font-size: 17px; font-weight: 700; }
 .pz-x { width: 34px; height: 34px; display: grid; place-items: center; border: 0; border-radius: 8px; background: transparent; color: rgba(255,255,255,.9); }
@@ -693,7 +693,7 @@ body { font-size: 13.5px; }
 .pz-task.done .pz-cb { background: #4b8df8; border-color: #4b8df8; }
 .pz-task.done .grow { color: #8b929c; text-decoration: line-through; }
 .pz-pts { font-size: 13px; color: #6b7280; }
-.pz-chat { position: relative; z-index: 3; flex: 1; min-height: 0; display: flex; flex-direction: column; border: 2px solid #b8a3f6; border-radius: 18px; background: #fff; color: #23262d; transition: height .25s cubic-bezier(.2,.8,.2,1); }
+.pz-chat { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 300px; display: flex; flex-direction: column; border: 2px solid #b8a3f6; border-radius: 18px; background: #fff; color: #23262d; transition: height .25s cubic-bezier(.2,.8,.2,1); }
 .pz-chat-h { display: flex; align-items: center; gap: 8px; height: 52px; padding: 0 10px; flex: none; }
 .pz-chat-h b { flex: 1; font-size: 18px; font-weight: 500; }
 .pz-ic { width: 34px; height: 34px; display: grid; place-items: center; border: 0; border-radius: 8px; background: none; color: #5d6470; }
@@ -1162,6 +1162,196 @@ html, body { overflow: hidden; overscroll-behavior: none; }
 pre.code.locked { user-select: none; -webkit-user-select: none; -webkit-mask-image: linear-gradient(#000 40%, transparent 95%); mask-image: linear-gradient(#000 40%, transparent 95%); }
 .code-lock { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); width: min(440px, calc(100% - 32px)); display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); box-shadow: var(--shadow); text-align: center; }
 .code-lock span { font-size: 13px; color: var(--muted); line-height: 1.45; }
+
+/* Puzzlo: исходный вид — карточки списком, чат-шторка снизу, маскот сидит на шторке */
+.pz-chat.expanded { height: calc(100% - 56px); }
+.pz-chat > .pz-mascot { position: absolute; right: 64px; top: -62px; z-index: 4; }
+.pz-chat > .pz-mascot .mascot { width: 76px; height: 76px; }
+.pz-top .pz-task { display: flex; flex-direction: row; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; background: #fff; font-size: 14.5px; }
+.pz-top .pz-task .pz-cb { width: 22px; height: 22px; }
+.pz-chat-h { cursor: grab; padding-top: 8px; touch-action: none; }
+
+/* ===== Вертикальный ползунок масштаба мокапа ===== */
+.zv { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 6; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 8px 0; width: 44px; border: 1px solid var(--line2); border-radius: 22px; background: var(--panel); box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.zv-b { width: 32px; height: 28px; display: grid; place-items: center; border: 0; background: none; color: var(--muted); cursor: pointer; }
+.zv-b:hover { color: var(--accent); }
+.zv-track { position: relative; width: 6px; height: 180px; border-radius: 3px; background: var(--panel3); cursor: pointer; touch-action: none; }
+.zv-track::before { content: ''; position: absolute; inset: 0 -16px; }
+.zv-fill { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 3px; background: var(--accent); opacity: .55; }
+.zv-th { position: absolute; left: 50%; width: 22px; height: 22px; margin-left: -11px; border-radius: 50%; background: #fff; border: 3px solid var(--accent); box-shadow: 0 2px 8px rgba(30,60,140,.35); cursor: grab; transition: transform .15s; }
+.zv-th::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid var(--accent); opacity: .35; animation: zvPulse 2.4s ease-out infinite; }
+.zv-track.drag .zv-th, .zv-th:hover { transform: scale(1.15); cursor: grabbing; }
+.zv-track.drag .zv-th::after { animation: none; opacity: 0; }
+.zv-tip { position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%); padding: 3px 7px; border-radius: 6px; background: var(--text); color: var(--bg); font-size: 11.5px; font-style: normal; font-weight: 600; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .15s; }
+.zv:hover .zv-tip, .zv-track.drag .zv-tip { opacity: 1; }
+@keyframes zvPulse { 0% { transform: scale(.8); opacity: .5; } 70% { transform: scale(1.5); opacity: 0; } 100% { opacity: 0; } }
+@media (max-width: 760px) { .zv { left: 8px; width: 38px; } .zv-track { height: 130px; } }
+@media (prefers-reduced-motion: reduce) { .zv-th::after { animation: none; } }
+
+/* ===== История изменений ===== */
+.hist { display: flex; flex-direction: column; max-height: 56vh; overflow-y: auto; margin-top: 8px; }
+.hist-i { position: relative; display: flex; align-items: center; gap: 12px; padding: 9px 4px 9px 26px; border-bottom: 1px solid var(--line); }
+.hist-i::before { content: ''; position: absolute; left: 9px; top: 0; bottom: 0; width: 2px; background: var(--line2); }
+.hist-dot { position: absolute; left: 4px; top: 50%; width: 12px; height: 12px; margin-top: -6px; border-radius: 50%; background: var(--panel); border: 2px solid var(--accent); z-index: 1; }
+.hist-i.now .hist-dot { background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.hist-i.undone { opacity: .6; } .hist-i.undone .hist-dot { border-color: var(--faint); }
+.hist-m { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.hist-m b { font-size: 13.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hist-m small { color: var(--muted); font-size: 12px; }
+.hist-i.now b { color: var(--accent); }
+
+/* ===== Защита контента (бесплатный лимит исчерпан) ===== */
+.ps-guard body, .ps-guard .stage, .ps-guard pre, .ps-guard .lyr { -webkit-user-select: none; user-select: none; }
+.ps-guard input, .ps-guard textarea { -webkit-user-select: text; user-select: text; }
+.ps-guard img { -webkit-user-drag: none; }
+.ps-devopen #app, .ps-devopen .pz-root, .ps-devopen .dlg-ov { filter: blur(16px); pointer-events: none; }
+.devov { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; background: rgba(245,246,248,.86); text-align: center; color: #23262d; }
+.devov b { font-size: 24px; font-weight: 800; } .devov span { max-width: 420px; font-size: 14px; color: #545b66; line-height: 1.5; }
+.devov .qm-btn { width: 260px; }
+
+/* ===== Просмотр на телефоне ===== */
+.pv { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 20px; align-items: start; }
+.pv-qr { width: 260px; height: 260px; border-radius: 12px; border: 1px solid var(--line); background: #fff; }
+.pv-qr--big { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 20px; text-align: center; font-size: 13px; color: var(--muted); }
+.pv-m { display: flex; flex-direction: column; gap: 12px; }
+@media (max-width: 640px) { .pv { grid-template-columns: 1fr; justify-items: center; } }
+.viewer { position: fixed; inset: 0; background: #fff; }
+.viewer-f { width: 100%; height: 100%; border: 0; display: block; }
+.viewer-badge { position: fixed; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px 6px 6px; border-radius: 999px; background: rgba(20,24,32,.78); color: #fff; font-size: 12px; font-weight: 600; text-decoration: none; backdrop-filter: blur(6px); }
+.viewer-badge .mascot { width: 20px; height: 20px; }
+
+/* ================================================================
+   ГЛАВНАЯ (посадочная страница)
+   ================================================================ */
+.home-main.ld-main { padding: 0; background: #fff; color: #1f2329; }
+.ld { --ld-blue: #2d6de0; --ld-ink: #1f2329; --ld-mut: #5f6672; --ld-bg: #f4f7fd; font-size: 15px; }
+.ld section { max-width: 1120px; margin: 0 auto; padding: 72px 32px 0; }
+.ld h2 { margin: 0 0 12px; font-size: clamp(26px, 3.4vw, 40px); font-weight: 800; letter-spacing: -0.02em; text-align: center; color: var(--ld-ink); }
+.ld-lead { max-width: 640px; margin: 0 auto 32px; text-align: center; color: var(--ld-mut); font-size: 16px; line-height: 1.55; }
+.ld-center { display: flex; justify-content: center; margin-top: 28px; }
+.ld-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 46px; padding: 0 22px; border: 0; border-radius: 12px; background: var(--ld-blue); color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; transition: transform .15s, box-shadow .15s; }
+.ld-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -10px rgba(45,109,224,.7); }
+.ld-btn.sm { height: 36px; padding: 0 14px; font-size: 13.5px; border-radius: 9px; }
+.ld-btn.ghost { background: #eef3fd; color: var(--ld-blue); box-shadow: none; }
+/* шапка */
+.ld-nav { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 24px; padding: 12px 32px; background: rgba(255,255,255,.9); backdrop-filter: blur(10px); border-bottom: 1px solid #eef0f4; }
+.ld-logo { display: flex; align-items: center; gap: 8px; } .ld-logo b { font-size: 18px; color: var(--ld-blue); } .ld-logo > span { color: #ff9a2e; font-weight: 800; }
+.ld-logo .mascot { width: 30px; height: 30px; }
+.ld-nav nav { display: flex; gap: 4px; flex: 1; justify-content: center; }
+.ld-nav nav button { height: 36px; padding: 0 12px; border: 0; border-radius: 8px; background: none; color: var(--ld-mut); font-size: 14.5px; font-weight: 500; cursor: pointer; }
+.ld-nav nav button:hover { background: #f2f5fb; color: var(--ld-ink); }
+.ld-nav .ld-btn { height: 40px; }
+/* первый экран */
+.ld-hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 40px; align-items: center; padding-top: 56px !important; }
+.ld-kicker { display: inline-block; padding: 6px 12px; border-radius: 999px; background: #eef3fd; color: var(--ld-blue); font-size: 13px; font-weight: 700; }
+.ld-hero h1 { margin: 16px 0 14px; font-size: clamp(32px, 4.6vw, 56px); line-height: 1.05; font-weight: 800; letter-spacing: -0.03em; color: var(--ld-ink); }
+.ld-hero h1 span { background: linear-gradient(90deg, #2d6de0, #8a5cf6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.ld-sub { margin: 0 0 24px; font-size: 17px; line-height: 1.55; color: var(--ld-mut); max-width: 560px; }
+.ld-prompt { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 2px solid #dfe7f8; border-radius: 18px; background: #fff; box-shadow: 0 18px 40px -24px rgba(45,109,224,.45); transition: border-color .15s; }
+.ld-prompt:focus-within { border-color: var(--ld-blue); }
+.ld-ta { width: 100%; border: 0; outline: none; resize: none; background: none; font: inherit; font-size: 16px; color: var(--ld-ink); padding: 4px 6px; }
+.ld-ta.shake { animation: ldShake .4s; }
+@keyframes ldShake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.ld-prompt-b { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ld-plat { display: flex; gap: 4px; padding: 3px; border-radius: 10px; background: #f2f5fb; }
+.ld-plat button { height: 32px; padding: 0 12px; border: 0; border-radius: 8px; background: none; color: var(--ld-mut); font-weight: 600; font-size: 13.5px; cursor: pointer; }
+.ld-plat button.on { background: #fff; color: var(--ld-ink); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.ld-go { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 18px; border: 0; border-radius: 11px; background: linear-gradient(90deg, #2d6de0, #6b5cf6); color: #fff; font-weight: 700; font-size: 14.5px; cursor: pointer; }
+.ld-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.ld-chips button { height: 34px; padding: 0 14px; border: 1px solid #e3e8f2; border-radius: 999px; background: #fff; color: var(--ld-ink); font-size: 13.5px; cursor: pointer; }
+.ld-chips button:hover { border-color: var(--ld-blue); color: var(--ld-blue); }
+.ld-hero-r { position: relative; height: 470px; }
+.ld-phones { position: absolute; inset: 0; }
+.ld-ph { position: absolute; width: 190px; height: 390px; padding: 8px; border-radius: 34px; background: #14171c; box-shadow: 0 30px 60px -24px rgba(20,40,90,.5); }
+.ld-ph-s { width: 100%; height: 100%; border-radius: 27px; overflow: hidden; background: #fff; position: relative; }
+.ld-ph0 { left: 4%; top: 50px; transform: rotate(-7deg); }
+.ld-ph1 { left: 32%; top: 0; z-index: 2; }
+.ld-ph2 { right: 2%; top: 60px; transform: rotate(7deg); }
+.ld-mascot { position: absolute; right: 26%; bottom: -14px; z-index: 3; }
+.ld-mascot .mascot { width: 110px; height: 110px; filter: drop-shadow(0 14px 18px rgba(20,40,90,.3)); }
+/* шаги */
+.ld-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.ld-step { display: flex; flex-direction: column; gap: 8px; padding: 22px; border-radius: 18px; background: var(--ld-bg); }
+.ld-step i { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px; background: var(--ld-blue); color: #fff; font-style: normal; font-weight: 800; }
+.ld-step b { font-size: 17px; } .ld-step span { color: var(--ld-mut); line-height: 1.5; font-size: 14.5px; }
+/* шаблоны */
+.ld-tgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.ld-tcard { display: flex; flex-direction: column; overflow: hidden; border: 1px solid #e8ecf3; border-radius: 18px; background: #fff; transition: transform .15s, box-shadow .15s; }
+.ld-tcard:hover { transform: translateY(-3px); box-shadow: 0 20px 40px -24px rgba(20,40,90,.35); }
+.ld-tth { height: 240px; overflow: hidden; background: var(--ld-bg); position: relative; }
+.ld-tb { display: flex; flex-direction: column; gap: 6px; padding: 16px; } .ld-tb b { font-size: 16px; } .ld-tb span { color: var(--ld-mut); font-size: 13.5px; line-height: 1.45; flex: 1; }
+.ld-tb .ld-btn { align-self: flex-start; margin-top: 6px; }
+/* почему мы */
+.ld-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 8px 0 28px; }
+.ld-stats div { padding: 22px; border-radius: 18px; background: linear-gradient(135deg, #2d6de0, #6b5cf6); color: #fff; }
+.ld-stats b { display: block; font-size: 40px; font-weight: 800; letter-spacing: -0.03em; } .ld-stats span { opacity: .9; font-size: 14px; }
+.ld-feats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.ld-feats.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.ld-feat { display: flex; flex-direction: column; gap: 8px; padding: 22px; border: 1px solid #e8ecf3; border-radius: 18px; background: #fff; }
+.ld-feat b { font-size: 16.5px; } .ld-feat p { margin: 0; color: var(--ld-mut); line-height: 1.5; font-size: 14.5px; }
+.ld-fi { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 12px; background: #eef3fd; color: var(--ld-blue); }
+.ld-fi.m { background: #fff3d6; } .ld-fi .mascot { width: 26px; height: 26px; }
+/* конструктор */
+.ld-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+.ld-split h2, .ld-split .ld-lead { text-align: left; margin-left: 0; }
+.ld-list { list-style: none; margin: 0 0 22px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.ld-list li { display: flex; align-items: center; gap: 10px; font-size: 15px; } .ld-list .ic { color: #22a560; }
+.ld-mock { border-radius: 18px; overflow: hidden; border: 1px solid #e3e8f2; background: #eef1f6; box-shadow: 0 30px 60px -30px rgba(20,40,90,.4); }
+.ld-mock-bar { display: flex; gap: 6px; padding: 10px 14px; background: #fff; border-bottom: 1px solid #e3e8f2; } .ld-mock-bar i { width: 10px; height: 10px; border-radius: 50%; background: #e3e6ec; }
+.ld-mock-b { display: grid; grid-template-columns: 1fr 150px; gap: 16px; padding: 20px; height: 330px; background-image: linear-gradient(#e3e7ee 1px, transparent 1px), linear-gradient(90deg, #e3e7ee 1px, transparent 1px); background-size: 40px 40px; }
+.ld-mock-ph { justify-self: center; width: 150px; height: 290px; padding: 6px; border-radius: 26px; background: #14171c; }
+.ld-mock-s { width: 100%; height: 100%; border-radius: 21px; overflow: hidden; background: #fff; position: relative; }
+.ld-mock-p { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 10px; background: #fff; }
+.ld-mock-p span { height: 10px; border-radius: 5px; background: #e6eaf1; }
+.ld-mock-p span:first-child { background: #cfdcf7; }
+/* интеграции */
+.ld-igrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.ld-ig { padding: 18px; border-radius: 18px; background: var(--ld-bg); } .ld-ig > b { display: block; margin-bottom: 12px; font-size: 15px; }
+.ld-ig-l { display: flex; flex-wrap: wrap; gap: 8px; }
+.ld-ig-i { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px 5px 5px; border-radius: 10px; background: #fff; font-size: 13px; }
+.ld-ig-i .ig-img, .ld-ig-i .ig-logo { width: 26px !important; height: 26px !important; border-radius: 7px; }
+/* тарифы */
+.ld-price { display: grid; grid-template-columns: repeat(2, minmax(0, 340px)); justify-content: center; gap: 18px; margin-top: 28px; }
+.ld-plan { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 26px; border: 1px solid #e8ecf3; border-radius: 20px; background: #fff; }
+.ld-plan.pro { border: 2px solid #ffb04c; box-shadow: 0 24px 50px -30px rgba(255,140,40,.6); }
+.ld-pp { font-size: 30px; font-weight: 800; } .ld-pd { color: var(--ld-mut); margin-bottom: 8px; }
+.ld-plan .ld-list { margin-top: 6px; } .ld-plan .ld-btn { align-self: stretch; }
+.ld-plan.pro .ld-btn { background: #ffb04c; } .ld-plan .qm-link { align-self: center; }
+/* поддержка */
+.ld-sup { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
+.ld-sc { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 22px; border: 1px solid #e8ecf3; border-radius: 18px; background: #fff; text-align: left; color: var(--ld-ink); text-decoration: none; font: inherit; cursor: pointer; transition: border-color .15s; }
+.ld-sc:hover { border-color: var(--ld-blue); } .ld-sc b { font-size: 16px; } .ld-sc > span:last-child { color: var(--ld-mut); font-size: 14px; line-height: 1.45; }
+/* вопросы */
+.ld-faq { max-width: 820px; margin: 24px auto 0; display: flex; flex-direction: column; gap: 10px; }
+.ld-faq details { border: 1px solid #e8ecf3; border-radius: 14px; background: #fff; }
+.ld-faq summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 20px; font-size: 16px; font-weight: 600; cursor: pointer; list-style: none; }
+.ld-faq summary::-webkit-details-marker { display: none; }
+.ld-faq summary .ic { color: var(--ld-blue); transition: transform .2s; } .ld-faq details[open] summary .ic { transform: rotate(45deg); }
+.ld-faq p { margin: 0; padding: 0 20px 18px; color: var(--ld-mut); line-height: 1.55; }
+/* финал и подвал */
+.ld-cta { max-width: 760px !important; display: flex; flex-direction: column; align-items: center; text-align: center; padding-bottom: 72px !important; }
+.ld-cta .mascot { width: 96px; height: 96px; } .ld-cta p { color: var(--ld-mut); margin: 0 0 20px; font-size: 16px; } .ld-cta .ld-prompt { align-self: stretch; text-align: left; }
+.ld-foot { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 24px; padding: 40px 32px 28px; background: #f6f8fc; border-top: 1px solid #eef0f4; }
+.ld-foot > div { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.ld-foot b { font-size: 14px; margin-bottom: 4px; } .ld-foot p { margin: 8px 0 0; color: var(--ld-mut); font-size: 13.5px; line-height: 1.5; max-width: 300px; }
+.ld-foot button, .ld-foot a { border: 0; background: none; padding: 0; color: var(--ld-mut); font-size: 14px; text-decoration: none; cursor: pointer; }
+.ld-foot button:hover, .ld-foot a:hover { color: var(--ld-blue); }
+.ld-copy { grid-column: 1 / -1; padding-top: 16px; border-top: 1px solid #e8ecf3; color: #9aa1ad; font-size: 12.5px; }
+@media (max-width: 980px) {
+  .ld-hero, .ld-split { grid-template-columns: 1fr; } .ld-hero-r { height: 420px; }
+  .ld-tgrid, .ld-feats, .ld-feats.four, .ld-sup { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ld-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ld-nav nav { display: none; } .ld-nav { justify-content: space-between; }
+  .ld-foot { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .ld section { padding: 52px 16px 0; } .ld-nav { padding: 10px 16px; } .ld-nav .ld-btn { height: 36px; padding: 0 12px; font-size: 13px; }
+  .ld-tgrid, .ld-feats, .ld-feats.four, .ld-sup, .ld-steps, .ld-price { grid-template-columns: 1fr; }
+  .ld-hero-r { height: 360px; } .ld-ph { width: 150px; height: 310px; } .ld-ph1 { left: 28%; }
+  .ld-foot { grid-template-columns: 1fr; padding: 32px 16px 96px; } .ld-mock-b { grid-template-columns: 1fr; } .ld-mock-p { display: none; }
+}
+.pv a.btn { text-decoration: none; }
+.ld-logo b { white-space: nowrap; } .ld-short { display: none; }
+@media (max-width: 600px) { .ld-long { display: none; } .ld-short { display: inline; } .ld-logo > span { display: none; } }
 
 </style>
 </head>
@@ -5785,7 +5975,7 @@ const History = {
   before(project, label, key) {
     const now = Date.now();
     if (key && key === this.lastKey && now - this.lastTime < 900) { this.lastTime = now; return; }
-    this.undo.push({ s: this.snap(project), label });
+    this.undo.push({ s: this.snap(project), label, t: now });
     if (this.undo.length > this.limit) this.undo.shift();
     this.redo = [];
     this.lastKey = key || null; this.lastTime = now;
@@ -5793,13 +5983,13 @@ const History = {
   breakGroup() { this.lastKey = null; },
   doUndo(project) {
     const e = this.undo.pop(); if (!e) return null;
-    this.redo.push({ s: this.snap(project), label: e.label });
+    this.redo.push({ s: this.snap(project), label: e.label, t: e.t });
     this.lastKey = null;
     return { state: JSON.parse(e.s), label: e.label };
   },
   doRedo(project) {
     const e = this.redo.pop(); if (!e) return null;
-    this.undo.push({ s: this.snap(project), label: e.label });
+    this.undo.push({ s: this.snap(project), label: e.label, t: e.t });
     this.lastKey = null;
     return { state: JSON.parse(e.s), label: e.label };
   },
@@ -7073,6 +7263,7 @@ const Screens = {
     this.auto = scale;
     if (!narrow && S.zoom) scale = S.zoom;
     this.strip.classList.toggle('zoomed-y', !narrow && outerH * scale > H + 4);
+    if (Editor.els.zvThumb) { const k = clamp((scale - 0.18) / (1.5 - 0.18), 0, 1); Editor.els.zvThumb.style.bottom = `calc(${(k * 100).toFixed(1)}% - 11px)`; Editor.els.zvFill.style.height = (k * 100).toFixed(1) + '%'; Editor.els.zvThumb.firstChild.textContent = Math.round(scale * 100) + '%'; Editor.els.zvThumb.setAttribute('aria-valuenow', Math.round(scale * 100)); }
     if (Editor.els.zoomVal) { Editor.els.zoomVal.textContent = Math.round(scale * 100) + '%'; Editor.els.zoomVal.title = S.zoom ? 'Вернуть масштаб «по высоте»' : 'Масштаб подобран по высоте'; }
     for (const f of Object.values(this.frames)) {
       f.dev.className = 'device ' + (narrow ? 'bare' : S.device === 'mobile' ? 'phone' : S.device);
@@ -7562,6 +7753,7 @@ const Editor = {
     UI.toast('Удалено: ' + label, { action: { label: 'Отменить', fn: () => this.undo() } });
   },
   duplicate(id) {
+    if (Guard.deny('дублирование')) return;
     const f = findNode(S.project.root, id);
     if (!f || !f.parent) return;
     const copy = reId(f.node);
@@ -7571,6 +7763,7 @@ const Editor = {
     this.select(copy.id);
   },
   copy(id) {
+    if (Guard.deny('копирование блоков')) return;
     const n = this.node(id); if (!n || n.type === 'page') return;
     S.clip = clone(n);
     try { localStorage.setItem('ps-clip', JSON.stringify(S.clip)); } catch (e) {}
@@ -7596,6 +7789,31 @@ const Editor = {
     else if (c === 'del') this.remove(id);
     else if (c === 'parent') this.selectParent(id);
     else if (c === 'props') { this.select(id); this.setMpane('props'); }
+  },
+  /* История изменений: список действий, можно вернуться к любому шагу и обратно */
+  historyDialog() {
+    const list = h('div', { class: 'hist' });
+    const tm = t => t ? new Date(t).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
+    const draw = () => {
+      list.innerHTML = '';
+      const U = History.undo, R = History.redo;
+      if (!U.length && !R.length) { list.append(h('div', { class: 'empty' }, ic('clock', 24), h('p', null, 'Пока изменений нет. Здесь появится каждое действие с этой страницей.'))); return; }
+      // отменённые шаги (можно повторить) — сверху, серым
+      R.slice().forEach((e, i) => {
+        const steps = R.length - i;
+        list.append(h('div', { class: 'hist-i undone' }, h('span', { class: 'hist-dot' }), h('div', { class: 'hist-m' }, h('b', null, e.label), h('small', null, tm(e.t) + ' · отменено')),
+          h('button', { class: 'btn sm', onclick: () => { for (let k = 0; k < steps; k++) { const r = History.doRedo(S.project); if (r) this.applySnap(r.state); } UI.toast('Повторено шагов: ' + steps, { icon: 'check' }); draw(); } }, 'Повторить')));
+      });
+      list.append(h('div', { class: 'hist-i now' }, h('span', { class: 'hist-dot' }), h('div', { class: 'hist-m' }, h('b', null, 'Сейчас'), h('small', null, 'текущее состояние страницы'))));
+      U.slice().reverse().forEach((e, i) => {
+        const steps = i + 1;
+        list.append(h('div', { class: 'hist-i' }, h('span', { class: 'hist-dot' }), h('div', { class: 'hist-m' }, h('b', null, e.label), h('small', null, tm(e.t))),
+          h('button', { class: 'btn sm', title: 'Вернуть страницу в состояние до этого действия', onclick: () => { for (let k = 0; k < steps; k++) { const r = History.doUndo(S.project); if (r) this.applySnap(r.state); } UI.toast('Отменено шагов: ' + steps + '. Вернуть — кнопка «Повторить»', { icon: 'check', ms: 3500 }); draw(); } }, ic('undo', 14), 'Вернуть до этого')));
+      });
+    };
+    draw();
+    UI.dialog({ title: 'История изменений', cls: 'mid', body: [h('p', { class: 'hint' }, 'Каждое действие с этой страницей. «Вернуть до этого» отменяет действие и всё, что было после него. Отменённое можно повторить. История живёт, пока проект открыт; сохранённые версии — в «История версий».'), list],
+      foot: [h('button', { class: 'btn', onclick: () => Versions.dialog() }, ic('clock', 14), 'История версий')] });
   },
   undo() {
     const r = History.doUndo(S.project);
@@ -7854,10 +8072,12 @@ const Editor = {
       '-',
       { label: 'Проверка качества', icon: 'shield', fn: () => QA.dialog() },
       { label: 'Заметки', icon: 'message', fn: () => QA.notes() },
+      { label: 'История изменений', icon: 'clock', fn: () => this.historyDialog() },
       { label: 'История версий', icon: 'clock', fn: () => Versions.dialog() },
       { label: 'Сохранить как мой шаблон', icon: 'bookmark', fn: () => MyTpl.saveCurrent() },
       { label: 'Облако NocoDB', icon: 'upload', fn: () => Cloud.dialog() },
       { label: 'Тестовый набор для PuzzleBot', icon: 'zap', fn: () => TestKit.create() },
+      { label: 'Посмотреть на телефоне (QR)', icon: 'smartphone', fn: () => PhoneView.dialog() },
       '-',
       { label: 'AI-генерация', icon: 'wand', fn: () => ExportUI.ai() },
       { label: 'Импорт JSON в этот проект', icon: 'upload', fn: () => ExportUI.importDialog(true) },
@@ -7873,6 +8093,7 @@ const Editor = {
       E.name, E.save,
       h('div', { class: 'top-mid' }, E.undo, E.redo, h('span', { class: 'sep hide-sm' }), h('div', { class: 'hide-sm' }, E.dev)),
       h('div', { class: 'top-r' },
+        h('button', { class: 'btn hide-sm', title: 'Посмотреть на телефоне по QR-коду', onclick: () => PhoneView.dialog() }, ic('smartphone', 15), h('span', { class: 'hide-md' }, 'На телефоне')),
         h('button', { class: 'btn hide-sm', onclick: () => this.preview() }, ic('play', 15), h('span', { class: 'hide-md' }, 'Просмотр')),
         moreBtn,
         h('button', { class: 'btn primary', onclick: () => ExportUI.open() }, ic('code', 16), h('span', { class: 'hide-sm' }, 'Экспорт'))));
@@ -7886,7 +8107,7 @@ const Editor = {
     E.apply = h('button', { class: 'tb-sq tb-apply', title: 'Применить все изменения', 'aria-label': 'Применить все изменения', onclick: () => this.applyAsk() }, ic('upload', 20));
     E.tbUndo = h('button', { class: 'tb-sq', title: 'Отменить (Ctrl+Z)', 'aria-label': 'Отменить последнее действие', onclick: () => this.undo() }, ic('undo', 20));
     E.discard = h('button', { class: 'tb-sq', title: 'Сбросить изменения до последнего применения', 'aria-label': 'Сбросить неприменённые изменения', onclick: () => this.discardAsk() }, ic('x', 20));
-    const tb = h('div', { class: 'tb-row' }, E.apply, E.tbUndo, E.discard, h('button', { class: 'tb-sq', title: 'Новый экран', 'aria-label': 'Новый экран', onclick: () => this.addScreen() }, ic('layers', 20)));
+    const tb = h('div', { class: 'tb-row' }, E.apply, E.tbUndo, h('button', { class: 'tb-sq', title: 'История изменений', 'aria-label': 'История изменений', onclick: () => this.historyDialog() }, ic('clock', 20)), E.discard, h('button', { class: 'tb-sq', title: 'Новый экран', 'aria-label': 'Новый экран', onclick: () => this.addScreen() }, ic('layers', 20)));
     stage.append(h('div', { class: 'stage-bar' }, tb, E.ws));
     // масштаб — справа внизу (слева внизу живёт Puzzlo)
     E.zoomVal = h('button', { class: 'zm-val', title: 'Вписать по высоте', onclick: () => Screens.setZoom(null) }, '100%');
@@ -7895,6 +8116,19 @@ const Editor = {
       h('button', { class: 'zm-fit', title: 'Вписать все экраны', 'aria-label': 'Вписать все экраны', onclick: () => Screens.fitAll() }, ic('move', 18)),
       h('span', { class: 'zm-info' }, E.info)));
     Canvas.info = E.info;
+    // вертикальный ползунок масштаба мокапа — слева
+    E.zvThumb = h('span', { class: 'zv-th', role: 'slider', tabindex: '0', 'aria-label': 'Масштаб мокапа', 'aria-valuemin': '18', 'aria-valuemax': '150' }, h('i', { class: 'zv-tip' }));
+    E.zvFill = h('span', { class: 'zv-fill' });
+    const track = h('div', { class: 'zv-track', title: 'Потяните кругляшок, чтобы увеличить или уменьшить мокап' }, E.zvFill, E.zvThumb);
+    const zFromY = y => { const r = track.getBoundingClientRect(); const k = clamp(1 - (y - r.top) / r.height, 0, 1); return Math.round((0.18 + k * (1.5 - 0.18)) * 100) / 100; };
+    track.addEventListener('pointerdown', e => {
+      e.preventDefault(); track.setPointerCapture(e.pointerId); track.classList.add('drag'); Screens.setZoom(zFromY(e.clientY));
+      const mv = ev => Screens.setZoom(zFromY(ev.clientY));
+      const up = () => { track.classList.remove('drag'); track.removeEventListener('pointermove', mv); track.removeEventListener('pointerup', up); track.removeEventListener('pointercancel', up); };
+      track.addEventListener('pointermove', mv); track.addEventListener('pointerup', up); track.addEventListener('pointercancel', up);
+    });
+    E.zvThumb.addEventListener('keydown', e => { if (e.key === 'ArrowUp' || e.key === 'ArrowRight') { e.preventDefault(); Screens.zoomBy(1); } if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') { e.preventDefault(); Screens.zoomBy(-1); } });
+    stage.append(h('div', { class: 'zv' }, h('button', { class: 'zv-b', title: 'Увеличить мокап', 'aria-label': 'Увеличить мокап', onclick: () => Screens.zoomBy(1) }, ic('plus', 16)), track, h('button', { class: 'zv-b', title: 'Уменьшить мокап', 'aria-label': 'Уменьшить мокап', onclick: () => Screens.zoomBy(-1) }, ic('minus', 16))));
     E.scrim = h('div', { class: 'sheet-scrim', onclick: () => this.setMpane(null) });
     E.chip = h('div', { class: 'sel-chip', hidden: true });
     const mnav = h('nav', { class: 'mnav', 'aria-label': 'Режимы редактора' });
@@ -9316,7 +9550,7 @@ const Home = {
   render() {
     const app = $('#app');
     app.innerHTML = '';
-    const tabs = [['projects', 'Мои проекты', 'folder'], ['templates', 'Шаблоны', 'grid'], ['kb', 'База знаний', 'book'], ['mine', 'Мои компоненты', 'bookmark'], ['integrations', 'Интеграции', 'puzzle'], ['media', 'Медиатека', 'image'], ['settings', 'Настройки', 'settings']];
+    const tabs = [['main', 'Главная', 'home'], ['projects', 'Мои проекты', 'folder'], ['templates', 'Шаблоны', 'grid'], ['kb', 'База знаний', 'book'], ['mine', 'Мои компоненты', 'bookmark'], ['integrations', 'Интеграции', 'puzzle'], ['media', 'Медиатека', 'image'], ['settings', 'Настройки', 'settings']];
     const side = h('nav', { class: 'side scroll', 'aria-label': 'Разделы' },
       h('div', { class: 'logo' }, mascotImg('icon', 34), h('span', { class: 'logo-text' }, 'Puzzle Studio'), h('span', { class: 'logo-sl' }, '://')),
       h('button', { class: 'btn primary', style: { marginBottom: '10px' }, onclick: () => this.newBlank() }, ic('plus', 16), 'Создать страницу'),
@@ -9328,7 +9562,7 @@ const Home = {
     const main = h('main', { class: 'home-main' });
     const mnav = h('nav', { class: 'mnav', 'aria-label': 'Разделы' }, tabs.map(([id, l, icn]) => h('button', { class: S.homeTab === id ? 'on' : '', onclick: () => { S.homeTab = id; this.render(); } }, ic(icn, 20), l.replace('Мои компоненты', 'Мои').replace('Мои проекты', 'Проекты').replace('База знаний', 'Помощь').replace('Медиатека', 'Медиа'))));
     app.append(h('div', { class: 'home' }, main, side), mnav);
-    ({ projects: () => this.projects(main), templates: () => this.templates(main), mine: () => this.mine(main), media: () => this.mediaPage(main), settings: () => this.settings(main), kb: () => KBView.render(main), integrations: () => IntegUI.render(main) })[S.homeTab]();
+    ({ projects: () => this.projects(main), templates: () => this.templates(main), mine: () => this.mine(main), media: () => this.mediaPage(main), settings: () => this.settings(main), kb: () => KBView.render(main), main: () => Landing.render(main), integrations: () => IntegUI.render(main) })[S.homeTab]();
     Puzzlo.render();
   },
 
@@ -9415,6 +9649,7 @@ const Home = {
     await this.persist(p); this.render();
   },
   async duplicate(p) {
+    if (Guard.deny('дублирование проектов')) return;
     const c = clone(p);
     c.id = 'p' + uid(10); c.pid = uid(6); c.name = p.name + ' (копия)'; c.createdAt = c.updatedAt = Date.now(); c.favorite = false; c.openedAt = 0;
     c.root = reId(c.root);
@@ -9907,6 +10142,9 @@ const KB = [
 
 [[Настройки|settings]]
 
+## Защита контента
+Когда бесплатные выгрузки закончились (10 из 10), закрываются копирование, экспорт кода и проектов, дублирование блоков и проектов, контекстное меню и горячие клавиши инструментов разработчика (F12, Ctrl+Shift+I, Ctrl+U). Если панель разработчика всё же открыта, рабочая область скрывается.
+
 ## Попытки обхода
 Счётчик хранится в нескольких местах и защищён подписью. Если его пытаются изменить или сбросить, это видно, и после нескольких попыток выгрузка блокируется до оформления подписки.` },
   { id: 'botconnect', cat: 'telegram', title: 'Подключить бота для отправки сообщений', body: `Действия «Отправить сообщение в Telegram» и «Отправить ссылку в Telegram» работают через бота. Когда вы выбираете такое действие, открывается окно подключения.
@@ -10016,6 +10254,10 @@ PuzzleBot, Telegram Bot API, NocoDB, вебхуки (n8n, Make, Albato), кар�
   { id: 'news', cat: 'start', title: 'Что нового в Puzzle Studio', body: `Все последние возможности — со ссылками на подробные статьи.
 
 ## Новое
+- **Главная страница** Puzzle Studio: возможности, шаблоны, интеграции, тарифы и вопросы, с полем «Опишите страницу» — Puzzlo сразу соберёт её.
+- **Ползунок масштаба слева**: потяните кругляшок, чтобы увеличить или уменьшить мокап. Ctrl + колесо и Ctrl +/− тоже меняют масштаб мокапа, а не всей страницы.
+- **История изменений** (значок часов над холстом): каждое действие со временем, «Вернуть до этого» и «Повторить».
+- **Просмотр на телефоне**: кнопка «На телефоне» показывает QR-код — наведите камеру и страница откроется сразу.
 - **Тарифы: 10 бесплатных выгрузок кода**, дальше — подписка Pro по ключу. [Подробнее](kb:plan)
 - **Окно подключения бота** у действий «Отправить сообщение / ссылку»: предупреждение о токене, три варианта (токен, свой сервер, ссылка на команду бота) и карточка бота с аватаркой, именем и описанием после проверки токена. [Подробнее](kb:botconnect)
 - **Панель свойств как в PuzzleBot**: шапка блока «Заголовок №2» со стрелками ↓ ↑ и меню ⋮, поля с подчёркиванием, счётчик символов, кнопки {α (переменные) и ☺ (эмодзи), большие галочки, «Добавить новый блок» и «Вставить» внизу.
@@ -10706,6 +10948,7 @@ const PuzzloAI = {
     const words = m[2].trim().split(/\s+/); const keep = [];
     for (const w of words) { if (stop.test(w) || /^(т[её]мн|светл|зел[её]н|син|красн|фиолет|оранж|розов|ж[её]лт)/i.test(w)) break; keep.push(w); }
     if (!keep.length) return '';
+    if (/^страниц/i.test(m[1])) return ''; // «страницу тарифов» — не название, оставляем заголовок шаблона
     const head = m[1].toLowerCase().replace(/[ыу]$/, 'а').replace(/ю$/, 'я').replace(/^страниц[ау]$/, '');
     return cap((head ? head + ' ' : '') + keep.join(' ')).trim();
   },
@@ -10887,26 +11130,14 @@ const Puzzlo = {
     if (this.unread && !this.open) mascot.append(h('i', { class: 'pz-badge', 'aria-label': 'Новое сообщение' }));
     if (this.open) this.unread = false;
     if (!this.open) { el.append(mascot); return; }
-    // верхняя часть: шапка и карточки, которые листаются свайпом
-    const pb = pbPromo('pz'); pb.classList.add('pz-slide');
-    const slides = [
-      h('div', { class: 'pz-card pz-slide' }, h('div', { class: 'pz-row' }, h('span', { class: 'pz-dia' }), h('span', { class: 'grow' }, 'Шаблоны'), h('b', null, TEMPLATES.length + ' шт.')), h('span', { class: 'pz-sub' }, 'Магазин, тарифы, кабинет, квиз — готовые страницы'), h('button', { class: 'pz-gray', onclick: () => App.go('templates') }, 'Подробнее')),
-      h('div', { class: 'pz-card pz-slide pz-tasks' }, h('b', null, 'Первые шаги'), ...this.tasks().map(tk => h('button', { class: 'pz-task' + (tk.done ? ' done' : ''), onclick: () => App.go(tk.route) }, h('span', { class: 'pz-cb' }, tk.done ? ic('check', 13) : null), h('span', { class: 'grow' }, tk.text), h('span', { class: 'pz-pts' }, tk.done ? 'готово' : '→')))),
-      h('div', { class: 'pz-card pz-promo pz-slide' }, h('b', null, 'Интеграции'), h('span', null, 'Погода, оплата ЮMoney, иконки, Google Таблицы, аналитика — подключаются как плагины'), h('button', { class: 'pz-gray sm', onclick: () => App.go('plugins') }, 'Открыть'), h('i', { class: 'pz-cloud', 'aria-hidden': 'true' })),
-      h('div', { class: 'pz-card pz-promo pz-slide' }, h('b', null, 'База знаний'), h('span', null, 'Ответы о редакторе и PuzzleBot'), h('button', { class: 'pz-gray sm', onclick: () => App.go('kb') }, 'Открыть'), h('i', { class: 'pz-cloud', 'aria-hidden': 'true' })),
-      pb,
-    ];
-    const track = h('div', { class: 'pz-track', role: 'region', 'aria-label': 'Карточки Puzzlo — листайте влево и вправо' }, slides);
-    const dots = h('div', { class: 'pz-nav' }, slides.map((sl, i) => h('button', { class: i === (this.slide || 0) ? 'on' : '', 'aria-label': 'Карточка ' + (i + 1), onclick: () => track.scrollTo({ left: sl.offsetLeft - track.offsetLeft, behavior: 'smooth' }) })));
-    track.addEventListener('scroll', () => {
-      const w = slides[0].offsetWidth + 10; const i = clamp(Math.round(track.scrollLeft / w), 0, slides.length - 1);
-      if (i !== this.slide) { this.slide = i; $$('button', dots).forEach((b, k) => b.classList.toggle('on', k === i)); }
-    }, { passive: true });
-    pzDragScroll(track);
-    requestAnimationFrame(() => { if (this.slide) track.scrollLeft = slides[this.slide].offsetLeft - track.offsetLeft; });
+    // верхняя часть: шапка и карточки (листаются вверх-вниз, чат-шторка их не закрывает — внизу есть отступ)
     const top = h('div', { class: 'pz-top' },
       h('div', { class: 'pz-head' }, h('b', null, 'Puzzlo Studio House'), h('button', { class: 'pz-x', 'aria-label': 'Закрыть', onclick: () => this.toggle(false) }, ic('x', 20))),
-      h('div', { class: 'pz-cards' }, track, dots));
+      h('div', { class: 'pz-card' }, h('div', { class: 'pz-row' }, h('span', { class: 'pz-dia' }), h('span', { class: 'grow' }, 'Шаблоны'), h('b', null, TEMPLATES.length + ' шт.')), h('button', { class: 'pz-gray', onclick: () => App.go('templates') }, 'Подробнее')),
+      pbPromo('pz'),
+      h('div', { class: 'pz-card pz-promo' }, h('b', null, 'База знаний'), h('span', null, 'Ответы о редакторе и PuzzleBot'), h('button', { class: 'pz-gray sm', onclick: () => App.go('kb') }, 'Открыть'), h('i', { class: 'pz-cloud', 'aria-hidden': 'true' })),
+      h('div', { class: 'pz-card pz-promo' }, h('b', null, 'Интеграции'), h('span', null, 'Погода, оплата, иконки, таблицы — плагинами'), h('button', { class: 'pz-gray sm', onclick: () => App.go('plugins') }, 'Открыть'), h('i', { class: 'pz-cloud', 'aria-hidden': 'true' })),
+      ...this.tasks().map(tk => h('button', { class: 'pz-card pz-task' + (tk.done ? ' done' : ''), onclick: () => App.go(tk.route) }, h('span', { class: 'pz-cb' }, tk.done ? ic('check', 14) : null), h('span', { class: 'grow' }, tk.text), h('span', { class: 'pz-pts' }, tk.done ? 'готово' : '→'))));
     // чат
     if (!this.cur) { this.cur = { id: 'c' + uid(8), title: 'Новый чат', ts: Date.now(), msgs: [] }; this.chats.unshift(this.cur); }
     const msgs = h('div', { class: 'pz-msgs scroll' });
@@ -10949,36 +11180,39 @@ const Puzzlo = {
       h('div', { class: 'pz-grab', 'aria-hidden': 'true' }),
       h('div', { class: 'pz-chat-h' },
         h('button', { class: 'pz-ic', 'aria-label': this.expanded ? 'Свернуть чат' : 'Развернуть чат', onclick: () => { this.expanded = !this.expanded; this.render(); } }, ic(this.expanded ? 'chevron-down' : 'chevron-up', 20)),
-        h('span', { class: 'pz-hm' }, mascotImg(this.curMood, 34)),
         h('b', null, 'Puzzlo AI'),
         h('button', { class: 'pz-ic', 'aria-label': 'Новый чат', title: 'Новый чат', onclick: () => this.newChat() }, ic('plus', 19)),
         h('button', { class: 'pz-ic' + (this.history ? ' on' : ''), 'aria-label': 'История чатов', title: 'История чатов', onclick: () => { this.history = !this.history; this.render(); } }, ic('clock', 19))),
       msgs,
       h('div', { class: 'pz-input' }, ta, h('div', { class: 'pz-input-b' }, h('button', { class: 'pz-ic', 'aria-label': 'Прикрепить файл', title: 'Картинка или проект .json', onclick: () => file.click() }, ic('link', 17)), sendBtn), file));
+    if (!this.expanded) chat.append(mascot); // маскот сидит на верхнем крае шторки чата
     pzSwipe(chat.firstChild, chat.children[1], dy => {
       if (dy < -40 && !this.expanded) { this.expanded = true; this.render(); }
       else if (dy > 40) { if (this.expanded) { this.expanded = false; this.render(); } else this.toggle(false); }
     });
-    const panel = h('section', { class: 'pz-panel' + (this.expanded ? ' chat-exp' : ''), role: 'dialog', 'aria-label': 'Puzzlo AI' }, top, chat);
+    const panel = h('section', { class: 'pz-panel', role: 'dialog', 'aria-label': 'Puzzlo AI' }, top, chat);
     el.append(panel);
     msgs.scrollTop = msgs.scrollHeight;
   },
   /* эффект печати: текст появляется по нескольку символов, кнопки — в конце */
   typeOut(m) {
-    clearInterval(this._tt);
+    clearTimeout(this._tt);
     this.typing = { msg: m, i: 0, el: null };
     const total = m.text.length;
-    const per = Math.max(1, Math.ceil(total / 110)); // длинные ответы печатаются быстрее (~2 сек максимум)
-    this._tt = setInterval(() => {
+    const step = () => {
       const t = this.typing;
-      if (!t || t.msg !== m) { clearInterval(this._tt); return; }
-      t.i = Math.min(total, t.i + per + (Math.random() < 0.3 ? 1 : 0));
+      if (!t || t.msg !== m) return;
+      t.i = Math.min(total, t.i + 1 + (Math.random() < 0.25 ? 1 : 0)); // по 1–2 символа, как будто печатает человек
       if (t.el && t.el.isConnected) {
         pzFill(t.el, m.text.slice(0, t.i), true);
         const box = this._msgs; if (box && box.scrollHeight - box.scrollTop - box.clientHeight < 80) box.scrollTop = box.scrollHeight;
       }
-      if (t.i >= total) { clearInterval(this._tt); this.typing = null; this.render(); }
-    }, 18);
+      if (t.i >= total) { this.typing = null; this.render(); return; }
+      const ch = m.text.charAt(t.i - 1);
+      const pause = /[.!?]/.test(ch) ? 260 : ch === '\n' ? 320 : /[,:;—]/.test(ch) ? 120 : 0;
+      this._tt = setTimeout(step, 34 + Math.random() * 22 + pause);
+    };
+    this._tt = setTimeout(step, 250);
   },
   push(role, text, btns, mood) {
     if (!this.cur) this.newChat();
@@ -10997,7 +11231,7 @@ const Puzzlo = {
     text = String(text || '').trim();
     if (!text) return;
     this.expanded = true;
-    if (this.typing) { clearInterval(this._tt); this.typing = null; }
+    if (this.typing) { clearTimeout(this._tt); this.typing = null; }
     this.thinking = true;
     this.push('user', text);
     setTimeout(() => {
@@ -11579,6 +11813,7 @@ const Cloud = {
   },
   async list() { const c = this.conf(); const j = await this.req('GET', `/api/v2/tables/${encodeURIComponent(c.table)}/records?fields=${encodeURIComponent('Id,project_id,name,updated')}&limit=200&sort=-updated`); return (j && j.list) || []; },
   async push(p = S.project) {
+    if (Quota.exhausted()) return;
     const c = this.conf();
     const data = projectFileJson(p);
     if (data.length > 4.5e6) throw { message: 'Проект больше 4,5 МБ — уберите встроенные картинки (используйте ссылки)' };
@@ -12068,7 +12303,7 @@ const QUOTA_CFG = {
 const Quota = (() => {
   const SALT = 'ps.q.v1.7f3a91c2';
   let rec = { v: 1, dev: '', used: [], tamper: 0, srv: 0, log: [] };
-  let lic = null, licRaw = '', fp = '', ready = null;
+  let lic = null, licRaw = '', fp = '', ready = null, lastKey = '', lastAt = 0;
   const enc = new TextEncoder();
   const b64 = u8 => btoa(String.fromCharCode(...u8));
   const unb64u = s => { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return Uint8Array.from(atob(s), c => c.charCodeAt(0)); };
@@ -12167,26 +12402,29 @@ const Quota = (() => {
   }
 
   const api = {
-    ready: () => ready || (ready = init().catch(e => { console.warn('quota', e); })),
+    ready: () => ready || (ready = init().catch(e => { console.warn('quota', e); }).then(() => { try { Guard.sync(); } catch (e) {} })),
     get pro() { return !!lic; },
     get license() { return lic; },
     used, limit: () => QUOTA_CFG.limit,
     left: () => Math.max(0, QUOTA_CFG.limit - used()),
     blocked,
+    exhausted: () => !lic && (blocked() || used() >= QUOTA_CFG.limit),
     deviceCode,
-    unlocked(p) { return !!lic || rec.used.includes(keyFor(p)); },
+    unlocked(p) { if (lic) return true; const k = keyFor(p); if (used() >= QUOTA_CFG.limit) return k === lastKey && Date.now() - lastAt < 10 * 60e3; return rec.used.includes(k); },
     /* выгрузка: true — можно отдавать код */
     async use(p) {
       await api.ready();
       if (lic) return true;
       if (blocked()) { api.modal('tamper'); return false; }
       const k = keyFor(p);
+      // после 10 из 10 закрыто всё, кроме только что выгруженной версии (несколько минут — чтобы скопировать все части)
+      if (used() >= QUOTA_CFG.limit) { if (k === lastKey && Date.now() - lastAt < 10 * 60e3) return true; api.modal('limit'); return false; }
       if (rec.used.includes(k)) return true;
-      if (used() >= QUOTA_CFG.limit) { api.modal('limit'); return false; }
       const s = await server('use', k);
       if (s && s.ok === false) { rec.srv = Math.max(rec.srv || 0, s.used || QUOTA_CFG.limit); await save(); api.modal('limit'); return false; }
-      rec.used.push(k); note('use');
+      rec.used.push(k); note('use'); lastKey = k; lastAt = Date.now();
       await save();
+      try { Guard.sync(); } catch (e) {}
       const left = api.left();
       UI.toast(left ? `Выгрузка ${used()} из ${QUOTA_CFG.limit} · осталось ${left}` : 'Это была последняя бесплатная выгрузка', { icon: 'check', ms: 3500 });
       return true;
@@ -12196,9 +12434,10 @@ const Quota = (() => {
       lic = p; licRaw = k.trim();
       try { localStorage.setItem('ps-lic', licRaw); } catch (e) {}
       try { await Store.kvSet('lic', licRaw); } catch (e) {}
+      try { Guard.sync(); } catch (e) {}
       return p;
     },
-    deactivate() { lic = null; licRaw = ''; try { localStorage.removeItem('ps-lic'); } catch (e) {} try { Store.kvSet('lic', ''); } catch (e) {} },
+    deactivate() { lic = null; licRaw = ''; setTimeout(() => { try { Guard.sync(); } catch (e) {} }); try { localStorage.removeItem('ps-lic'); } catch (e) {} try { Store.kvSet('lic', ''); } catch (e) {} },
 
     /* окно «Превышен лимит» в стиле PuzzleBot */
     modal(kind = 'limit') {
@@ -12238,7 +12477,7 @@ const Quota = (() => {
         box.append(h('div', { class: 'qp-h' }, h('span', { class: 'qp-badge' }, 'FREE'), h('b', null, 'Бесплатный тариф'), h('span', null, `Выгрузок кода: ${u} из ${lim}`)),
           h('div', { class: 'qp-bar' + (u >= lim ? ' full' : u >= lim - 2 ? ' warn' : '') }, h('i', { style: { width: (u / lim * 100) + '%' } })),
           ...(blocked() ? [h('div', { class: 'status-line bad' }, 'Выгрузка заблокирована: обнаружены попытки обойти лимит.')] : []),
-          h('div', { class: 'hint' }, 'Одна выгрузка — это копирование, скачивание, ZIP или отправка в PuzzleBot одной версии страницы. Повторно выгрузить ту же версию можно бесплатно.'),
+          h('div', { class: 'hint' }, 'Одна выгрузка — это копирование, скачивание, ZIP или отправка в PuzzleBot одной версии страницы. Повторно выгрузить ту же версию можно бесплатно. После ' + lim + ' из ' + lim + ' включается защита контента: копирование, экспорт, дублирование и инструменты разработчика закрыты.'),
           h('div', { class: 'btn-row' }, h('button', { class: 'btn primary', onclick: () => window.open(QUOTA_CFG.planUrl, '_blank', 'noopener') }, 'Оформить подписку'), h('button', { class: 'btn', onclick: () => api.keyDialog() }, 'У меня есть ключ')));
       }
       box.append(h('div', { class: 'qm-devrow' }, 'Код устройства: ', h('b', null, deviceCode())));
@@ -12247,6 +12486,280 @@ const Quota = (() => {
   };
   return Object.freeze(api);
 })();
+
+/* ===== 14j-guard-phone.js ===== */
+/* ============================================================
+   14j · ЗАЩИТА КОНТЕНТА ПРИ ИСЧЕРПАННОМ ЛИМИТЕ + ПРОСМОТР НА ТЕЛЕФОНЕ
+   Защита включается, только когда бесплатные выгрузки закончились
+   (10 из 10) и нет подписки Pro. Честно: в браузере это сдерживание,
+   а не абсолютная защита — инструменты разработчика можно открыть
+   из меню браузера. Мы закрываем горячие клавиши, копирование,
+   контекстное меню и прячем рабочую область, если панель разработчика открыта.
+   ============================================================ */
+const Guard = {
+  on: false, devOpen: false, _t: 0,
+  deny(what) {
+    if (!Quota.exhausted()) return false;
+    UI.toast('Защита контента: ' + what + ' недоступно на бесплатном тарифе после 10 выгрузок', { err: true, ms: 3500 });
+    Quota.modal(Quota.blocked() ? 'tamper' : 'limit');
+    return true;
+  },
+  keyBlocked(e) {
+    const k = (e.key || '').toLowerCase(), c = e.ctrlKey || e.metaKey;
+    if (e.key === 'F12' || e.keyCode === 123) return 'Инструменты разработчика';
+    if (c && e.shiftKey && ['i', 'j', 'c', 'k', 'ш', 'о', 'с', 'л'].includes(k)) return 'Инструменты разработчика';
+    if (e.metaKey && e.altKey && ['i', 'j', 'c', 'u'].includes(k)) return 'Инструменты разработчика';
+    if (c && ['u', 'г'].includes(k)) return 'Просмотр исходного кода';
+    if (c && ['s', 'ы', 'p', 'з'].includes(k)) return 'Сохранение страницы';
+    if (c && !e.shiftKey && ['c', 'x', 'с', 'ч'].includes(k)) return 'Копирование';
+    if (c && !e.shiftKey && ['d', 'в'].includes(k)) return 'Дублирование';
+    return '';
+  },
+  onKey(e) {
+    if (!Guard.on) return;
+    const what = Guard.keyBlocked(e);
+    if (!what) return;
+    // копирование своего текста в полях ввода не трогаем — защищаем код и блоки
+    if (what === 'Копирование' && e.target && e.target.closest && e.target.closest('input, textarea') && !e.target.closest('.dlg pre')) return;
+    e.preventDefault(); e.stopPropagation();
+    UI.toast('Защита контента: ' + what.toLowerCase() + ' отключено. Оформите подписку Pro', { err: true, ms: 2500 });
+  },
+  onCopy(e) {
+    if (!Guard.on) return;
+    const t = e.target && e.target.closest ? e.target : null;
+    if (t && t.closest('input, textarea') && !t.closest('.dlg pre')) return;
+    e.preventDefault();
+    UI.toast('Защита контента: копирование отключено', { err: true, ms: 2000 });
+  },
+  onMenu(e) { if (Guard.on && !(e.target.closest && e.target.closest('input, textarea'))) e.preventDefault(); },
+  attach(win) {
+    try {
+      if (!win || win.__psGuard) return;
+      win.__psGuard = true;
+      win.addEventListener('keydown', Guard.onKey, true);
+      win.addEventListener('copy', Guard.onCopy, true); win.addEventListener('cut', Guard.onCopy, true);
+      win.addEventListener('contextmenu', Guard.onMenu, true);
+    } catch (e) {}
+  },
+  /* панель разработчика открыта? (по разнице размеров окна) */
+  checkDev() {
+    const w = window.outerWidth - window.innerWidth, hh = window.outerHeight - window.innerHeight;
+    const open = Guard.on && !isMobile() && (w > 200 || hh > 260);
+    if (open === Guard.devOpen) return;
+    Guard.devOpen = open;
+    document.documentElement.classList.toggle('ps-devopen', open);
+    let ov = $('#ps-devov');
+    if (open && !ov) document.body.append(h('div', { id: 'ps-devov', class: 'devov' }, mascotImg('error', 120), h('b', null, 'Закройте инструменты разработчика'), h('span', null, 'Рабочая область скрыта: на бесплатном тарифе после 10 выгрузок включена защита контента.'), h('button', { class: 'qm-btn', onclick: () => window.open(QUOTA_CFG.planUrl, '_blank', 'noopener') }, 'Оформить подписку')));
+    if (!open && ov) ov.remove();
+  },
+  sync() {
+    const on = Quota.exhausted();
+    if (on === this.on) return;
+    this.on = on;
+    document.documentElement.classList.toggle('ps-guard', on);
+    clearInterval(this._t);
+    if (on) {
+      this.attach(window);
+      this._t = setInterval(() => { this.checkDev(); $$('iframe').forEach(f => { try { this.attach(f.contentWindow); } catch (e) {} }); }, 1200);
+    } else this.checkDev();
+  },
+};
+
+/* ---------- Просмотр на телефоне: ссылка + QR-код ---------- */
+const VIEW_BASE = 'https://broot-ai.github.io/puzzle/studio.html';
+const PhoneView = {
+  async pack(p) {
+    const strip = JSON.parse(JSON.stringify({ n: p.name, page: p.page, root: p.root, screens: p.screens || [] }));
+    let removed = 0;
+    // картинки, встроенные в проект (data:), в ссылку не помещаются — заменяем пустым местом
+    const walkStrip = o => { if (Array.isArray(o)) o.forEach(walkStrip); else if (o && typeof o === 'object') for (const k of Object.keys(o)) { const v = o[k]; if (typeof v === 'string' && v.startsWith('data:') && v.length > 300) { o[k] = ''; removed++; } else walkStrip(v); } };
+    walkStrip(strip);
+    if (strip.page) { delete strip.page.botlink; delete strip.page.nocodb; }
+    const json = JSON.stringify(strip);
+    let bytes = new TextEncoder().encode(json);
+    if (window.CompressionStream) {
+      const cs = new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+      bytes = new Uint8Array(await new Response(cs).arrayBuffer());
+    }
+    let bin = ''; for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    const data = (window.CompressionStream ? 'z' : 'j') + btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    return { data, removed };
+  },
+  async unpack(s) {
+    const kind = s[0]; let b = s.slice(1).replace(/-/g, '+').replace(/_/g, '/'); while (b.length % 4) b += '=';
+    let bytes = Uint8Array.from(atob(b), c => c.charCodeAt(0));
+    if (kind === 'z') bytes = new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+    return JSON.parse(new TextDecoder().decode(bytes));
+  },
+  base() { return /broot-ai\.github\.io/.test(location.host) ? location.origin + location.pathname : VIEW_BASE; },
+  async dialog() {
+    if (!S.project) return;
+    const P = Editor.isDirty() ? S.project : S.project;
+    const { data, removed } = await this.pack(P);
+    const url = this.base() + '#v=' + data;
+    const fits = url.length <= 2800;
+    const qr = fits ? h('img', { class: 'pv-qr', alt: 'QR-код для просмотра на телефоне', width: 260, height: 260, src: 'https://api.qrserver.com/v1/create-qr-code/?size=520x520&ecc=L&margin=8&data=' + encodeURIComponent(url) })
+      : h('div', { class: 'pv-qr pv-qr--big' }, ic('alert', 26), h('span', null, 'Страница слишком большая для QR-кода. Откройте ссылку на телефоне — например, отправьте её себе в Telegram.'));
+    if (fits) qr.addEventListener('error', () => qr.replaceWith(h('div', { class: 'pv-qr pv-qr--big' }, ic('qr', 26), h('span', null, 'Не удалось загрузить QR-код (нет интернета). Используйте ссылку ниже.'))));
+    UI.dialog({ title: 'Посмотреть на телефоне', cls: 'mid', body: [h('div', { class: 'pv' },
+      qr,
+      h('div', { class: 'pv-m' },
+        h('ol', { class: 'steps' }, h('li', null, 'Откройте камеру телефона и наведите на QR-код.'), h('li', null, 'Нажмите на появившуюся ссылку — страница откроется сразу, без установки.'), h('li', null, 'Переменные {{…}} показываются примерами. Чтобы увидеть настоящие, вставьте код в PuzzleBot.')),
+        removed ? h('div', { class: 'hint box warn' }, `Картинок, загруженных с компьютера: ${removed}. В ссылку они не помещаются — на телефоне будет пустое место. Загрузите картинки по ссылке https://, чтобы они были видны.`) : null,
+        h('div', { class: 'btn-row' },
+          h('button', { class: 'btn primary', onclick: () => UI.copy(url, 'Ссылка скопирована') }, ic('copy', 14), 'Копировать ссылку'),
+          h('a', { class: 'btn', href: 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent('Посмотрите страницу «' + P.name + '»'), target: '_blank', rel: 'noopener' }, ic('send', 14), 'В Telegram'),
+          h('a', { class: 'btn', href: url, target: '_blank', rel: 'noopener' }, ic('external', 14), 'Открыть')),
+        h('div', { class: 'hint' }, 'Ссылка ведёт на ' + this.base().replace(/^https:\/\//, '') + ' — там должен лежать файл конструктора. Данные страницы хранятся в самой ссылке, на сервер ничего не отправляется.')))] });
+  },
+  /* открытие ссылки #v=… — показываем только страницу, без редактора */
+  async boot() {
+    const m = location.hash.match(/^#v=([A-Za-z0-9_-]+)/);
+    if (!m) return false;
+    const app = $('#app');
+    try {
+      const d = await this.unpack(m[1]);
+      const p = newProject({ name: d.n || 'Страница', themeId: (d.page && d.page.themeId) || 'telegram', root: d.root });
+      p.page = { ...p.page, ...(d.page || {}) }; p.screens = d.screens || [];
+      ensureScreens(p);
+      document.title = p.name + ' · Puzzle Studio';
+      const frame = h('iframe', { class: 'viewer-f', title: p.name, sandbox: 'allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms' });
+      frame.srcdoc = previewSrcdoc(p, 'sample');
+      app.innerHTML = '';
+      app.append(h('div', { class: 'viewer' }, frame, h('a', { class: 'viewer-badge', href: this.base(), target: '_blank', rel: 'noopener' }, mascotImg('icon', 20), 'Сделано в Puzzle Studio')));
+    } catch (e) {
+      app.innerHTML = '';
+      app.append(h('div', { class: 'empty', style: { margin: 'auto' } }, mascotImg('error', 96), h('h3', null, 'Ссылка повреждена'), h('p', null, 'Похоже, ссылку скопировали не полностью. Попросите отправить её ещё раз.')));
+    }
+    return true;
+  },
+};
+
+/* ===== 14k-landing.js ===== */
+/* ============================================================
+   14k · ГЛАВНАЯ: посадочная страница Puzzle Studio
+   Порядок разделов как у главной PuzzleBot, тексты — свои.
+   Цифры на странице настоящие: считаются из самого конструктора.
+   ============================================================ */
+const Landing = {
+  cats: [['Магазин', 'Магазин с каталогом, корзиной и оформлением заказа'], ['Тарифы', 'Страница тарифов подписки с FAQ'], ['Личный кабинет', 'Личный кабинет с балансом, подпиской и рефералами'], ['Квиз', 'Квиз из 5 вопросов с результатом и кнопкой в бота'], ['Запись', 'Онлайн-запись в барбершоп с услугами и ценами'], ['Лендинг', 'Лендинг сервиса с отзывами и контактами'], ['Другое', '']],
+  prompt(big) {
+    const ta = h('textarea', { class: 'ld-ta', rows: big ? 3 : 2, placeholder: 'Опишите страницу, которую нужно собрать', 'data-novar': '', 'aria-label': 'Описание страницы' });
+    let plat = 'tg';
+    const go = () => {
+      const t = ta.value.trim();
+      if (!t) { ta.focus(); ta.classList.add('shake'); setTimeout(() => ta.classList.remove('shake'), 500); return; }
+      Puzzlo.send(t + (plat === 'max' ? ' (для MAX)' : ''));
+      UI.toast('Puzzlo начал собирать страницу', { icon: 'check' });
+    };
+    ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); go(); } });
+    const plats = h('div', { class: 'ld-plat' }, [['tg', 'Telegram'], ['max', 'MAX']].map(([id, l]) => {
+      const b = h('button', { class: id === plat ? 'on' : '', type: 'button', onclick: () => { plat = id; $$('button', plats).forEach(x => x.classList.toggle('on', x === b)); } }, l); return b; }));
+    const box = h('div', { class: 'ld-prompt' }, ta, h('div', { class: 'ld-prompt-b' }, plats, h('button', { class: 'ld-go', type: 'button', onclick: go }, ic('sparkles', 16), big ? 'Создать проект' : 'Создать')));
+    return { box, ta };
+  },
+  render(main) {
+    main.classList.add('ld-main');
+    const P = this.prompt(true);
+    const scrollTo = id => { const el = main.querySelector('#ld-' + id); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+    const nav = h('header', { class: 'ld-nav' },
+      h('div', { class: 'ld-logo' }, mascotImg('icon', 30), h('b', null, 'Puzzle Studio'), h('span', null, '://')),
+      h('nav', null, [['features', 'Возможности'], ['templates', 'Шаблоны'], ['integr', 'Интеграции'], ['price', 'Тарифы'], ['faq', 'Вопросы']].map(([id, l]) => h('button', { onclick: () => scrollTo(id) }, l))),
+      h('button', { class: 'ld-btn', onclick: () => App.go(S.projects.length ? 'projects' : 'templates') }, h('span', { class: 'ld-long' }, 'Открыть конструктор'), h('span', { class: 'ld-short' }, 'Открыть')));
+    const tpls = TEMPLATES.slice(0, 3);
+    const phones = h('div', { class: 'ld-phones' }, tpls.map((t, i) => { const scr = h('div', { class: 'ld-ph-s' }); const ph = h('div', { class: 'ld-ph ld-ph' + i }, scr); requestAnimationFrame(() => thumbInto(scr, tplPreviewProject(t))); return ph; }));
+    const hero = h('section', { class: 'ld-hero' },
+      h('div', { class: 'ld-hero-l' },
+        h('span', { class: 'ld-kicker' }, 'Конструктор мини-приложений для PuzzleBot'),
+        h('h1', null, 'Создавайте мини-приложения для Telegram ', h('span', null, 'вместе с AI')),
+        h('p', { class: 'ld-sub' }, 'От одной страницы до магазина с корзиной — без кода, прямо в браузере. Готовый код вставляется в PuzzleBot одной кнопкой.'),
+        P.box,
+        h('div', { class: 'ld-chips' }, this.cats.map(([l, t]) => h('button', { onclick: () => { P.ta.value = t; P.ta.focus(); } }, l)))),
+      h('div', { class: 'ld-hero-r' }, phones, h('div', { class: 'ld-mascot' }, mascotImg('wave', 110))));
+
+    const steps = h('section', { class: 'ld-sec' }, h('h2', null, 'Насладитесь результатом'),
+      h('p', { class: 'ld-lead' }, 'Три шага от идеи до страницы в боте. Без модерации и без своего хостинга: код живёт в блоке «HTML код» PuzzleBot.'),
+      h('div', { class: 'ld-steps' }, [['1', 'Опишите или выберите шаблон', 'Puzzlo соберёт страницу по описанию, или начните с одного из ' + TEMPLATES.length + ' шаблонов.'], ['2', 'Поправьте на холсте', 'Тексты, картинки, цвета и кнопки меняются прямо на макете телефона.'], ['3', 'Вставьте в PuzzleBot', 'Скопируйте код и вставьте в блок «HTML код» — переменные {{…}} подставит бот.']].map(([n, t, d]) => h('div', { class: 'ld-step' }, h('i', null, n), h('b', null, t), h('span', null, d)))));
+
+    const tgrid = h('div', { class: 'ld-tgrid' });
+    for (const t of TEMPLATES.slice(0, 6)) {
+      const th = h('div', { class: 'ld-tth' });
+      requestAnimationFrame(() => thumbInto(th, tplPreviewProject(t)));
+      tgrid.append(h('article', { class: 'ld-tcard' }, th, h('div', { class: 'ld-tb' }, h('b', null, t.name), h('span', null, t.desc || ''), h('button', { class: 'ld-btn sm', onclick: () => Home.useTemplate(t) }, 'Использовать'))));
+    }
+    const templates = h('section', { class: 'ld-sec', id: 'ld-templates' }, h('h2', null, 'Расширяйте возможности'),
+      h('p', { class: 'ld-lead' }, 'Магазин, тарифы, личный кабинет, квиз, запись, лендинг — начните с готовой страницы и сделайте её своей.'),
+      tgrid, h('div', { class: 'ld-center' }, h('button', { class: 'ld-btn ghost', onclick: () => App.go('templates') }, 'Все шаблоны · ' + TEMPLATES.length)));
+
+    const stats = [[TEMPLATES.length, 'готовых шаблонов'], [Object.keys(COMP).length, 'блоков для страницы'], [ACTION_DEFS.length, 'действий для кнопок'], [INTEG.length, 'интеграций']];
+    const feats = [
+      ['send', 'Telegram и MAX', 'Одна страница работает в мини-приложениях Telegram и MAX. Кнопки «Назад», MainButton, Face ID, вибрация — уже внутри.'],
+      ['variable', 'Переменные PuzzleBot', 'Пишите {{FIRST_NAME}}, {{BALANCE}} и любые свои — бот подставит значения для каждого пользователя.'],
+      ['layers', 'Экраны и шторки', 'Несколько экранов, связи стрелками, шторки снизу и переходы между страницами Mini App.'],
+      ['sparkles', 'Puzzlo AI', 'Опишите, что нужно, — Puzzlo соберёт страницу на ваших глазах и поправит её по просьбе.'],
+      ['bot', 'Сообщения и команды', 'Кнопки отправляют сообщения в Telegram и запускают команды, сценарии и переменные PuzzleBot.'],
+      ['check', 'Проверка перед запуском', 'Конструктор найдёт пустые ссылки, плохой контраст и забытые настройки до того, как это увидит клиент.'],
+    ];
+    const features = h('section', { class: 'ld-sec', id: 'ld-features' }, h('h2', null, 'Почему Puzzle Studio'),
+      h('div', { class: 'ld-stats' }, stats.map(([n, l]) => h('div', null, h('b', null, String(n)), h('span', null, l)))),
+      h('div', { class: 'ld-feats' }, feats.map(([i, t, d]) => h('div', { class: 'ld-feat' }, h('span', { class: 'ld-fi' }, ic(i, 20)), h('b', null, t), h('p', null, d)))));
+
+    const builder = h('section', { class: 'ld-sec ld-split' },
+      h('div', null, h('h2', null, 'Визуальный конструктор'), h('p', { class: 'ld-lead' }, 'Вся страница перед глазами: макет телефона, слои, настройки блока справа — как в конструкторе PuzzleBot. Каждый шаг можно поправить, отменить или вернуть из истории изменений.'),
+        h('ul', { class: 'ld-list' }, ['Перетаскивание блоков и масштаб мокапа', 'История изменений и версии', 'Просмотр на телефоне по QR-коду', 'Темы: Telegram, iOS, тёмная, неон и другие'].map(t => h('li', null, ic('check', 16), t))),
+        h('button', { class: 'ld-btn', onclick: () => Home.newBlank() }, 'Создать пустую страницу')),
+      h('div', { class: 'ld-mock' }, h('div', { class: 'ld-mock-bar' }, h('i'), h('i'), h('i')), h('div', { class: 'ld-mock-b' }, h('div', { class: 'ld-mock-ph' }, h('div', { class: 'ld-mock-s' })), h('div', { class: 'ld-mock-p' }, ...[70, 90, 55, 80, 65].map(w => h('span', { style: { width: w + '%' } }))))));
+    requestAnimationFrame(() => { const s = builder.querySelector('.ld-mock-s'); if (s && TEMPLATES[0]) thumbInto(s, tplPreviewProject(TEMPLATES[0])); });
+
+    const groups = [['Бот и базы', 'bot'], ['Данные', 'data'], ['Формы и оплата', 'money'], ['Контент', 'content'], ['Аналитика', 'stats']];
+    const integr = h('section', { class: 'ld-sec', id: 'ld-integr' }, h('h2', null, 'Широкий выбор интеграций'),
+      h('p', { class: 'ld-lead' }, 'Бесплатные сервисы подключаются как плагины: включили — и в редакторе появились новые блоки и действия.'),
+      h('div', { class: 'ld-igrid' }, groups.map(([t, c]) => h('div', { class: 'ld-ig' }, h('b', null, t), h('div', { class: 'ld-ig-l' }, INTEG.filter(x => x.cat === c).map(x => h('span', { class: 'ld-ig-i', title: x.name }, integLogo(x, 26), x.name)))))),
+      h('div', { class: 'ld-center' }, h('button', { class: 'ld-btn ghost', onclick: () => App.go('integrations') }, 'Все интеграции')));
+
+    const better = h('section', { class: 'ld-sec' }, h('h2', null, 'Лучше, чем писать код вручную'),
+      h('div', { class: 'ld-feats four' }, [['shield', 'Код без ошибок вёрстки', 'Стили изолированы и не ломают страницу PuzzleBot.'], ['smartphone', 'Сразу под телефон', 'Тема Telegram, безопасные отступы, тёмный режим.'], ['puzzle', 'Готовые модули', 'Корзина, квиз, таймер, слайдер, карта, формы.'], ['refresh', 'Правки за минуту', 'Поменяли текст — скопировали новый код. Без разработчика.']].map(([i, t, d]) => h('div', { class: 'ld-feat' }, h('span', { class: 'ld-fi' }, ic(i, 20)), h('b', null, t), h('p', null, d)))));
+
+    const price = h('section', { class: 'ld-sec', id: 'ld-price' }, h('h2', null, 'Тарифы'),
+      h('div', { class: 'ld-price' },
+        h('div', { class: 'ld-plan' }, h('span', { class: 'qp-badge' }, 'FREE'), h('b', { class: 'ld-pp' }, '0 ₽'), h('span', { class: 'ld-pd' }, 'Чтобы попробовать'),
+          h('ul', { class: 'ld-list' }, ['Все блоки, шаблоны и интеграции', 'Puzzlo AI и база знаний', QUOTA_CFG.limit + ' выгрузок кода', 'Просмотр на телефоне'].map(t => h('li', null, ic('check', 16), t))),
+          h('button', { class: 'ld-btn ghost', onclick: () => App.go(S.projects.length ? 'projects' : 'templates') }, 'Начать бесплатно')),
+        h('div', { class: 'ld-plan pro' }, h('span', { class: 'qp-badge pro' }, 'PRO'), h('b', { class: 'ld-pp' }, 'Подписка'), h('span', { class: 'ld-pd' }, 'Для тех, кто делает страницы регулярно'),
+          h('ul', { class: 'ld-list' }, ['Выгрузка кода без ограничений', 'Копирование и дублирование без защиты', 'Экспорт проектов и облако', 'Всё из бесплатного тарифа'].map(t => h('li', null, ic('check', 16), t))),
+          h('button', { class: 'ld-btn', onclick: () => window.open(QUOTA_CFG.planUrl, '_blank', 'noopener') }, 'Оформить подписку'),
+          h('button', { class: 'qm-link', onclick: () => Quota.keyDialog() }, 'У меня есть ключ'))));
+
+    const support = h('section', { class: 'ld-sec' }, h('h2', null, 'Создавайте, мы поддержим'),
+      h('div', { class: 'ld-sup' },
+        h('button', { class: 'ld-sc', onclick: () => App.go('kb') }, h('span', { class: 'ld-fi' }, ic('book', 20)), h('b', null, 'База знаний'), h('span', null, 'Статьи обо всех блоках, действиях и размещении в PuzzleBot')),
+        h('button', { class: 'ld-sc', onclick: () => App.go('ai') }, h('span', { class: 'ld-fi m' }, mascotImg('icon', 26)), h('b', null, 'Puzzlo AI'), h('span', null, 'Помощник прямо в редакторе: собирает и правит страницы по описанию')),
+        h('a', { class: 'ld-sc', href: PB_REF, target: '_blank', rel: 'noopener' }, h('span', { class: 'ld-fi' }, ic('bot', 20)), h('b', null, 'PuzzleBot'), h('span', null, 'Конструктор ботов, куда вставляются ваши страницы. Ещё нет бота? Начните здесь')),
+        h('button', { class: 'ld-sc', onclick: () => App.go('templates') }, h('span', { class: 'ld-fi' }, ic('grid', 20)), h('b', null, 'Шаблоны'), h('span', null, TEMPLATES.length + ' готовых страниц для разных задач'))));
+
+    const faqs = [
+      ['Нужно ли уметь программировать?', 'Нет. Страница собирается из блоков на холсте, а код конструктор пишет сам. Вам остаётся скопировать его и вставить в PuzzleBot.'],
+      ['Как вставить страницу в PuzzleBot?', 'Нажмите «Экспорт» → «Копировать код». В PuzzleBot откройте мини-приложение, добавьте блок «HTML код» и вставьте. Подробная инструкция — в базе знаний.'],
+      ['Сколько это стоит?', `Бесплатно доступны все блоки и ${QUOTA_CFG.limit} выгрузок кода. Для работы без ограничений — подписка Pro.`],
+      ['Работает ли в MAX?', 'Да, страницы рассчитаны на мини-приложения Telegram и MAX. Функции, которых нет в MAX, просто не показываются.'],
+      ['Что такое Puzzlo AI?', 'Помощник внутри конструктора. Понимает простые фразы: «собери магазин в тёмном стиле», «добавь отзывы», «сделай зелёным».'],
+      ['Где хранятся мои проекты?', 'В вашем браузере. Их можно скачать файлом или сохранить в облако NocoDB, чтобы открыть на другом устройстве.'],
+    ];
+    const faq = h('section', { class: 'ld-sec', id: 'ld-faq' }, h('h2', null, 'Частые вопросы'), h('div', { class: 'ld-faq' }, faqs.map(([q, a]) => h('details', null, h('summary', null, q, ic('plus', 18)), h('p', null, a)))));
+
+    const P2 = this.prompt(false);
+    const cta = h('section', { class: 'ld-cta' }, mascotImg('like', 96), h('h2', null, 'Начнём?'), h('p', null, 'Опишите страницу — Puzzlo соберёт её за минуту.'), P2.box);
+
+    const foot = h('footer', { class: 'ld-foot' },
+      h('div', null, h('div', { class: 'ld-logo' }, mascotImg('icon', 26), h('b', null, 'Puzzle Studio'), h('span', null, '://')), h('p', null, 'Независимый визуальный конструктор страниц для мини-приложений PuzzleBot, Telegram и MAX.')),
+      h('div', null, h('b', null, 'Конструктор'), ...[['Главная', 'main'], ['Мои проекты', 'projects'], ['Шаблоны', 'templates'], ['Интеграции', 'integrations'], ['База знаний', 'kb']].map(([l, r]) => h('button', { onclick: () => r === 'main' ? main.scrollTo({ top: 0, behavior: 'smooth' }) : App.go(r) }, l))),
+      h('div', null, h('b', null, 'Тариф'), h('button', { onclick: () => scrollTo('price') }, 'Тарифы'), h('button', { onclick: () => Quota.keyDialog() }, 'Активировать ключ'), h('button', { onclick: () => App.go('settings') }, 'Настройки')),
+      h('div', null, h('b', null, 'PuzzleBot'), h('a', { href: PB_REF, target: '_blank', rel: 'noopener' }, 'Создать бота'), h('a', { href: VIEW_BASE, target: '_blank', rel: 'noopener' }, 'Puzzle Studio онлайн')),
+      h('div', { class: 'ld-copy' }, '© ' + new Date().getFullYear() + ' Puzzle Studio. PuzzleBot — сторонний сервис; Puzzle Studio не является его официальным продуктом.'));
+
+    main.append(h('div', { class: 'ld' }, nav, hero, steps, templates, features, builder, integr, better, price, support, faq, cta, foot));
+  },
+};
 
 /* ===== 15-export-ui.js ===== */
 /* ============================================================
@@ -12382,8 +12895,9 @@ const ExportUI = {
     files.push({ name: 'README.txt', data: `Puzzle Studio — ${this.P.name}\n\nindex.html — самостоятельная страница (хостинг / Mini App по ссылке)\npuzzlebot-block.html — один блок со стилями для вставки в PuzzleBot\npage.html, style.css, script.js — те же части по отдельности\nproject.json — исходный проект: его можно снова открыть в Puzzle Studio через «Импорт»\n\nПеременные вида {{ИМЯ}} сохранены как есть — значения подставляет бот.\n` });
     saveFile(makeZip(files), base + '.zip').then(st => saveMsg(st, base + '.zip'));
   },
-  downloadProject(p) { this.download(projectFileJson(p), slugName(p.name) + '.puzzle.json', 'application/json'); },
+  downloadProject(p) { if (Guard.deny('экспорт проекта')) return; this.download(projectFileJson(p), slugName(p.name) + '.puzzle.json', 'application/json'); },
   async backupAll() {
+    if (Guard.deny('резервная копия')) return;
     const all = await Store.all('projects').catch(() => S.projects);
     this.download(JSON.stringify({ format: 'puzzle-studio-backup', version: PROJECT_VERSION, exportedAt: new Date().toISOString(), projects: all }, null, 1), 'puzzle-studio-backup.json', 'application/json');
   },
@@ -12504,7 +13018,7 @@ const App = {
     if (r.startsWith('url:')) { const u = r.slice(4); if (/^https:\/\/t\.me\//.test(u)) window.open(u, '_blank', 'noopener'); return; }
     switch (r) {
       case 'kb': KBView.art = null; KBView.cat = null; return home('kb');
-      case 'templates': case 'projects': case 'mine': case 'media': case 'settings': case 'integrations': return home(r);
+      case 'main': case 'templates': case 'projects': case 'mine': case 'media': case 'settings': case 'integrations': return home(r);
       case 'plugins': return S.view === 'editor' ? IntegUI.dialog() : home('integrations');
       case 'new': return Home.newBlank();
       case 'mcp': return PBUI.mcpDialog();
@@ -12538,6 +13052,7 @@ const App = {
       }
     } catch (e) { console.warn('Telegram WebApp:', e); }
     this.applyUi();
+    if (await PhoneView.boot()) return;
     try { document.documentElement.style.setProperty('--m-err', 'url("' + MASCOT.error + '")'); } catch (e) {}
     PB.load();
     VarSuggest.init();
@@ -12559,9 +13074,12 @@ const App = {
     Quota.ready();
     await Puzzlo.load();
     Puzzlo.mount();
-    if (!S.projects.length) S.homeTab = 'templates';
+    if (!S.projects.length) S.homeTab = 'main';
     Home.render();
     document.addEventListener('keydown', e => Editor.key(e));
+    // Ctrl + колесо / жест щипка и Ctrl +/− увеличивают мокап, а не всю страницу конструктора
+    window.addEventListener('wheel', e => { if (S.view === 'editor' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); if (!e.target.closest || !e.target.closest('.scr-strip')) Screens.zoomBy(e.deltaY < 0 ? 1 : -1); } }, { passive: false });
+    window.addEventListener('keydown', e => { if (S.view === 'editor' && (e.ctrlKey || e.metaKey) && ['=', '+', '-', '_', '0'].includes(e.key)) { e.preventDefault(); if (e.key === '0') Screens.setZoom(null); else Screens.zoomBy(e.key === '-' || e.key === '_' ? -1 : 1); } }, true);
     window.addEventListener('beforeunload', () => { if (S.project) Editor.saveNow(); });
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && S.project) Editor.saveNow(); });
     let lastMobile = isMobile();
