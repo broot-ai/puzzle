@@ -211,13 +211,15 @@ button { cursor: pointer; }
 .pname { min-width: 60px; max-width: 280px; height: 32px; padding: 0 8px; border: 1px solid transparent; border-radius: var(--r-sm); background: transparent; font-weight: 600; font-size: 14px; text-overflow: ellipsis; }
 .pname:hover { border-color: var(--line); }
 .pname:focus { outline: none; border-color: var(--accent); background: var(--bg); }
-.save-st { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.save-st { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); white-space: nowrap; flex: 0 1 auto; min-width: 0; max-width: 150px; overflow: hidden; margin-right: 4px; }
+.save-st span { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.save-st i { flex: none; }
 .save-st i { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
 .save-st.saving i { background: var(--warn); animation: pulse 1s infinite; }
 .save-st.err { color: var(--err); } .save-st.err i { background: var(--err); }
 .save-st.mem i { background: var(--warn); }
 @keyframes pulse { 50% { opacity: .3; } }
-.top-mid { flex: 1; display: flex; justify-content: center; gap: 8px; min-width: 0; }
+.top-mid { flex: 1; display: flex; justify-content: safe center; gap: 8px; min-width: 0; }
 .top-r { display: flex; align-items: center; gap: 6px; }
 .ed-main { display: grid; grid-template-columns: 272px minmax(0, 1fr) 312px; min-height: 0; }
 .pane { display: flex; flex-direction: column; min-height: 0; background: var(--panel); }
@@ -1411,6 +1413,90 @@ pre.code.locked { user-select: none; -webkit-user-select: none; -webkit-mask-ima
 .chk { position: relative; } .chk input { left: 0; top: 0; }
 .pane-body, .dlg-b { position: relative; }
 .spl-demo { isolation: isolate; z-index: 0; }
+
+/* ================================================================
+   КАК В PUZZLEBOT: правое меню, уведомления, плашки, список проектов
+   ================================================================ */
+/* правое меню с крестиком */
+.rc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 8px 10px 0; padding: 4px 0 0 2px; color: #7b8088; font-size: 14px; flex: none; }
+.rc-x { width: 34px; height: 34px; display: grid; place-items: center; border: 0; border-radius: 6px; background: none; color: #6f747c; cursor: pointer; }
+.rc-x:hover { background: var(--panel3); color: var(--text); }
+.rc-card { display: flex; flex-direction: column; gap: 8px; margin: 8px 10px 0; flex: none; }
+.rc-nm { padding: 10px 12px; border-radius: 4px; background: var(--panel); }
+.rc-nm label { display: block; font-size: 13.5px; color: var(--pb-lbl, #8a8f99); margin-bottom: 2px; }
+.rc-nm .inp { height: 34px; padding: 0 2px; border: 0; border-bottom: 1px solid var(--line2); border-radius: 0; background: transparent !important; font-size: 14.5px; box-shadow: none; }
+.rc-ics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px; border-radius: 4px; background: var(--panel); }
+.rc-ib { height: 30px; display: grid; place-items: center; border: 1px solid var(--line2); border-radius: 3px; background: var(--panel); color: #7b8088; cursor: pointer; }
+.rc-ib:hover { border-color: var(--accent); color: var(--accent); }
+.rc-ib.ok { color: var(--accent); }
+.rc-ib.del { background: #fde4e4; border-color: #fde4e4; color: #e5484d; }
+.rc-ib.del:hover { background: #fbd3d3; }
+.rc-ib:disabled { opacity: .45; cursor: default; }
+.rcol.min .rc-card { display: none; }
+.rcol .rswitch { grid-template-columns: repeat(3, 1fr) 34px; padding: 0; border: 0; background: none; gap: 6px; }
+.rcol .rswitch button:not(.rc-min) { height: 34px; border: 1px solid var(--line); border-radius: 3px; background: var(--panel); color: var(--text); font-weight: 500; font-size: 14px; }
+.rcol .rswitch button.on { background: #d6e6fd; border-color: #d6e6fd; color: var(--text); }
+:root:not([data-ui="light"]) .rcol .rswitch button.on { background: var(--accent-soft); }
+.rc-min { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--line2) !important; border-radius: 3px !important; background: var(--panel) !important; color: #6f747c !important; }
+@media (min-width: 861px) {
+  .rcol[data-t="settings"] > .pane.right, .rcol[data-t="actions"] > .pane.right { display: flex; }
+  .rcol[data-t="settings"] > .pane.left, .rcol[data-t="actions"] > .pane.left { display: none; }
+  .ed-main.rc-closed { grid-template-columns: minmax(0, 1fr) 0 !important; }
+  .ed-main.rc-closed .rcol { display: none; }
+}
+.rc-open { display: none; position: absolute; right: 14px; top: 14px; z-index: 7; align-items: center; gap: 8px; height: 42px; padding: 0 14px; border: 1px solid var(--line2); border-radius: 6px; background: var(--panel); color: var(--text); font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.rc-closed .rc-open { display: inline-flex; }
+@media (max-width: 860px) { .rc-head, .rc-card, .rc-open { display: none !important; } }
+.lnk { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line2); color: var(--text); font-size: 13.5px; }
+.lnk .ic:first-child { color: #2aa3df; } .lnk span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* выпадающий список проектов (как группы в PuzzleBot) */
+.proj-dd { width: 26px; height: 26px; display: grid; place-items: center; border: 0; border-radius: 6px; background: none; color: var(--accent); cursor: pointer; margin-left: -6px; }
+.proj-dd:hover { background: var(--accent-soft); }
+.pop.pm-pop { padding: 0; border-radius: 4px; border: 1px solid #b6d2fb; box-shadow: 0 10px 30px -10px rgba(20,40,90,.35); }
+.pm { display: flex; flex-direction: column; gap: 2px; padding: 12px; min-width: 210px; max-width: 300px; }
+.pm-i { display: flex; align-items: center; gap: 8px; }
+.pm-n { flex: 1; min-width: 0; padding: 9px 4px; border: 0; background: none; color: var(--text); font-size: 14px; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.pm-n:hover { color: var(--accent); }
+.pm-i.on .pm-n { font-weight: 600; }
+.pm-dup { width: 28px; height: 28px; display: grid; place-items: center; border: 0; border-radius: 3px; background: #8a8f99; color: #fff; cursor: pointer; }
+.pm-new { margin-top: 10px; height: 34px; border: 0; border-radius: 3px; background: #ffb04c; color: #fff; font-size: 14px; font-weight: 500; cursor: pointer; }
+.pm-new:hover { background: #ffa232; }
+
+/* колокольчик и уведомления */
+.nt-bell { position: relative; width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 6px; background: none; color: #4b8df8; cursor: pointer; }
+.nt-bell:hover { background: var(--accent-soft); }
+.nt-n { display: none; position: absolute; top: 4px; right: 3px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: #ff3b30; color: #fff; font-size: 10px; font-style: normal; font-weight: 700; line-height: 16px; text-align: center; }
+.nt-bell.has .nt-n { display: block; }
+.pop.nt-pop { padding: 0; border-radius: 4px; overflow: hidden; border: 1px solid var(--line2); }
+.nt-drop { width: 310px; display: flex; flex-direction: column; }
+.nt-list { max-height: 270px; overflow-y: auto; padding: 6px; }
+.nt-i { display: flex; gap: 12px; align-items: flex-start; width: 100%; padding: 12px 10px; border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--text); text-align: left; font: inherit; }
+button.nt-i { cursor: pointer; } button.nt-i:hover { background: var(--panel2); }
+.nt-i.new { background: #f1f6ff; } :root:not([data-ui="light"]) .nt-i.new { background: var(--accent-soft); }
+.nt-ic { width: 36px; height: 36px; flex: none; display: grid; place-items: center; border-radius: 8px; }
+.nt-m { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.nt-m b { font-size: 13.5px; font-weight: 500; line-height: 1.35; } .nt-m span { font-size: 12.5px; color: var(--muted); line-height: 1.4; } .nt-m small { font-size: 11.5px; color: var(--faint); }
+.nt-all { height: 40px; border: 0; background: #4b9bf5; color: #fff; font-size: 14px; font-weight: 500; cursor: pointer; }
+.nt-all:hover { background: #3a8be8; }
+.nt-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 24px; color: var(--muted); font-size: 13px; }
+.nt-full { display: flex; flex-direction: column; max-height: 62vh; overflow-y: auto; margin: -4px -4px 0; }
+.nt-full .nt-i { padding: 16px 12px; }
+.side .nt-bell { margin-left: auto; }
+
+/* плашки уведомлений — как в PuzzleBot: справа внизу, зелёные */
+.toasts { left: auto !important; right: 14px; transform: none !important; align-items: flex-end !important; bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important; }
+.toast { min-width: 280px; max-width: 420px; justify-content: space-between; gap: 12px !important; padding: 0 8px 0 16px !important; min-height: 48px; border-radius: 4px !important; background: #4caf50 !important; color: #fff !important; font-size: 14px !important; font-weight: 500; box-shadow: 0 8px 22px -8px rgba(0,0,0,.3) !important; cursor: pointer; animation: toastIn .25s cubic-bezier(.2,.8,.2,1); transition: opacity .2s, transform .2s; }
+.toast.err { background: #e5484d !important; }
+.toast.out { opacity: 0; transform: translateX(16px); }
+.toast-t { flex: 1; padding: 12px 0; line-height: 1.35; }
+.toast-ic { width: 30px; height: 30px; flex: none; display: grid; place-items: center; border-radius: 5px; background: #a5d6a7; color: #fff; }
+.toast.err .toast-ic { background: rgba(255,255,255,.3); }
+.toast-a { border: 0; background: rgba(255,255,255,.2) !important; color: #fff; font-weight: 700; padding: 6px 10px !important; border-radius: 4px; text-decoration: none !important; cursor: pointer; }
+@keyframes toastIn { from { opacity: 0; transform: translateX(24px); } }
+@media (max-width: 760px) { .toasts { left: 10px !important; right: 10px; align-items: stretch !important; bottom: calc(var(--bnav-h, 60px) + 12px) !important; } .toast { min-width: 0; max-width: none; } }
+
+.rc-closed .stage-bar { padding-right: 150px !important; }
 
 </style>
 </head>
@@ -3539,9 +3625,9 @@ const RUNTIME_EXT = {
     if (BOT.via === 'botapi') return fetch('https://api.telegram.org/bot' + BOT.bt + '/' + method.replace(/^tg\\./, ''), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(params) }).then(function (r) { return r.json(); }).then(function (j) { if (!j || !j.ok) throw j; return j; });
     var b = new URLSearchParams(); b.set('token', BOT.pb || ''); b.set('method', method); b.set('platform', BOT.platform || 'tg');
     for (var k in params) if (params[k] != null && params[k] !== '') b.set(k, typeof params[k] === 'object' ? JSON.stringify(params[k]) : String(params[k]));
-    return fetch('https://api.puzzlebot.top/', { method: 'POST', body: b }).then(function (r) { return r.json(); }, function (e) {
+    return fetch('https://api.puzzle.bot/', { method: 'POST', body: b }).then(function (r) { return r.json(); }, function (e) {
       /* сервер не разрешил браузеру прочитать ответ (CORS): отправляем запрос «вслепую» — PuzzleBot его выполнит, но ответ не виден */
-      return fetch('https://api.puzzlebot.top/', { method: 'POST', mode: 'no-cors', body: b }).then(function () { return { ok: true, blind: true }; });
+      return fetch('https://api.puzzle.bot/', { method: 'POST', mode: 'no-cors', body: b }).then(function () { return { ok: true, blind: true }; });
     }).then(function (j) { if (j && ((j.code !== undefined && j.code !== 0) || j.ok === false)) throw j; return j; });
   }
   function botDone(done) { return [function () { hap('success'); if (done) toast(done); }, function (e) { try { console.warn('bot', e); } catch (er) {} hap('error'); toast('Не удалось выполнить запрос к боту'); throw e; }]; }
@@ -3849,7 +3935,7 @@ const Plug = {
   st: {},
   async load() { try { const v = await Store.kvGet('plugins', {}); this.st = v && typeof v === 'object' ? v : {}; } catch (e) { this.st = {}; } },
   on(id) { const d = INTEG_BY[id]; if (!d) return true; if (d.builtin) return true; return id in this.st ? !!this.st[id] : !!d.def; },
-  set(id, v) { this.st[id] = !!v; try { Store.kvSet('plugins', this.st); } catch (e) {} },
+  set(id, v) { this.st[id] = !!v; try { Store.kvSet('plugins', this.st); } catch (e) {} try { const d = INTEG_BY[id]; if (d) Notify.add('plug', `Интеграция «${d.name}» ${v ? 'подключена' : 'отключена'}`, v ? (d.gives || []).join(', ') : '', { route: 'integrations' }); } catch (e) {} },
   /* блок или действие доступно, если хотя бы один его плагин включён */
   allowed(item) { const p = item && item.plug; if (!p) return true; return (Array.isArray(p) ? p : [p]).some(x => this.on(x)); },
   ensure(id) { if (id && !this.on(id)) { this.set(id, true); return true; } return false; },
@@ -4366,6 +4452,21 @@ RUNTIME_EXT.launch = (pid, feat) => `
       if (tg.isFullscreen && tg.exitFullscreen) tg.exitFullscreen();
       if (tg.expand) tg.expand();` : `
       /* compact: размер окна задаёт ссылка с mode=compact */`}
+    } catch (e) {}
+  })();`;
+
+RUNTIME_EXT.tgx = (pid, feat) => `
+  /* дополнительные настройки мини-приложения */
+  (function () {
+    var X = ${JSON.stringify(feat.tgx || {})};
+    if (X.protect) { root.addEventListener('contextmenu', function (e) { if (!e.target.closest('input, textarea')) e.preventDefault(); }); root.addEventListener('copy', function (e) { if (!e.target.closest || !e.target.closest('input, textarea')) e.preventDefault(); }); }
+    if (!tg || PREVIEW) return;
+    try {
+      if (X.confirm && tg.enableClosingConfirmation) tg.enableClosingConfirmation();
+      if (X.noswipe && can('7.7') && tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+      if (X.head && can('6.1') && tg.setHeaderColor) tg.setHeaderColor(X.head);
+      if (X.bg && can('6.1') && tg.setBackgroundColor) tg.setBackgroundColor(X.bg);
+      if (X.bottom && can('7.10') && tg.setBottomBarColor) tg.setBottomBarColor(X.bottom);
     } catch (e) {}
   })();`;
 
@@ -5508,6 +5609,7 @@ function generate(project, opts = {}) {
   page.embedMode = opts.embed || project.page.embed || 'transparent';
   const feat = scanFeatures(project.root);
   feat.nc = ncUsage(project);
+  { const x = project.page.tgx || {}; if (mode === 'export' && opts.varMode !== 'sample' && (x.protect || x.confirm || x.swipe === false || x.head || x.bg || x.bottom)) { feat.tgx = { protect: !!x.protect, confirm: !!x.confirm, noswipe: x.swipe === false, head: x.head && /^#[0-9a-f]{6}$/i.test(x.headC || '') ? x.headC : '', bg: x.bg && /^#[0-9a-f]{6}$/i.test(x.bgC || '') ? x.bgC : '', bottom: x.bottom && /^#[0-9a-f]{6}$/i.test(x.bottomC || '') ? x.bottomC : '' }; feat.js = true; feat.tg = true; } }
   if (project.page.launch && mode === 'export' && opts.varMode !== 'sample') { feat.launch = CSS.pick(project.page.launch, ['compact', 'fullsize', 'fullscreen']) || ''; if (feat.launch && feat.launch !== 'compact') { feat.js = true; feat.tg = true; } else feat.launch = ''; }
   { const an = analyticsCfg(project.page); if (an && mode === 'export' && opts.varMode !== 'sample') { feat.analytics = true; feat.analyticsCfg = an; feat.js = true; } }
   if (feat.nc.size && mode === 'export' && opts.varMode !== 'sample') feat.js = true;
@@ -5524,6 +5626,8 @@ function generate(project, opts = {}) {
   GEN.presets = project.page.presets || {};
   nodeRules(project.root, R, tokens, out);
   let css = baseCss(R, pid, page, tokens) + '\n/* ---- Блоки страницы ---- */\n' + out.base.join('\n');
+  const tgx = project.page.tgx || {};
+  if (ctx.mode !== 'edit' && tgx.protect) css += `\n/* ---- Защита контента ---- */\n${R} { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }\n${R} input, ${R} textarea { -webkit-user-select: text; user-select: text; }\n${R} img { -webkit-user-drag: none; }`;
   if (ctx.mode !== 'edit' && !opts.noAnim && splashFor(project)) { html = splashHtml(project.page, ctx) + '\n' + html; css += SPLASH_CSS; }
   if (out.hover.length) css += `\n@media (hover: hover) {\n${out.hover.join('\n')}\n}`;
   if (out.tablet.length) css += `\n/* ---- Планшет (от ${BP.tablet}px) ---- */\n@media (min-width: ${BP.tablet}px) {\n${out.tablet.join('\n')}\n}`;
@@ -5716,6 +5820,8 @@ function validateImport(raw) {
   p.page = page;
   for (const k of ['embed', 'hostPreview', 'hapticType', 'lang']) if (typeof pageIn[k] === 'string') p.page[k] = pageIn[k].slice(0, 30);
   if (['compact', 'fullsize', 'fullscreen'].includes(pageIn.launch)) p.page.launch = pageIn.launch;
+  if (typeof pageIn.botUser === 'string' && /^[A-Za-z0-9_]{3,40}$/.test(pageIn.botUser)) p.page.botUser = pageIn.botUser;
+  if (pageIn.tgx && typeof pageIn.tgx === 'object') { const t = {}; for (const k of ['protect', 'confirm', 'swipe', 'head', 'bg', 'bottom']) if (typeof pageIn.tgx[k] === 'boolean') t[k] = pageIn.tgx[k]; for (const k of ['headC', 'bgC', 'bottomC']) if (/^#[0-9a-f]{6}$/i.test(pageIn.tgx[k] || '')) t[k] = pageIn.tgx[k]; p.page.tgx = t; }
   if (pageIn.splash && typeof pageIn.splash === 'object') { const sp = {}; for (const k of Object.keys(SPLASH_DEF)) { const v = pageIn.splash[k]; if (typeof v === typeof SPLASH_DEF[k]) sp[k] = typeof v === 'string' ? v.slice(0, k === 'img' ? 400000 : 200) : v; } p.page.splash = sp; }
   if (pageIn.haptics === false) p.page.haptics = false;
   if (pageIn.botlink && typeof pageIn.botlink === 'object') { const bl = pageIn.botlink; p.page.botlink = { via: ['webhook', 'puzzlebot', 'botapi'].includes(bl.via) ? bl.via : 'webhook', hook: typeof bl.hook === 'string' ? bl.hook.slice(0, 300) : '', platform: bl.platform === 'max' ? 'max' : 'tg', pb: '', bt: '' }; }
@@ -6635,10 +6741,14 @@ const UI = {
   toast(text, opts = {}) {
     let host = $('.toasts');
     if (!host) { host = h('div', { class: 'toasts', role: 'status', 'aria-live': 'polite' }); document.body.append(host); }
-    const t = h('div', { class: 'toast' + (opts.err ? ' err' : '') }, opts.err ? mascotImg('error', 30) : opts.icon === 'check' ? mascotImg('like', 30) : opts.icon === 'heart' ? mascotImg('heart', 30) : opts.icon ? ic(opts.icon, 16) : null, h('span', null, text),
-      opts.action ? h('button', { onclick: () => { opts.action.fn(); t.remove(); } }, opts.action.label) : null);
+    // как в PuzzleBot: зелёная плашка справа внизу с галочкой; ошибка — красная, с маскотом рядом
+    const t = h('div', { class: 'toast' + (opts.err ? ' err' : '') }, opts.err ? mascotImg('error', 34) : null, h('span', { class: 'toast-t' }, text),
+      opts.action ? h('button', { class: 'toast-a', onclick: () => { opts.action.fn(); t.remove(); } }, opts.action.label) : null,
+      h('span', { class: 'toast-ic' }, ic(opts.err ? 'x' : (opts.icon && !['check', 'heart'].includes(opts.icon) ? opts.icon : 'check'), 16)));
+    t.addEventListener('click', e => { if (!e.target.closest('.toast-a')) { t.classList.add('out'); setTimeout(() => t.remove(), 200); } });
     host.append(t);
-    setTimeout(() => t.remove(), opts.ms || (opts.action ? 5000 : 2600));
+    if (opts.err && typeof Notify !== 'undefined' && Notify.loaded) Notify.add('err', String(text).slice(0, 120));
+    setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 220); }, opts.ms || (opts.action ? 5000 : 3000));
   },
 
   dialog({ title, body, foot, cls = '', onClose, full }) {
@@ -7868,6 +7978,7 @@ const Editor = {
     this.after(opts);
   },
   after(opts = {}) {
+    this.renderRcCard();
     if (S.ws && S.ws !== 'page' && !this.node(S.ws)) S.ws = 'page'; // шторку удалили или отменили
     this.syncScreens();
     this.renderWs();
@@ -8163,6 +8274,7 @@ const Editor = {
     Versions.add('Применено').catch(() => {});
     if (Cloud.conf().auto && Cloud.ready()) Cloud.push().then(() => UI.toast('Отправлено в облако NocoDB', { icon: 'check' }), e => UI.toast('Облако: ' + e.message, { err: true, ms: 5000 }));
     UI.toast('Изменения применены — код экспорта обновлён', { icon: 'check' });
+    Notify.add('ok', 'Изменения применены', '«' + S.project.name + '» — код экспорта обновлён');
     if (typeof Puzzlo !== 'undefined') Puzzlo.mood('like', 2400);
   },
   appliedProject() {
@@ -8309,7 +8421,8 @@ const Editor = {
     Screens.renderOthers();
     if (!opts.fromCanvas) Canvas.select(id, opts.scroll !== false);
     else Canvas.select(id, false);
-    if (opts.fromCanvas && !isMobile() && S.rtab !== 'props') this.setRtab('props');
+    if (id && !isMobile() && S.rcClosed) this.toggleRcol(true);
+    if (opts.fromCanvas && !isMobile() && S.rtab !== 'props') this.setRtab(id ? 'props' : 'add');
     Inspector.render();
     this.highlightLayer();
     this.updateChip();
@@ -8380,11 +8493,12 @@ const Editor = {
       h('button', { class: 'btn icon ghost', title: 'К проектам', 'aria-label': 'К проектам', onclick: () => this.close() }, ic('arrow-left')),
       h('span', { class: 'logo hide-sm' }, mascotImg('icon', 30), h('span', { class: 'logo-text hide-md' }, 'Puzzle Studio'), h('span', { class: 'logo-sl hide-md' }, '://')),
       h('button', { class: 'crumb hide-sm', onclick: () => this.close() }, 'Мои проекты'), h('span', { class: 'crumb-sep hide-sm' }, '/'),
-      E.name, E.save,
+      E.name, h('button', { class: 'proj-dd', title: 'Другие проекты', 'aria-label': 'Другие проекты', onclick: e => this.projMenu(e.currentTarget) }, ic('chevron-down', 16)), E.save,
       h('div', { class: 'top-mid' }, E.undo, E.redo, h('span', { class: 'sep hide-sm' }), h('div', { class: 'hide-sm' }, E.dev)),
       h('div', { class: 'top-r' },
         h('button', { class: 'btn hide-sm', title: 'Посмотреть на телефоне по QR-коду', onclick: () => PhoneView.dialog() }, ic('smartphone', 15), h('span', { class: 'hide-md' }, 'На телефоне')),
         h('button', { class: 'btn hide-sm', onclick: () => this.preview() }, ic('play', 15), h('span', { class: 'hide-md' }, 'Просмотр')),
+        Notify.bell(),
         moreBtn,
         h('button', { class: 'btn primary', onclick: () => ExportUI.open() }, ic('code', 16), h('span', { class: 'hide-sm' }, 'Экспорт'))));
     // панели
@@ -8431,8 +8545,12 @@ const Editor = {
       mBtn('preview', 'play', 'Просмотр', () => this.preview()),
       mBtn('export', 'code', 'Экспорт', () => ExportUI.open()));
     E.rswitch = h('div', { class: 'rswitch', role: 'tablist', 'aria-label': 'Панель' });
-    E.rcol = h('div', { class: 'rcol' }, E.rswitch, E.left, E.right);
-    app.append(h('div', { class: 'ed' }, top, h('div', { class: 'ed-main' }, stage, E.rcol), E.chip, E.scrim, mnav));
+    E.rcCard = h('div', { class: 'rc-card' });
+    E.rcol = h('div', { class: 'rcol' }, h('div', { class: 'rc-head' }, h('span', null, 'Настройки мини-приложения'), h('button', { class: 'rc-x', title: 'Закрыть меню', 'aria-label': 'Закрыть меню', onclick: () => this.toggleRcol(false) }, ic('x', 20))), E.rcCard, E.rswitch, E.left, E.right);
+    E.main = h('div', { class: 'ed-main' + (S.rcClosed ? ' rc-closed' : '') }, stage, E.rcol);
+    stage.append(h('button', { class: 'rc-open', title: 'Открыть настройки мини-приложения', onclick: () => this.toggleRcol(true) }, ic('sliders', 18), h('span', null, 'Настройки')));
+    app.append(h('div', { class: 'ed' }, top, E.main, E.chip, E.scrim, mnav));
+    this.renderRcCard();
     this.setRtab(S.rtab || 'add');
     Canvas.mount(stage);
     this.renderWs();
@@ -8444,16 +8562,56 @@ const Editor = {
   },
   /* Правая колонка (как панель настроек PuzzleBot): Добавить / Слои / Свойства */
   setRtab(t) {
+    if (t === 'layers') { S.leftTab = 'layers'; t = 'add'; this.renderLeft(); }
+    if (t === 'props' && !S.sel) t = 'add';
+    const was = S.rtab;
     S.rtab = t;
     const E = this.els;
     if (!E.rcol) return;
+    if (S.rcClosed && (t === 'props' || t === 'settings' || t === 'actions')) this.toggleRcol(true);
     E.rcol.dataset.t = t;
     E.rswitch.innerHTML = '';
-    for (const [id, label, icn] of [['add', 'Добавить', 'plus'], ['layers', 'Слои', 'layers'], ['props', 'Свойства', 'sliders']]) {
-      E.rswitch.append(h('button', { class: t === id ? 'on' : '', role: 'tab', 'aria-selected': String(t === id), onclick: () => this.setRtab(id) }, ic(icn, 15), label));
+    const cur = t === 'settings' || t === 'actions' ? t : 'content';
+    for (const [id, label] of [['content', 'Контент'], ['settings', 'Настройки'], ['actions', 'Действия']]) {
+      E.rswitch.append(h('button', { class: cur === id ? 'on' : '', role: 'tab', 'aria-selected': String(cur === id), onclick: () => this.setRtab(id === 'content' ? (S.sel ? 'props' : 'add') : id) }, label));
     }
-    if (t === 'layers' && S.leftTab !== 'layers') { S.leftTab = 'layers'; this.renderLeft(); }
-    else if (t === 'add' && S.leftTab === 'layers') { S.leftTab = 'add'; this.renderLeft(); }
+    E.rswitch.append(h('button', { class: 'rc-min', title: S.rcMin ? 'Показать название и кнопки' : 'Свернуть шапку меню', 'aria-label': 'Свернуть шапку меню', onclick: () => { S.rcMin = !S.rcMin; E.rcol.classList.toggle('min', S.rcMin); this.setRtab(S.rtab); } }, ic(S.rcMin ? 'chevron-down' : 'chevron-up', 16)));
+    E.rcol.classList.toggle('min', !!S.rcMin);
+    if (t === 'add' && S.leftTab === 'layers' && was !== 'add') {}
+    if ((t === 'settings' || t === 'actions') && was !== t) Inspector.render();
+    if (t === 'props' && (was === 'settings' || was === 'actions')) Inspector.render();
+  },
+  toggleRcol(open) {
+    S.rcClosed = !open;
+    const E = this.els; if (!E.main) return;
+    E.main.classList.toggle('rc-closed', !open);
+    setTimeout(() => Canvas.layout(), 30);
+  },
+  renderRcCard() {
+    const E = this.els; if (!E.rcCard || !S.project) return;
+    const r = S.project.root;
+    E.rcCard.innerHTML = '';
+    const nm = h('input', { class: 'inp', value: (r.scr && r.scr.name) || S.project.name, maxlength: 40, 'aria-label': 'Название мини-приложения', 'data-novar': '' });
+    nm.addEventListener('change', () => { const v = nm.value.trim(); if (!v) return; this.act('Название экрана', p => { if (p.root.scr) p.root.scr.name = v.slice(0, 40); }, { struct: false }); Screens.sync && Screens.sync(); });
+    const id = r.scr && r.scr.id;
+    E.rcCard.append(
+      h('div', { class: 'rc-nm' }, h('label', null, 'Название мини-приложения:'), nm),
+      h('div', { class: 'rc-ics' },
+        h('button', { class: 'rc-ib' + (r.scr && r.scr.pbId ? ' ok' : ''), title: r.scr && r.scr.pbId ? 'Ссылка на страницу PuzzleBot: ' + r.scr.pbId : 'Указать ссылку на страницу PuzzleBot', onclick: () => this.setScreenLink(id) }, ic('link', 16)),
+        h('button', { class: 'rc-ib', title: 'Дублировать экран', onclick: () => this.duplicateScreen(id) }, ic('copy', 16)),
+        h('button', { class: 'rc-ib del', title: 'Удалить экран', disabled: allScreens(S.project).length < 2, onclick: () => this.deleteScreen(id) }, ic('trash', 16))));
+  },
+  projMenu(anchor) {
+    const list = h('div', { class: 'pm' });
+    const items = S.projects.slice().sort((a, b) => (b.openedAt || b.updatedAt || 0) - (a.openedAt || a.updatedAt || 0)).slice(0, 12);
+    for (const p of items) {
+      const on = p.id === S.project.id;
+      list.append(h('div', { class: 'pm-i' + (on ? ' on' : '') },
+        h('button', { class: 'pm-n', onclick: () => { UI.closePop(); if (!on) { this.saveNow(); this.open(p); } } }, p.name),
+        on ? h('button', { class: 'pm-dup', title: 'Дублировать проект', 'aria-label': 'Дублировать проект', onclick: () => { UI.closePop(); Home.duplicate(p); } }, ic('copy', 15)) : null));
+    }
+    list.append(h('button', { class: 'pm-new', onclick: () => { UI.closePop(); Home.newBlank(); } }, 'Создать страницу'));
+    UI.popover(anchor, list, { cls: 'pm-pop' });
   },
   setDevice(d) {
     S.device = d;
@@ -8800,7 +8958,8 @@ const Inspector = {
     R.innerHTML = '';
     R.append(h('div', { class: 'grabber' }));
     const n = Editor.node(S.sel);
-    if (!n || n.type === 'page') this.pageSettings(R);
+    const part = !isMobile() && (S.rtab === 'settings' || S.rtab === 'actions') ? S.rtab : '';
+    if (part || !n || n.type === 'page') this.pageSettings(R, part);
     else this.nodePanel(R, n);
     const body = R.querySelector('.pane-body');
     if (body && S._keepScroll !== false) body.scrollTop = st;
@@ -8808,7 +8967,7 @@ const Inspector = {
 
   sec(id, title, content, opts = {}) {
     const open = S.openSecs[id] ?? !!opts.open;
-    const s = h('div', { class: 'sec' + (open ? ' open' : '') });
+    const s = h('div', { class: 'sec' + (open ? ' open' : ''), 'data-sec': id });
     const hd = h('button', { class: 'sec-h', 'aria-expanded': String(open) }, h('span', null, title), opts.mark ? h('i', { class: 'dot', title: 'Есть изменения' }) : null, ic('chevron-down', 15));
     hd.addEventListener('click', () => { const o = !s.classList.contains('open'); s.classList.toggle('open', o); hd.setAttribute('aria-expanded', String(o)); S.openSecs[id] = o; });
     s.append(hd, h('div', { class: 'sec-b' }, content));
@@ -9161,7 +9320,7 @@ const Inspector = {
       const c = botCfg(S.project);
       try {
         if (c.via === 'webhook') { if (!c.hook) throw new Error('Укажите адрес https://'); const r = await fetch(c.hook, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ method: 'test', params: {} }) }); if (!r.ok) throw new Error('HTTP ' + r.status); }
-        else if (c.via === 'puzzlebot') { const r = await fetch('https://api.puzzlebot.top/', { method: 'POST', body: new URLSearchParams({ token: c.pb, method: 'test', platform: c.platform }) }); const j = await r.json(); if (j.code) throw new Error(PB_ERR[j.code] || 'Код ' + j.code); }
+        else if (c.via === 'puzzlebot') { const r = await fetch(PB_API, { method: 'POST', body: new URLSearchParams({ token: c.pb, method: 'test', platform: c.platform }) }); const j = await r.json(); if (j.code) throw new Error(PB_ERR[j.code] || 'Код ' + j.code); }
         else if (TG_TOKEN_RE.test(c.bt)) { const b = await BotConnect.info(c.bt); st.className = 'status-line ok'; st.textContent = '✓ Токен принят'; st.after(BotConnect.card(b)); return; }
         else { const r = await fetch('https://api.telegram.org/bot' + c.bt + '/getMe'); const j = await r.json(); if (!j.ok) throw new Error(j.description || 'Токен не принят'); st.className = 'status-line ok'; st.textContent = '✓ Бот @' + j.result.username; return; }
         st.className = 'status-line ok'; st.textContent = '✓ Работает';
@@ -9698,6 +9857,40 @@ const Inspector = {
       h('div', { class: 'hint' }, 'Картинку лучше загружать по ссылке https:// — так код страницы останется лёгким.'));
     return out.filter(Boolean);
   },
+  linkCtl() {
+    const p = S.project, r = p.root, pbId = r.scr && r.scr.pbId;
+    let mode = 'direct';
+    const box = h('div', { class: 'fld' });
+    const user = h('input', { class: 'inp', value: p.page.botUser || '', placeholder: 'имя_бота', 'data-novar': '', spellcheck: 'false' });
+    user.addEventListener('change', () => { Editor.act('Юзернейм бота', pr => { pr.page.botUser = user.value.trim().replace(/^@/, '').replace(/^https:\/\/t\.me\//, ''); }, { struct: false, panel: true }); });
+    const draw = () => {
+      box.innerHTML = '';
+      const direct = pbId && p.page.botUser ? `https://t.me/${p.page.botUser}?startapp=${pbId}` : '';
+      const val = mode === 'direct' ? direct : (pbId || '');
+      box.append(segmented([['direct', 'Прямая ссылка'], ['tech', 'ID страницы']], mode, v => { mode = v; draw(); }),
+        mode === 'direct' ? h('div', { class: 'hint box' }, h('b', null, 'Важно! '), 'Для прямой ссылки в @BotFather должен быть включён режим Mini App. Ссылку на страницу возьмите в PuzzleBot.') : null,
+        val ? h('div', { class: 'lnk' }, ic('send', 16), h('span', null, val), h('button', { class: 'btn icon sm ghost', title: 'Скопировать', 'aria-label': 'Скопировать', onclick: () => UI.copy(val, 'Ссылка скопирована') }, ic('copy', 15)))
+          : h('div', { class: 'hint' }, !pbId ? 'Экран ещё не связан со страницей PuzzleBot.' : 'Укажите юзернейм бота ниже.'),
+        h('button', { class: 'btn sm', onclick: () => Editor.setScreenLink(r.scr.id) }, ic('link', 14), pbId ? 'Изменить ссылку' : 'Указать ссылку на страницу'));
+    };
+    draw();
+    return [box, field('Юзернейм бота (для прямой ссылки)', user)];
+  },
+  /* как «Дополнительные настройки» мини-приложения в PuzzleBot */
+  extraCtl() {
+    const p = S.project, x = p.page.tgx || {};
+    const set = (k, v) => Editor.act('Дополнительные настройки', pr => { pr.page.tgx = { ...(pr.page.tgx || {}), [k]: v }; }, { struct: false, panel: true });
+    const color = k => { const i = h('input', { type: 'color', value: /^#[0-9a-f]{6}$/i.test(x[k + 'C'] || '') ? x[k + 'C'] : '#ffffff' }); i.addEventListener('change', () => set(k + 'C', i.value)); return i; };
+    return [
+      toggle('Защита контента (нельзя выделить и скопировать текст, сохранить картинки)', !!x.protect, v => set('protect', v)),
+      toggle('Показать попап перед закрытием мини-приложения', !!x.confirm, v => set('confirm', v)),
+      toggle('Закрывать окно по жесту (свайп) вниз', x.swipe !== false, v => set('swipe', v)),
+      toggle('Задать цвет шапки', !!x.head, v => set('head', v)), x.head ? h('div', { class: 'spl-cols' }, h('label', { class: 'spl-col' }, color('head'), h('span', null, 'Цвет шапки'))) : null,
+      toggle('Задать фон', !!x.bg, v => set('bg', v)), x.bg ? h('div', { class: 'spl-cols' }, h('label', { class: 'spl-col' }, color('bg'), h('span', null, 'Цвет фона'))) : null,
+      toggle('Задать цвет нижней панели', !!x.bottom, v => set('bottom', v)), x.bottom ? h('div', { class: 'spl-cols' }, h('label', { class: 'spl-col' }, color('bottom'), h('span', null, 'Цвет нижней панели'))) : null,
+      h('div', { class: 'hint' }, 'Работает в Telegram: попап — Bot API 6.2+, свайп — 7.7+, цвета шапки и фона — 6.1+, нижняя панель — 7.10+. В PuzzleBot часть этих настроек есть и в самом мини-приложении — включайте в одном месте.'),
+    ].filter(Boolean);
+  },
   telegramCtl() {
     const p = S.project;
     return [
@@ -9726,12 +9919,20 @@ const Inspector = {
   },
 
   /* ---------- настройки страницы и темы ---------- */
-  pageSettings(R) {
+  pageSettings(R, part) {
+    this._pageSettings(R, part);
+    if (part) { const ACT = ['back', 'flow', 'launch']; $$('[data-sec]', R).forEach(x => { const a = ACT.includes(x.dataset.sec); if (part === 'actions' ? !a : a) x.remove(); }); $$('.pane-body > :not([data-sec])', R).forEach(x => { if (part === 'actions') x.remove(); }); }
+  },
+  _pageSettings(R, part) {
     const p = S.project, root = p.root, tokens = themeTokens(p.page);
     R.append(h('div', { class: 'insp-head' }, h('div', { class: 'insp-title' }, ic('file', 16), h('input', { value: 'Страница', disabled: true, 'aria-label': 'Страница' })), h('div', { class: 'hint' }, 'Ничего не выбрано — здесь общие настройки. Нажмите на блок на холсте, чтобы изменить его.')));
     const body = h('div', { class: 'pane-body', style: { padding: 0 } });
     R.append(body);
-    body.append(this.sec('embed', 'Размещение в PuzzleBot', this.embedCtl(), { open: true }));
+    if (part !== 'actions') {
+      body.append(this.sec('pblink', 'Ссылка на мини-приложение', this.linkCtl(), { open: part === 'settings' }));
+      body.append(this.sec('extra', 'Дополнительные настройки', this.extraCtl(), { open: part === 'settings', mark: !!(S.project.page.tgx && Object.values(S.project.page.tgx).some(Boolean)) }));
+    }
+    body.append(this.sec('embed', 'Размещение в PuzzleBot', this.embedCtl(), { open: !part }));
     body.append(this.sec('back', 'Кнопка «Назад» Telegram', this.backCtl(), { open: !!(S.project.root.back && S.project.root.back.on), mark: !!(S.project.root.back && S.project.root.back.on) }));
     body.append(this.sec('flow', 'При открытии страницы', this.flowCtl(), { open: !!(S.project.root.flow && S.project.root.flow.on), mark: !!(S.project.root.flow && S.project.root.flow.on) }));
     body.append(this.sec('launch', 'Режим запуска (Launch Mode)', this.launchCtl(), { open: !!S.project.page.launch, mark: !!S.project.page.launch }));
@@ -9878,7 +10079,7 @@ const Home = {
     app.innerHTML = '';
     const tabs = [['main', 'Главная', 'home'], ['projects', 'Мои проекты', 'folder'], ['templates', 'Шаблоны', 'grid'], ['kb', 'База знаний', 'book'], ['mine', 'Мои компоненты', 'bookmark'], ['integrations', 'Интеграции', 'puzzle'], ['media', 'Медиатека', 'image'], ['settings', 'Настройки', 'settings']];
     const side = h('nav', { class: 'side scroll', 'aria-label': 'Разделы' },
-      h('div', { class: 'logo' }, mascotImg('icon', 34), h('span', { class: 'logo-text' }, 'Puzzle Studio'), h('span', { class: 'logo-sl' }, '://')),
+      h('div', { class: 'logo' }, mascotImg('icon', 34), h('span', { class: 'logo-text' }, 'Puzzle Studio'), h('span', { class: 'logo-sl' }, '://'), Notify.bell()),
       h('button', { class: 'btn primary', style: { marginBottom: '10px' }, onclick: () => this.newBlank() }, ic('plus', 16), 'Создать страницу'),
       tabs.map(([id, l, icn]) => h('button', { class: 'side-btn' + (S.homeTab === id ? ' on' : ''), onclick: () => { S.homeTab = id; this.render(); } }, ic(icn, 17), l)),
       pbPromo('side'),
@@ -9910,6 +10111,7 @@ const Home = {
     const p = buildTemplateProject(t); // новые ID, независимая копия
     await this.persist(p);
     UI.toast('Создан проект «' + t.name + '»', { icon: 'check' });
+    Notify.add('ok', 'Создан проект «' + t.name + '»', 'Из шаблона');
     Editor.open(p);
   },
 
@@ -10115,10 +10317,13 @@ const Home = {
 /* ============================================================
    14a · ПОДКЛЮЧЕНИЕ PUZZLEBOT API (по желанию пользователя)
    Документация: https://help.puzzle.bot/vhodyaschie-zaprosy-api
-   Адрес: https://api.puzzlebot.top/ , параметры token, method, platform.
+   Адрес: https://api.puzzle.bot/ (с осени 2026; старый api.puzzlebot.top — запасной,
+   пока PuzzleBot его не отключит), параметры token, method, platform.
    Токен запрашивается у пользователя, хранится только в этом браузере,
-   отправляется только на api.puzzlebot.top и НИКОГДА не попадает в экспорт.
+   отправляется только на api.puzzle.bot (или старый адрес PuzzleBot) и НИКОГДА не попадает в экспорт.
    ============================================================ */
+const PB_API = 'https://api.puzzle.bot/';
+const PB_API_OLD = 'https://api.puzzlebot.top/'; // старый домен: PuzzleBot скоро его отключит
 const PB_ERR = {
   1: 'Неверный формат токена', 2: 'Неверный формат метода', 3: 'Токен не найден — проверьте ключ в PuzzleBot', 4: 'Неизвестный метод',
   40: 'Не передан ID чата или пользователя', 100: 'Внутренняя ошибка PuzzleBot', 102: 'Ошибка вычисления', 104: 'Переменная не найдена',
@@ -10146,16 +10351,19 @@ const PB = {
     if (!this.token) throw { code: 'no_token', message: 'Сначала подключите PuzzleBot (нужен API-токен)' };
     const body = new URLSearchParams({ token: this.token, method, platform: this.platform });
     for (const [k, v] of Object.entries(params)) if (v !== undefined && v !== null && v !== '') body.set(k, String(v));
-    let r;
-    try {
-      // POST с обычной формой: токен не попадает в адресную строку и журналы
-      r = await fetch('https://api.puzzlebot.top/', { method: 'POST', body });
-    } catch (e) {
-      // Вторая попытка «вслепую»: так видно, дошёл ли запрос до сервера
-      let reached = false;
-      try { await fetch('https://api.puzzlebot.top/', { method: 'POST', mode: 'no-cors', body }); reached = true; } catch (e2) {}
+    let r = null, reached = false;
+    // POST с обычной формой: токен не попадает в адресную строку и журналы.
+    // Сначала новый адрес api.puzzle.bot, при отказе сети — старый api.puzzlebot.top
+    for (const url of [PB_API, PB_API_OLD]) {
+      try { r = await fetch(url, { method: 'POST', body }); break; }
+      catch (e) {
+        // Вторая попытка «вслепую»: так видно, дошёл ли запрос до сервера
+        try { await fetch(url, { method: 'POST', mode: 'no-cors', body }); reached = true; break; } catch (e2) {}
+      }
+    }
+    if (!r) {
       if (reached) throw { code: 'cors', message: 'PuzzleBot получил запрос, но не разрешает показать ответ на этой странице. Кнопки на готовой странице (сообщения, команды, переменные) работают, а загрузить в редактор товары, переменные и списки команд отсюда не получится.' };
-      throw { code: 'network', message: 'Не удалось связаться с api.puzzlebot.top. Проверьте подключение к интернету и попробуйте ещё раз.' };
+      throw { code: 'network', message: 'Не удалось связаться с api.puzzle.bot. Проверьте подключение к интернету и попробуйте ещё раз.' };
     }
     if (r.status === 429) throw { code: 429, message: PB_ERR[429] };
     let j;
@@ -10225,7 +10433,7 @@ const PBUI = {
         field('API-токен', tok),
         field('Платформа', segmented([['tg', 'Telegram'], ['max', 'MAX']], platform, v => { platform = v; })),
         toggle('Запомнить на этом устройстве', PB.remember, v => { PB.remember = v; }),
-        h('div', { class: 'hint box warn' }, 'Токен даёт полный доступ к боту: рассылки, переменные, пользователи. Он хранится только в этом браузере, отправляется только на api.puzzlebot.top и никогда не попадает в код страницы. Не вставляйте токен в HTML-блоки.'),
+        h('div', { class: 'hint box warn' }, 'Токен даёт полный доступ к боту: рассылки, переменные, пользователи. Он хранится только в этом браузере, отправляется только на api.puzzle.bot (или старый адрес PuzzleBot) и никогда не попадает в код страницы. Не вставляйте токен в HTML-блоки.'),
         st, out,
       ],
       foot: [
@@ -10598,6 +10806,12 @@ PuzzleBot, Telegram Bot API, NocoDB, вебхуки (n8n, Make, Albato), кар�
   { id: 'news', cat: 'start', title: 'Что нового в Puzzle Studio', body: `Все последние возможности — со ссылками на подробные статьи.
 
 ## Новое
+- **Новый адрес PuzzleBot API — api.puzzle.bot.** PuzzleBot переезжает в зону .bot, старый api.puzzlebot.top скоро отключат. Конструктор и готовые страницы уже работают с новым адресом. Если страница выгружена раньше, выгрузите её заново и замените код в PuzzleBot.
+- **Правая панель как в PuzzleBot**: «Настройки мини-приложения» с крестиком (панель закрывается, кнопка «Настройки» возвращает её), карточка с названием экрана, кнопки «ссылка / дублировать / удалить» и вкладки Контент · Настройки · Действия.
+- **Вкладка «Настройки»**: «Ссылка на мини-приложение» (прямая или по ID страницы) и «Дополнительные настройки» — защита контента, окно перед закрытием, запрет закрытия свайпом вниз, цвет шапки, фона и нижней панели.
+- **Колокольчик уведомлений**: системные события (изменения применены, выгрузки кода, лимит, бот, интеграции, ошибки, обновления) и «Открыть все уведомления».
+- **Зелёные уведомления внизу справа**, как в PuzzleBot; ошибки — красные, с маскотом.
+- **Список экранов проекта** под стрелкой рядом с названием.
 - **Режим запуска (Launch Mode)**: Compact, Fullsize или Fullscreen — выбор как в Telegram. Мокап меняется на глазах, а в код попадает команда открыть страницу в выбранном режиме. [Подробнее](kb:launch)
 - **Заставка при загрузке**: иконка по центру, заголовок, полоса, кольцо, точки или пульс, свои цвета и время. [Подробнее](kb:splash)
 - **Мокапы перетаскиваются** за шапку экрана — как блоки в PuzzleBot.
@@ -10983,7 +11197,7 @@ Ctrl + колесо мыши (на Mac — ⌘ + колесо) тоже меня
 ## Как отправлять
 Ничего не выбирайте → панель «Страница» → **«Связь с ботом»**:
 - **Свой сервер (вебхук)** — рекомендуем. Страница шлёт \`{ method, params, tg_init_data }\`, сервер проверяет initData и сам вызывает PuzzleBot API или Bot API. Токены не попадают на страницу.
-- **PuzzleBot API** — запросы на api.puzzlebot.top с вашим токеном (метод tg.sendMessage и остальные). Токен будет виден в коде страницы.
+- **PuzzleBot API** — запросы на api.puzzle.bot (новый адрес PuzzleBot; старый api.puzzlebot.top скоро отключат) с вашим токеном (метод tg.sendMessage и остальные). Токен будет виден в коде страницы.
 - **Bot API** — только отправка сообщений через api.telegram.org/bot…/sendMessage. Токен бота будет виден в коде.
 
 Лимит PuzzleBot API — 120 запросов в минуту на проект.` },
@@ -12553,6 +12767,7 @@ const BotConnect = {
       const t = tok.value.trim();
       Editor.act('Связь с ботом', p => { p.page.botlink = { ...(p.page.botlink || {}), via: 'botapi', bt: t, platform: 'tg' }; }, { struct: false, panel: true });
       d.close(); UI.toast('Бот @' + (found.username || found.name) + ' подключён к странице', { icon: 'check' });
+      Notify.add('bot', 'Бот @' + (found.username || found.name) + ' подключён', 'Отправка сообщений по токену. Для запуска лучше «Свой сервер».');
       if (opts.onDone) opts.onDone();
     });
     wrap.append(
@@ -12776,6 +12991,7 @@ const Quota = (() => {
       try { Guard.sync(); } catch (e) {}
       const left = api.left();
       UI.toast(left ? `Выгрузка ${used()} из ${QUOTA_CFG.limit} · осталось ${left}` : 'Это была последняя бесплатная выгрузка', { icon: 'check', ms: 3500 });
+      try { Notify.add(left ? 'code' : 'warn', `Выгрузка кода ${used()} из ${QUOTA_CFG.limit}`, '«' + (p.name || 'Страница') + '»' + (left ? ` · бесплатно осталось ${left}` : ' · бесплатные выгрузки закончились'), { route: left ? '' : 'settings' }); } catch (e) {}
       return true;
     },
     async activate(k) {
@@ -12784,6 +13000,7 @@ const Quota = (() => {
       try { localStorage.setItem('ps-lic', licRaw); } catch (e) {}
       try { await Store.kvSet('lic', licRaw); } catch (e) {}
       try { Guard.sync(); } catch (e) {}
+      try { Notify.add('plan', 'Подписка Pro активна', p.e ? 'До ' + p.e.split('-').reverse().join('.') : 'Бессрочно', { route: 'settings' }); } catch (e) {}
       return p;
     },
     deactivate() { lic = null; licRaw = ''; setTimeout(() => { try { Guard.sync(); } catch (e) {} }); try { localStorage.removeItem('ps-lic'); } catch (e) {} try { Store.kvSet('lic', ''); } catch (e) {} },
@@ -12791,6 +13008,7 @@ const Quota = (() => {
     /* окно «Превышен лимит» в стиле PuzzleBot */
     modal(kind = 'limit') {
       const tamper = kind === 'tamper';
+      try { Notify.add(tamper ? 'err' : 'plan', tamper ? 'Выгрузка заблокирована' : 'Превышен лимит выгрузок', tamper ? 'Обнаружены попытки обойти лимит' : `Использовано ${Math.min(used(), QUOTA_CFG.limit)} из ${QUOTA_CFG.limit}. Оформите Puzzle Studio Pro`, { route: 'settings' }); } catch (e) {}
       const d = UI.dialog({ title: '', cls: 'qm-dlg', body: [h('div', { class: 'qm' },
         h('div', { class: 'qm-top' }, mascotImg(tamper ? 'error' : 'logo', 150)),
         h('h2', null, tamper ? 'Выгрузка заблокирована' : 'Превышен лимит'),
@@ -13187,6 +13405,73 @@ const Landing = {
   },
 };
 
+/* ===== 14m-notify.js ===== */
+/* ============================================================
+   14m · УВЕДОМЛЕНИЯ (колокольчик, как в PuzzleBot)
+   Системные события конструктора: применение изменений, выгрузки кода,
+   лимит, подписка, интеграции, бот, ошибки, обновления Puzzle Studio.
+   Хранятся в этом браузере (последние 80).
+   ============================================================ */
+const APP_VERSION = '2026.10.13';
+const NOTIFY_TYPES = { ok: ['check', '#e3f6e8', '#2e9d50'], err: ['x', '#fde4e4', '#e5484d'], warn: ['alert', '#fff3dc', '#c58a12'], info: ['info', '#e4efff', '#2d6de0'], code: ['code', '#e4efff', '#2d6de0'], plan: ['crown', '#fff1d6', '#ff9a2e'], bot: ['bot', '#e4efff', '#2d6de0'], plug: ['puzzle', '#efe8ff', '#7c4dff'], news: ['sparkles', '#e4efff', '#2d6de0'] };
+const Notify = {
+  list: [], loaded: false, _last: '',
+  async load() {
+    try { const v = await Store.kvGet('notifs', []); this.list = Array.isArray(v) ? v : []; } catch (e) { this.list = []; }
+    this.loaded = true;
+    // системные уведомления при запуске
+    let seen = ''; try { seen = (await Store.kvGet('appVersion', '')) || ''; } catch (e) {}
+    if (seen !== APP_VERSION) {
+      if (seen) this.add('news', 'Puzzle Studio обновлён', 'Новые возможности: режим запуска, заставка, перетаскивание экранов, уведомления. Посмотрите «Что нового».', { route: 'kb:news' });
+      else this.add('news', 'Добро пожаловать в Puzzle Studio', 'Соберите первую страницу из шаблона или попросите Puzzlo AI.', { route: 'templates' });
+      try { Store.kvSet('appVersion', APP_VERSION); } catch (e) {}
+    }
+    if (Store.mode === 'memory') this.add('warn', 'Проекты не сохраняются', 'Хранилище браузера недоступно. Скачивайте проекты файлом, чтобы ничего не потерять.');
+    this.badge();
+  },
+  save() { try { Store.kvSet('notifs', this.list.slice(0, 80)); } catch (e) {} },
+  add(type, title, text = '', opts = {}) {
+    const key = type + title + text;
+    if (key === this._last && Date.now() - (this._lt || 0) < 4000) return; // без дублей подряд
+    this._last = key; this._lt = Date.now();
+    this.list.unshift({ id: uid(8), t: Date.now(), type, title: String(title).slice(0, 120), text: String(text || '').slice(0, 300), route: opts.route || '', read: false });
+    this.list = this.list.slice(0, 80);
+    this.save(); this.badge();
+  },
+  unread() { return this.list.filter(n => !n.read).length; },
+  markAll() { this.list.forEach(n => { n.read = true; }); this.save(); this.badge(); },
+  badge() { $$('.nt-bell').forEach(b => { const n = this.unread(); b.classList.toggle('has', n > 0); const i = b.querySelector('.nt-n'); if (i) i.textContent = n > 9 ? '9+' : String(n); b.setAttribute('aria-label', 'Уведомления' + (n ? ', непрочитанных: ' + n : '')); }); },
+  when(t) { const d = new Date(t); const p = x => String(x).padStart(2, '0'); return `${p(d.getDate())}.${p(d.getMonth() + 1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`; },
+  item(n, onGo) {
+    const [icn, bg, fg] = NOTIFY_TYPES[n.type] || NOTIFY_TYPES.info;
+    const el = h(n.route ? 'button' : 'div', { class: 'nt-i' + (n.read ? '' : ' new'), type: n.route ? 'button' : undefined, onclick: n.route ? () => { onGo && onGo(); App.go(n.route); } : null },
+      h('span', { class: 'nt-ic', style: { background: bg, color: fg } }, ic(icn, 18)),
+      h('div', { class: 'nt-m' }, h('b', null, n.title), n.text ? h('span', null, n.text) : null, h('small', null, this.when(n.t))));
+    return el;
+  },
+  bell() {
+    const b = h('button', { class: 'nt-bell', type: 'button', title: 'Уведомления', 'aria-label': 'Уведомления' }, ic('bell', 20), h('i', { class: 'nt-n' }));
+    b.addEventListener('click', () => this.drop(b));
+    setTimeout(() => this.badge());
+    return b;
+  },
+  drop(anchor) {
+    const list = h('div', { class: 'nt-list scroll' });
+    if (!this.list.length) list.append(h('div', { class: 'nt-empty' }, ic('bell', 22), h('span', null, 'Уведомлений пока нет')));
+    for (const n of this.list.slice(0, 12)) list.append(this.item(n, () => UI.closePop()));
+    const box = h('div', { class: 'nt-drop' }, list, h('button', { class: 'nt-all', type: 'button', onclick: () => { UI.closePop(); this.dialog(); } }, 'Открыть все уведомления'));
+    UI.popover(anchor, box, { cls: 'nt-pop', align: 'end' });
+    setTimeout(() => this.markAll(), 1200);
+  },
+  dialog() {
+    const list = h('div', { class: 'nt-full' });
+    const draw = () => { list.innerHTML = ''; if (!this.list.length) list.append(h('div', { class: 'nt-empty' }, ic('bell', 24), h('span', null, 'Уведомлений пока нет'))); for (const n of this.list) list.append(this.item(n, () => d.close())); };
+    draw();
+    const d = UI.dialog({ title: 'Уведомления', cls: 'mid nt-dlg', body: [list], foot: [h('button', { class: 'btn', onclick: () => { this.list = []; this.save(); this.badge(); draw(); } }, ic('trash', 14), 'Очистить'), h('button', { class: 'btn primary', onclick: () => d.close() }, 'Готово')] });
+    this.markAll();
+  },
+};
+
 /* ===== 15-export-ui.js ===== */
 /* ============================================================
    15 · ОКНА: экспорт кода, импорт JSON, AI-генерация
@@ -13497,6 +13782,7 @@ const App = {
     if (Store.mode === 'memory') UI.toast('Хранилище браузера недоступно — проекты не сохранятся после закрытия. Скачивайте JSON.', { err: true, ms: 7000 });
     S.flags = (await Store.kvGet('flags', {})) || {};
     await Plug.load();
+    await Notify.load();
     Quota.ready();
     await Puzzlo.load();
     Puzzlo.mount();
