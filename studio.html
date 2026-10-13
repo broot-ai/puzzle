@@ -303,10 +303,40 @@ button { cursor: pointer; }
 .device.tablet .dev-status { display: flex; align-items: center; justify-content: space-between; height: 24px; padding: 0 22px; font: 600 12px/1 -apple-system, "Inter", system-ui, sans-serif; }
 .device.tablet .dev-island { display: none; }
 /* Компьютер */
-.device.desktop { border-radius: 10px; background: var(--panel); box-shadow: var(--shadow); overflow: hidden; }
-.device.desktop .dev-screen { border-radius: 0; }
-.device.desktop::before { content: ""; display: block; height: 26px; background: var(--panel2) radial-gradient(circle at 14px 13px, #ff5f57 4px, transparent 5px), radial-gradient(circle at 30px 13px, #febc2e 4px, transparent 5px), radial-gradient(circle at 46px 13px, #28c840 4px, transparent 5px); background-color: var(--panel2); border-bottom: 1px solid var(--line); }
-.device.desktop .dev-screen { height: calc(100% - 27px); }
+.dev-win { display: contents; }
+.dev-desk { display: none; }
+/* Ноутбук (как MacBook): крышка с тонкой рамкой и вырезом, алюминиевое основание */
+.device.desktop { padding: 22px 64px 44px; background: transparent; }
+.device.desktop::before { content: ""; position: absolute; left: 48px; right: 48px; top: 0; bottom: 26px; border-radius: 26px 26px 8px 8px; background: #0b0c0f; box-shadow: inset 0 0 0 1.5px #2f3238, 0 0 0 2px #c8ccd2, 0 0 0 3px #a9aeb6, 0 40px 70px -40px rgba(15,23,42,.55); }
+.device.desktop::after { content: ""; position: absolute; left: 0; right: 0; bottom: 4px; height: 22px; border-radius: 3px 3px 22px 22px / 3px 3px 14px 14px; background: linear-gradient(90deg, rgba(0,0,0,.18), transparent 6%, transparent 94%, rgba(0,0,0,.18)), linear-gradient(#b7bcc3, #b7bcc3) 50% 0 / 200px 7px no-repeat, linear-gradient(#f1f2f4, #d4d7dc 45%, #a3a8b0); box-shadow: 0 16px 22px -14px rgba(15,23,42,.5); }
+.device.desktop .dev-screen { position: relative; z-index: 1; height: 100%; border-radius: 12px 12px 0 0; display: block; background: #fff; }
+.device.desktop .dev-screen::before { content: ""; position: absolute; left: 50%; top: 0; width: 190px; height: 24px; margin-left: -95px; border-radius: 0 0 12px 12px; background: #0b0c0f radial-gradient(circle at 50% 11px, #2c3446 2.5px, transparent 3.5px); z-index: 9; }
+/* сцена Telegram Desktop */
+.device.desktop .dev-desk { display: flex; flex-direction: column; position: absolute; inset: 0; font: 13px/1.3 -apple-system, "SF Pro Text", "Inter", system-ui, sans-serif; color: #222; }
+.dk-bar { flex: none; display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 14px; background: #ececec; border-bottom: 1px solid #dcdcdc; }
+.dk-bar i { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; } .dk-bar i:nth-child(2) { background: #febc2e; } .dk-bar i:nth-child(3) { background: #28c840; }
+.dk-bar span { margin-left: 10px; color: #8a8a8a; font-size: 12.5px; }
+.dk-body { flex: 1; display: flex; min-height: 0; }
+.dk-side { flex: none; width: 400px; background: #fff; border-right: 1px solid #e3e3e3; padding: 10px 0; overflow: hidden; }
+.dk-top { display: flex; align-items: center; gap: 12px; padding: 0 14px 10px; }
+.dk-menu { width: 18px; height: 12px; border-top: 2px solid #9a9a9a; border-bottom: 2px solid #9a9a9a; position: relative; } .dk-menu::after { content: ""; position: absolute; left: 0; right: 0; top: 3px; border-top: 2px solid #9a9a9a; }
+.dk-search { flex: 1; height: 34px; border-radius: 17px; background: #f1f1f1; color: #9a9a9a; display: flex; align-items: center; padding: 0 14px; }
+.dk-row { display: flex; align-items: center; gap: 12px; height: 62px; padding: 0 14px; }
+.dk-row b { flex: none; width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #cfd8e3, #b9c4d2); }
+.dk-row:nth-child(3n) b { background: linear-gradient(135deg, #f6c98a, #ee9f5a); } .dk-row:nth-child(3n+1) b { background: linear-gradient(135deg, #8fd0a2, #5fb37d); }
+.dk-row span { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.dk-row em { display: block; height: 9px; width: 55%; border-radius: 5px; background: #e6e8eb; } .dk-row em + em { width: 82%; background: #f0f1f3; }
+.dk-row:nth-child(2n) em { width: 40%; } .dk-row:nth-child(2n) em + em { width: 70%; }
+.dk-chat { flex: 1; position: relative; display: grid; place-items: center; background: radial-gradient(circle at 20% 30%, rgba(255,255,255,.25) 0 2px, transparent 3px) 0 0 / 46px 46px, radial-gradient(circle at 70% 70%, rgba(255,255,255,.18) 0 3px, transparent 4px) 0 0 / 64px 64px, linear-gradient(135deg, #d4d98f 0%, #9cc58b 38%, #6fae86 62%, #c9dca0 100%); }
+.dk-pill { padding: 5px 12px; border-radius: 14px; background: rgba(40,70,40,.35); color: #fff; font-size: 13px; }
+/* окно мини-приложения: по центру экрана (Compact/Fullsize) или на весь экран (Fullscreen) */
+.device.desktop .dev-win { display: flex; flex-direction: column; position: absolute; z-index: 3; left: 445px; top: 52px; width: 390px; height: 720px; border-radius: 12px; overflow: hidden; background: var(--dev-top, #fff); box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 24px 60px -12px rgba(0,0,0,.45); transition: left .55s cubic-bezier(.2,.8,.2,1), top .55s cubic-bezier(.2,.8,.2,1), width .55s cubic-bezier(.2,.8,.2,1), height .55s cubic-bezier(.2,.8,.2,1), border-radius .4s; }
+.device.desktop .dev-tg { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: 44px; padding: 0 14px; font: 15px/1.1 -apple-system, "SF Pro Text", "Inter", system-ui, sans-serif; transition: height .4s, opacity .3s; }
+.device.desktop .dev-win iframe { flex: 1 1 0; min-height: 0; height: auto !important; }
+.device.desktop .dev-main { padding-bottom: 10px; }
+.device.desktop[data-lm="fullscreen"] .dev-win { left: 0; top: 0; width: 100%; height: 100%; border-radius: 0; box-shadow: none; }
+.device.desktop[data-lm="fullscreen"] .dev-tg { height: 0; opacity: 0; overflow: hidden; }
+.device.desktop[data-lm="fullscreen"] .dev-pills { display: flex; position: absolute; left: 16px; right: 16px; top: 30px; z-index: 4; justify-content: space-between; animation: devPillsIn .45s ease; pointer-events: none; }
 .device.bare .dev-screen { border-radius: 0; }
 .stage-empty { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); }
 
@@ -1380,15 +1410,17 @@ pre.code.locked { user-select: none; -webkit-user-select: none; -webkit-mask-ima
 
 /* ===== Мокап в выбранном режиме запуска (меняется плавно) ===== */
 .dev-pills { display: none; }
-.device.phone .dev-top { transition: margin-top .55s cubic-bezier(.2,.8,.2,1); }
-.device.phone .dev-tg { transition: margin-top .55s cubic-bezier(.2,.8,.2,1), border-radius .4s, opacity .3s; }
-.device.phone .dev-screen { transition: background-color .4s; }
-.device.phone[data-lm="fullsize"] .dev-screen, .device.phone[data-lm="compact"] .dev-screen { background: #8d9198; }
-.device.phone[data-lm="fullsize"] .dev-status, .device.phone[data-lm="compact"] .dev-status { background: transparent; color: #fff; }
-.device.phone[data-lm="fullsize"] .dev-tg { margin-top: 6px; border-radius: 13px 13px 0 0; background: var(--dev-top, #fff); }
-.device.phone[data-lm="compact"] .dev-tg { margin-top: 300px; border-radius: 13px 13px 0 0; background: var(--dev-top, #fff); }
-.device.phone[data-lm="fullscreen"] .dev-tg > * { opacity: 0; }
-.device.phone[data-lm="fullscreen"] .dev-pills { display: flex; position: absolute; left: 14px; right: 14px; top: 54px; z-index: 3; justify-content: space-between; animation: devPillsIn .45s ease; pointer-events: none; }
+:is(.device.phone, .device.tablet) .dev-top { transition: margin-top .55s cubic-bezier(.2,.8,.2,1); }
+:is(.device.phone, .device.tablet) .dev-tg { transition: margin-top .55s cubic-bezier(.2,.8,.2,1), border-radius .4s, opacity .3s; }
+:is(.device.phone, .device.tablet) .dev-screen { transition: background-color .4s; }
+:is(.device.phone, .device.tablet)[data-lm="fullsize"] .dev-screen, :is(.device.phone, .device.tablet)[data-lm="compact"] .dev-screen { background: #8d9198; }
+:is(.device.phone, .device.tablet)[data-lm="fullsize"] .dev-status, :is(.device.phone, .device.tablet)[data-lm="compact"] .dev-status { background: transparent; color: #fff; }
+:is(.device.phone, .device.tablet)[data-lm="fullsize"] .dev-tg { margin-top: 6px; border-radius: 13px 13px 0 0; background: var(--dev-top, #fff); }
+:is(.device.phone, .device.tablet)[data-lm="compact"] .dev-tg { margin-top: 300px; border-radius: 13px 13px 0 0; background: var(--dev-top, #fff); }
+:is(.device.phone, .device.tablet)[data-lm="fullscreen"] .dev-tg > * { opacity: 0; }
+:is(.device.phone, .device.tablet)[data-lm="fullscreen"] .dev-pills { display: flex; position: absolute; left: 14px; right: 14px; top: 54px; z-index: 3; justify-content: space-between; animation: devPillsIn .45s ease; pointer-events: none; }
+.device.tablet[data-lm="compact"] .dev-tg { margin-top: 430px; }
+.device.tablet[data-lm="fullscreen"] .dev-pills { top: 32px; left: 18px; right: 18px; }
 .dev-pill { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 11px; border-radius: 15px; background: color-mix(in srgb, var(--dev-ink, #000) 9%, transparent); color: var(--dev-ink, #000); font: 500 13.5px/1 -apple-system, "SF Pro Text", "Inter", system-ui, sans-serif; backdrop-filter: blur(8px); }
 .dev-pill b { display: inline-grid; place-items: center; }
 @keyframes devPillsIn { from { opacity: 0; transform: translateY(-6px); } }
@@ -1408,8 +1440,8 @@ pre.code.locked { user-select: none; -webkit-user-select: none; -webkit-mask-ima
 .scr-col.drop-before::before, .scr-col.drop-after::after { content: ''; position: absolute; top: 40px; bottom: 20px; width: 4px; border-radius: 2px; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); z-index: 15; }
 .scr-col.drop-before::before { left: -14px; } .scr-col.drop-after::after { right: -14px; }
 .scr-col { position: relative; }
-.device.phone[data-lm="compact"] .dev-top, .device.phone[data-lm="fullsize"] .dev-top { background: transparent; }
-.device.phone[data-lm="compact"] .dev-status, .device.phone[data-lm="fullsize"] .dev-status { color: #fff; }
+:is(.device.phone, .device.tablet)[data-lm="compact"] .dev-top, :is(.device.phone, .device.tablet)[data-lm="fullsize"] .dev-top { background: transparent; }
+:is(.device.phone, .device.tablet)[data-lm="compact"] .dev-status, :is(.device.phone, .device.tablet)[data-lm="fullsize"] .dev-status { color: #fff; }
 .chk { position: relative; } .chk input { left: 0; top: 0; }
 .pane-body, .dlg-b { position: relative; }
 .spl-demo { isolation: isolate; z-index: 0; }
@@ -1497,6 +1529,11 @@ button.nt-i { cursor: pointer; } button.nt-i:hover { background: var(--panel2); 
 @media (max-width: 760px) { .toasts { left: 10px !important; right: 10px; align-items: stretch !important; bottom: calc(var(--bnav-h, 60px) + 12px) !important; } .toast { min-width: 0; max-width: none; } }
 
 .rc-closed .stage-bar { padding-right: 150px !important; }
+/* верхняя панель: переключатель устройств не прячется под правыми кнопками */
+.top .pname { flex: 0 1 220px; width: 220px; }
+.top-mid { flex: 1 0 auto; }
+.top-r { flex: none; }
+@media (max-width: 1500px) { .top-r .hide-md { display: none; } .top .logo-text { display: none; } }
 
 </style>
 </head>
@@ -4441,7 +4478,7 @@ function launchPicker(cur, onPick) {
   }
   return wrap;
 }
-const LAUNCH_HINT = 'Мокап меняется сразу. В код страницы попадёт команда Telegram: Fullsize — expand(), Fullscreen — requestFullscreen() (Telegram 8.0+; на старых версиях откроется Fullsize). Compact кодом не включается: откройте мини-приложение ссылкой с параметром mode=compact (https://t.me/имя_бота/приложение?startapp&mode=compact) или выберите режим в @BotFather.';
+const LAUNCH_HINT = 'Мокап меняется сразу. В код страницы попадёт команда Telegram: Fullsize — expand(), Fullscreen — requestFullscreen() (Telegram 8.0+; на старых версиях откроется Fullsize). Compact кодом не включается: откройте мини-приложение ссылкой с параметром mode=compact (https://t.me/имя_бота/приложение?startapp&mode=compact) или выберите режим в @BotFather. На планшете режимы выглядят как на телефоне. На компьютере (Telegram Desktop) Compact и Fullsize открываются окном около 390px по центру, а Fullscreen — на весь экран.';
 
 RUNTIME_EXT.launch = (pid, feat) => `
   /* режим запуска: ${feat.launch} */
@@ -7651,10 +7688,12 @@ const Screens = {
     this.strip.classList.toggle('narrow', narrow);
     let outerW, outerH, frameH, scale;
     if (narrow) { outerW = W; outerH = H + 44 - 34; frameH = outerH; scale = 1; }
-    else if (S.device === 'desktop') { outerW = d.w; scale = Math.min(1, (n > 1 ? W * 0.8 : W) / outerW); outerH = H / scale; frameH = outerH - 26; }
+    else if (S.device === 'desktop') {
+      ({ w: outerW, h: outerH, frameH } = devOuter('desktop'));
+      scale = Math.max(Math.min(1, H / outerH, W * 0.74 / outerW), 0.25);
+    }
     else {
-      const fr = DEV_FRAME[S.device];
-      outerW = d.w + fr.px * 2; outerH = fr.h + fr.py * 2; frameH = fr.h - fr.top;
+      ({ w: outerW, h: outerH, frameH } = devOuter(S.device));
       scale = Math.min(1, H / outerH, n > 1 ? 1 : W / outerW);
       if (n > 1) scale = Math.max(scale, 0.42);
     }
@@ -7674,7 +7713,7 @@ const Screens = {
     }
     this.addCol.style.height = (narrow ? 0 : outerH * scale) + 'px';
     requestAnimationFrame(() => this.updateBar());
-    if (Canvas.info) Canvas.info.textContent = `${d.label} · ${narrow ? Math.round(W) : d.w}px${scale < 1 ? ' · ' + Math.round(scale * 100) + '%' : ''}${n > 1 ? ' · экранов: ' + n : ''}`;
+    if (Canvas.info) Canvas.info.textContent = `${narrow ? d.label + ' · ' + Math.round(W) + 'px' : devLabel(S.device, S.project)}${scale < 1 ? ' · ' + Math.round(scale * 100) + '%' : ''}${n > 1 ? ' · экранов: ' + n : ''}`;
     this.drawLinks();
   },
 
@@ -7690,9 +7729,7 @@ const Screens = {
   fitAll() {
     const wrap = Canvas.wrap; if (!wrap) return;
     const n = Object.keys(this.frames).length;
-    const d = DEVICES[S.device] || DEVICES.mobile, fr = DEV_FRAME[S.device];
-    if (!fr) { this.setZoom(null); return; }
-    const outerW = d.w + fr.px * 2;
+    const outerW = devOuter(S.device).w;
     const W = wrap.clientWidth - 80 - 84 * n - 200;
     const z = Math.min(this.auto || 1, W / (n * outerW));
     this.setZoom(z);
@@ -7830,7 +7867,7 @@ const Screens = {
     let mb = null; walk(root, n => { if (!mb && n.type === 'button' && n.props && n.props.mainBtn && !n.hidden) mb = n; });
     let bar = dev.querySelector('.dev-main');
     if (!mb) { if (bar) bar.remove(); return; }
-    if (!bar) { bar = h('div', { class: 'dev-main' }, h('span')); dev.querySelector('.dev-screen').append(bar); }
+    if (!bar) { bar = h('div', { class: 'dev-main' }, h('span')); (dev.querySelector('.dev-win') || dev.querySelector('.dev-screen')).append(bar); }
     bar.firstChild.textContent = String(mb.props.text || 'Продолжить').replace(/\{\{([A-Z0-9_]+)\}\}/g, '…');
     bar.title = 'Кнопка Telegram внизу экрана (MainButton)';
   },
@@ -7852,17 +7889,38 @@ const isMobile = () => window.matchMedia('(max-width: 860px)').matches;
 
 /* ---------- Макет устройства: телефон как в Telegram (статус-бар, шапка Mini App, полоска «домой») ---------- */
 const DEV_FRAME = { mobile: { h: 844, px: 12, py: 12, top: 47 + 44 }, tablet: { h: 1024, px: 14, py: 14, top: 24 + 44 } };
+/* Ноутбук: экран 1280×800, рамка с вырезом, алюминиевое основание шире крышки */
+const DEV_LAPTOP = { w: 1408, h: 866, screen: 800 };
+function devOuter(device) {
+  if (device === 'desktop') return { w: DEV_LAPTOP.w, h: DEV_LAPTOP.h, frameH: DEV_LAPTOP.screen };
+  const d = DEVICES[device] || DEVICES.mobile, f = DEV_FRAME[device] || DEV_FRAME.mobile;
+  return { w: d.w + f.px * 2, h: f.h + f.py * 2, frameH: f.h - f.top };
+}
+function launchOf(project) { return CSS.pick(((project && project.page) || {}).launch, ['compact', 'fullsize', 'fullscreen']) || 'fullsize'; }
+function devLabel(device, project) {
+  if (device !== 'desktop') { const d = DEVICES[device] || DEVICES.mobile; return d.label + ' · ' + d.w + 'px'; }
+  return launchOf(project) === 'fullscreen' ? 'Ноутбук · на весь экран 1280px' : 'Ноутбук · окно Telegram Desktop 390px';
+}
+/* сцена Telegram Desktop за окном мини-приложения */
+function deskScene() {
+  const rows = []; for (let i = 0; i < 9; i++) rows.push(h('div', { class: 'dk-row' }, h('b'), h('span', null, h('em'), h('em'))));
+  return h('div', { class: 'dev-desk', 'aria-hidden': 'true' },
+    h('div', { class: 'dk-bar' }, h('i'), h('i'), h('i'), h('span', null, 'Telegram')),
+    h('div', { class: 'dk-body' },
+      h('div', { class: 'dk-side' }, h('div', { class: 'dk-top' }, h('i', { class: 'dk-menu' }), h('div', { class: 'dk-search' }, 'Поиск')), ...rows),
+      h('div', { class: 'dk-chat' }, h('span', { class: 'dk-pill' }, 'Выберите, кому хотели бы написать'))));
+}
 function makeDevice(frame) {
   const sys = '<svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13.5" y="0" width="3" height="11" rx="1"/></svg>'
     + '<svg width="15" height="11" viewBox="0 0 15 11" fill="currentColor"><path d="M7.5 2.2c2.1 0 4 .8 5.5 2.1l1.1-1.2A9.6 9.6 0 0 0 7.5.5 9.6 9.6 0 0 0 .9 3.1L2 4.3a8 8 0 0 1 5.5-2.1Zm0 3.3c1.2 0 2.3.4 3.2 1.2l1.1-1.2a6.4 6.4 0 0 0-8.6 0l1.1 1.2c.9-.8 2-1.2 3.2-1.2Zm0 3.3c-.4 0-.8.2-1.1.4l1.1 1.3 1.1-1.3c-.3-.2-.7-.4-1.1-.4Z"/></svg>'
     + '<svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3.5" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="18" height="8" rx="2" fill="currentColor"/><path d="M23 4v4c.8-.3 1.3-1.1 1.3-2S23.8 4.3 23 4Z" fill="currentColor" opacity=".45"/></svg>';
   const title = h('b', { class: 'dev-tg-t' }, 'Mini App');
-  const screen = h('div', { class: 'dev-screen' },
+  const screen = h('div', { class: 'dev-screen' }, deskScene(), h('div', { class: 'dev-win' },
     h('div', { class: 'dev-top' },
       h('div', { class: 'dev-status' }, h('b', null, '9:41'), h('i', { class: 'dev-island' }), h('span', { class: 'dev-sys', html: sys })),
       h('div', { class: 'dev-pills', 'aria-hidden': 'true' }, h('span', { class: 'dev-pill' }, h('b', { html: iconSvg('x', 13) }), 'Закрыть'), h('span', { class: 'dev-pill' }, h('b', { html: iconSvg('chevron-down', 14) }), h('b', { html: iconSvg('more', 14) }))),
       h('div', { class: 'dev-tg' }, h('span', { class: 'dev-tg-x' }, 'Закрыть'), h('span', { class: 'dev-tg-c' }, title, h('small', null, 'мини-приложение')), h('span', { class: 'dev-tg-m', html: iconSvg('more', 16) }))),
-    frame, h('i', { class: 'dev-home' }));
+    frame), h('i', { class: 'dev-home' }));
   const dev = h('div', { class: 'device' }, screen);
   dev._title = title;
   return dev;
@@ -7876,7 +7934,10 @@ function deviceTheme(dev, project) {
   dev.style.setProperty('--dev-ink', dark ? '#ffffff' : '#000000');
   dev.style.setProperty('--dev-accent', dark ? '#6ab3f3' : '#2481cc');
   if (dev._title) dev._title.textContent = (project.name || 'Mini App').slice(0, 28);
-  dev.dataset.lm = CSS.pick((project.page || {}).launch, ['compact', 'fullsize', 'fullscreen']) || 'fullsize';
+  const prev = dev.dataset.lm, lm = launchOf(project);
+  dev.dataset.lm = lm;
+  // подпись под холстом («окно Telegram Desktop» / «на весь экран») обновляем при смене режима
+  if (prev && prev !== lm && typeof Screens !== 'undefined' && Screens.strip && Screens.strip.contains(dev)) setTimeout(() => Screens.layout(), 0);
 }
 function fitDevice(wrap, dev, frame, device, info) {
   const cs = getComputedStyle(wrap);
@@ -7893,23 +7954,17 @@ function fitDevice(wrap, dev, frame, device, info) {
     if (info) info.textContent = `${d.label} · ${Math.round(W)}px`;
     return;
   }
-  let outerW, outerH, frameH, scale;
-  if (device === 'desktop') {
-    outerW = d.w; scale = Math.min(1, W / outerW);
-    outerH = H / scale; frameH = outerH - 26;
-  } else {
-    const f = DEV_FRAME[device];
-    outerW = d.w + f.px * 2; outerH = f.h + f.py * 2; frameH = f.h - f.top;
-    scale = Math.min(1, W / outerW, H / outerH);
-    const free = H - outerH * scale;
-    if (free > 0) dev.style.marginTop = Math.floor(free / 2) + 'px';
-  }
+  const o = devOuter(device);
+  const outerW = o.w, outerH = o.h, frameH = o.frameH;
+  const scale = Math.min(1, W / outerW, H / outerH);
+  const free = H - outerH * scale;
+  if (free > 0) dev.style.marginTop = Math.floor(free / 2) + 'px';
   dev.style.width = outerW + 'px';
   dev.style.height = outerH + 'px';
   frame.style.height = frameH + 'px';
   dev.style.transform = scale < 1 ? `scale(${scale})` : '';
   dev.style.marginBottom = scale < 1 ? `${-(outerH * (1 - scale))}px` : '';
-  if (info) info.textContent = `${d.label} · ${d.w}px${scale < 1 ? ' · ' + Math.round(scale * 100) + '%' : ''}`;
+  if (info) info.textContent = `${devLabel(device, S.project)}${scale < 1 ? ' · ' + Math.round(scale * 100) + '%' : ''}`;
 }
 
 const Editor = {
@@ -9559,7 +9614,7 @@ const Inspector = {
       return;
     }
     if (S.device !== 'mobile') {
-      body.append(h('div', { style: { padding: '12px 12px 0' } }, h('div', { class: 'bp-note' }, ic(DEVICES[S.device].icon, 16), h('span', null, `Изменения размеров, отступов и оформления сохраняются только для ${S.device === 'tablet' ? 'планшета (от 600px)' : 'компьютера (от 1024px)'}. Синие подписи — переопределённые значения.`))));
+      body.append(h('div', { style: { padding: '12px 12px 0' } }, h('div', { class: 'bp-note' }, ic(DEVICES[S.device].icon, 16), h('span', null, `Изменения размеров, отступов и оформления сохраняются только для ${S.device === 'tablet' ? 'планшета (от 600px)' : 'компьютера (от 1024px)'}. Синие подписи — переопределённые значения.${S.device === 'desktop' && launchOf(S.project) !== 'fullscreen' ? ' Сейчас ноутбук показывает окно Telegram Desktop (390px) — так страница откроется в режимах Compact и Fullsize. Вид для компьютера целиком — в режиме Fullscreen.' : ''}`))));
     }
     if (n.hidden) body.append(h('div', { style: { padding: '12px 12px 0' } }, h('div', { class: 'hint box warn' }, 'Блок скрыт и не попадёт в итоговый код. ', h('button', { class: 'btn sm', onclick: () => Editor.toggleFlag(n.id, 'hidden') }, 'Показать'))));
     if (tab === 'content') {
@@ -10806,6 +10861,8 @@ PuzzleBot, Telegram Bot API, NocoDB, вебхуки (n8n, Make, Albato), кар�
   { id: 'news', cat: 'start', title: 'Что нового в Puzzle Studio', body: `Все последние возможности — со ссылками на подробные статьи.
 
 ## Новое
+- **Мокап ноутбука в стиле MacBook**: тонкая рамка с вырезом, алюминиевое основание, внутри — Telegram Desktop со списком чатов. Мини-приложение открывается окном около 390px по центру (Compact и Fullsize), а в режиме Fullscreen плавно разворачивается на весь экран.
+- **Режим запуска работает и на планшете** — так же, как на телефоне: Compact — нижняя половина, Fullsize — с шапкой, Fullscreen — без шапки.
 - **Новый адрес PuzzleBot API — api.puzzle.bot.** PuzzleBot переезжает в зону .bot, старый api.puzzlebot.top скоро отключат. Конструктор и готовые страницы уже работают с новым адресом. Если страница выгружена раньше, выгрузите её заново и замените код в PuzzleBot.
 - **Правая панель как в PuzzleBot**: «Настройки мини-приложения» с крестиком (панель закрывается, кнопка «Настройки» возвращает её), карточка с названием экрана, кнопки «ссылка / дублировать / удалить» и вкладки Контент · Настройки · Действия.
 - **Вкладка «Настройки»**: «Ссылка на мини-приложение» (прямая или по ID страницы) и «Дополнительные настройки» — защита контента, окно перед закрытием, запрет закрытия свайпом вниз, цвет шапки, фона и нижней панели.
