@@ -1352,6 +1352,65 @@ pre.code.locked { user-select: none; -webkit-user-select: none; -webkit-mask-ima
 .pv a.btn { text-decoration: none; }
 .ld-logo b { white-space: nowrap; } .ld-short { display: none; }
 @media (max-width: 600px) { .ld-long { display: none; } .ld-short { display: inline; } .ld-logo > span { display: none; } }
+.pv-l { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.pv-qrbox .pv-qr { image-rendering: pixelated; }
+.pv-link { display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; border-radius: 8px; background: var(--panel2); border: 1px solid var(--line); }
+.pv-link code { font-family: var(--font-m); font-size: 13px; color: var(--accent); word-break: break-all; }
+.pv-link small { color: var(--muted); font-size: 11.5px; }
+.pv-big { position: fixed; inset: 0; z-index: 300; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: rgba(255,255,255,.97); cursor: zoom-out; }
+.pv-big .pv-qr { width: min(80vmin, 560px); height: min(80vmin, 560px); border: 0; }
+.pv-big span { color: #6b7280; font-size: 14px; }
+
+/* ===== Launch Mode: выбор как в Telegram ===== */
+.lm { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 12px 6px; border-radius: 14px; background: #20262e; }
+.lm-o { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 6px 2px; border: 0; background: none; color: #8f99a6; cursor: pointer; }
+.lm-o b { padding: 4px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; transition: background .2s, color .2s; }
+.lm-o small { font-size: 10.5px; color: #7d8794; text-align: center; line-height: 1.25; min-height: 26px; }
+.lm-o.on b { background: #2b8fdb; color: #fff; }
+.lm-ph { position: relative; width: 46px; height: 76px; border: 2.5px solid #3b4756; border-radius: 10px; transition: background .2s, border-color .2s; }
+.lm-ph i { position: absolute; left: 3px; right: 3px; bottom: 3px; border-radius: 6px; background: #34495e; transition: all .3s; }
+.lm-compact i { height: 52%; } .lm-fullsize i { top: 14px; } .lm-fullscreen i { display: none; }
+.lm-fullsize em { position: absolute; left: 5px; top: 2px; font-style: normal; color: #5f6b78; font-size: 9px; } .lm-fullsize em::before { content: '←'; }
+.lm-fullscreen { background: #34495e; border-color: #34495e; } .lm-fullscreen em { position: absolute; left: 5px; top: 5px; width: 14px; height: 5px; border-radius: 3px; background: #8fa2b5; }
+.lm-o.on .lm-ph { border-color: #2b8fdb; } .lm-o.on .lm-ph i { background: #2b8fdb; }
+.lm-o.on .lm-fullscreen { background: #2b8fdb; border-color: #2b8fdb; } .lm-o.on .lm-fullscreen em { background: #fff; }
+.lm-o:hover .lm-ph { border-color: #5a6b7d; }
+
+/* ===== Мокап в выбранном режиме запуска (меняется плавно) ===== */
+.dev-pills { display: none; }
+.device.phone .dev-top { transition: margin-top .55s cubic-bezier(.2,.8,.2,1); }
+.device.phone .dev-tg { transition: margin-top .55s cubic-bezier(.2,.8,.2,1), border-radius .4s, opacity .3s; }
+.device.phone .dev-screen { transition: background-color .4s; }
+.device.phone[data-lm="fullsize"] .dev-screen, .device.phone[data-lm="compact"] .dev-screen { background: #8d9198; }
+.device.phone[data-lm="fullsize"] .dev-status, .device.phone[data-lm="compact"] .dev-status { background: transparent; color: #fff; }
+.device.phone[data-lm="fullsize"] .dev-tg { margin-top: 6px; border-radius: 13px 13px 0 0; background: var(--dev-top, #fff); }
+.device.phone[data-lm="compact"] .dev-tg { margin-top: 300px; border-radius: 13px 13px 0 0; background: var(--dev-top, #fff); }
+.device.phone[data-lm="fullscreen"] .dev-tg > * { opacity: 0; }
+.device.phone[data-lm="fullscreen"] .dev-pills { display: flex; position: absolute; left: 14px; right: 14px; top: 54px; z-index: 3; justify-content: space-between; animation: devPillsIn .45s ease; pointer-events: none; }
+.dev-pill { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 11px; border-radius: 15px; background: color-mix(in srgb, var(--dev-ink, #000) 9%, transparent); color: var(--dev-ink, #000); font: 500 13.5px/1 -apple-system, "SF Pro Text", "Inter", system-ui, sans-serif; backdrop-filter: blur(8px); }
+.dev-pill b { display: inline-grid; place-items: center; }
+@keyframes devPillsIn { from { opacity: 0; transform: translateY(-6px); } }
+
+/* ===== Заставка: настройки ===== */
+.spl-demo { position: relative; width: 170px; height: 300px; margin: 4px auto 6px; border-radius: 22px; overflow: hidden; border: 6px solid #15171b; box-shadow: 0 10px 24px -12px rgba(0,0,0,.4); }
+.spl-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.spl-col { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--pb-lbl, var(--muted)); cursor: pointer; }
+.spl-col input { width: 34px; height: 34px; padding: 0; border: 1px solid var(--line2); border-radius: 8px; background: none; cursor: pointer; }
+/* ===== Перетаскивание мокапов ===== */
+.scr-head.drag-ok { cursor: grab; touch-action: none; }
+.scr-grip { display: inline-grid; place-items: center; color: var(--faint); margin-right: -2px; }
+.scr-head.drag-ok:hover .scr-grip { color: var(--accent); }
+.scr-col.scr-dragging { z-index: 20; opacity: .92; cursor: grabbing; transition: none; }
+.scr-col.scr-dragging .device { box-shadow: 0 40px 80px -30px rgba(20,40,90,.55); }
+.scr-reorder .scr-col:not(.scr-dragging) { transition: transform .2s; }
+.scr-col.drop-before::before, .scr-col.drop-after::after { content: ''; position: absolute; top: 40px; bottom: 20px; width: 4px; border-radius: 2px; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); z-index: 15; }
+.scr-col.drop-before::before { left: -14px; } .scr-col.drop-after::after { right: -14px; }
+.scr-col { position: relative; }
+.device.phone[data-lm="compact"] .dev-top, .device.phone[data-lm="fullsize"] .dev-top { background: transparent; }
+.device.phone[data-lm="compact"] .dev-status, .device.phone[data-lm="fullsize"] .dev-status { color: #fff; }
+.chk { position: relative; } .chk input { left: 0; top: 0; }
+.pane-body, .dlg-b { position: relative; }
+.spl-demo { isolation: isolate; z-index: 0; }
 
 </style>
 </head>
@@ -1538,6 +1597,114 @@ function rgba(hex, a) {
 function safe(fn, fallback) {
   try { return fn(); } catch (e) { console.error(e); return fallback; }
 }
+
+/* ===== 01b-qr.js ===== */
+/* ============================================================
+   01b · QR-КОД ПРЯМО В БРАУЗЕРЕ (без внешних сервисов)
+   Байтовый режим, версии 1–40, коррекция L/M/Q/H.
+   Алгоритм по стандарту ISO/IEC 18004 (как в библиотеке Nayuki).
+   ============================================================ */
+const QR = (() => {
+  const ECC = { L: [-1, 7, 10, 15, 20, 26, 18, 20, 24, 30, 18, 20, 24, 26, 30, 22, 24, 28, 30, 28, 28, 28, 28, 30, 30, 26, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30],
+    M: [-1, 10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28, 26, 26, 26, 26, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28],
+    Q: [-1, 13, 22, 18, 26, 18, 24, 18, 22, 20, 24, 28, 26, 24, 20, 30, 24, 28, 28, 26, 30, 28, 30, 30, 30, 30, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30],
+    H: [-1, 17, 28, 22, 16, 22, 28, 26, 26, 24, 28, 24, 28, 22, 24, 24, 30, 28, 28, 26, 28, 30, 24, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30] };
+  const BLK = { L: [-1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 7, 8, 8, 9, 9, 10, 12, 12, 12, 13, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 24, 25],
+    M: [-1, 1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17, 17, 18, 20, 21, 23, 25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47, 49],
+    Q: [-1, 1, 1, 2, 2, 4, 4, 6, 6, 8, 8, 8, 10, 12, 16, 12, 17, 16, 18, 21, 20, 23, 23, 25, 27, 29, 34, 34, 35, 38, 40, 43, 45, 48, 51, 53, 56, 59, 62, 65, 68],
+    H: [-1, 1, 1, 2, 4, 4, 4, 5, 6, 8, 8, 11, 11, 16, 16, 18, 16, 19, 21, 25, 25, 25, 34, 30, 32, 35, 37, 40, 42, 45, 48, 51, 54, 57, 60, 63, 66, 70, 74, 77, 81] };
+  const FMT = { L: 1, M: 0, Q: 3, H: 2 };
+  const rawModules = v => { let r = (16 * v + 128) * v + 64; if (v >= 2) { const n = Math.floor(v / 7) + 2; r -= (25 * n - 10) * n - 55; if (v >= 7) r -= 36; } return r; };
+  const dataCodewords = (v, e) => Math.floor(rawModules(v) / 8) - ECC[e][v] * BLK[e][v];
+  const mul = (x, y) => { let z = 0; for (let i = 7; i >= 0; i--) { z = (z << 1) ^ ((z >>> 7) * 0x11D); z ^= ((y >>> i) & 1) * x; } return z & 0xFF; };
+  const rsDivisor = d => { const r = new Array(d).fill(0); r[d - 1] = 1; let root = 1; for (let i = 0; i < d; i++) { for (let j = 0; j < r.length; j++) { r[j] = mul(r[j], root); if (j + 1 < r.length) r[j] ^= r[j + 1]; } root = mul(root, 2); } return r; };
+  const rsRem = (data, div) => { const r = div.map(() => 0); for (const b of data) { const f = b ^ r.shift(); r.push(0); div.forEach((c, i) => { r[i] ^= mul(c, f); }); } return r; };
+  const alignPos = (v, size) => { if (v === 1) return []; const n = Math.floor(v / 7) + 2; const step = v === 32 ? 26 : Math.ceil((v * 4 + 4) / (n * 2 - 2)) * 2; const r = [6]; for (let p = size - 7; r.length < n; p -= step) r.splice(1, 0, p); return r; };
+
+  function encode(text, ecl = 'M') {
+    const bytes = Array.from(new TextEncoder().encode(String(text)));
+    let ver = 1;
+    for (; ver <= 40; ver++) { const cc = ver < 10 ? 8 : 16; if (4 + cc + bytes.length * 8 <= dataCodewords(ver, ecl) * 8) break; }
+    if (ver > 40) { if (ecl !== 'L') return encode(text, 'L'); throw new Error('Слишком длинный текст для QR-кода'); }
+    // поднимаем уровень коррекции, если влезает в ту же версию
+    for (const e of ['M', 'Q', 'H']) { if ('LMQH'.indexOf(e) <= 'LMQH'.indexOf(ecl)) continue; const cc = ver < 10 ? 8 : 16; if (4 + cc + bytes.length * 8 <= dataCodewords(ver, e) * 8) ecl = e; }
+    const bits = [];
+    const put = (val, len) => { for (let i = len - 1; i >= 0; i--) bits.push((val >>> i) & 1); };
+    put(4, 4); put(bytes.length, ver < 10 ? 8 : 16); bytes.forEach(b => put(b, 8));
+    const cap = dataCodewords(ver, ecl) * 8;
+    put(0, Math.min(4, cap - bits.length)); put(0, (8 - bits.length % 8) % 8);
+    for (let pad = 0xEC; bits.length < cap; pad ^= 0xEC ^ 0x11) put(pad, 8);
+    const data = []; for (let i = 0; i < bits.length; i += 8) { let b = 0; for (let j = 0; j < 8; j++) b = (b << 1) | bits[i + j]; data.push(b); }
+    // коды коррекции и перемешивание блоков
+    const nb = BLK[ecl][ver], el = ECC[ecl][ver], raw = Math.floor(rawModules(ver) / 8);
+    const nShort = nb - raw % nb, shortLen = Math.floor(raw / nb), div = rsDivisor(el);
+    const blocks = [];
+    for (let i = 0, k = 0; i < nb; i++) { const d = data.slice(k, k + shortLen - el + (i < nShort ? 0 : 1)); k += d.length; const e = rsRem(d, div); if (i < nShort) d.push(0); blocks.push(d.concat(e)); }
+    const all = [];
+    for (let i = 0; i < blocks[0].length; i++) blocks.forEach((b, j) => { if (i !== shortLen - el || j >= nShort) all.push(b[i]); });
+    // матрица
+    const size = ver * 4 + 17;
+    const M = Array.from({ length: size }, () => new Array(size).fill(false));
+    const F = Array.from({ length: size }, () => new Array(size).fill(false));
+    const set = (x, y, v) => { M[y][x] = v; F[y][x] = true; };
+    for (let i = 0; i < size; i++) { set(6, i, i % 2 === 0); set(i, 6, i % 2 === 0); }
+    const finder = (cx, cy) => { for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) { const x = cx + dx, y = cy + dy; if (x < 0 || y < 0 || x >= size || y >= size) continue; const d = Math.max(Math.abs(dx), Math.abs(dy)); set(x, y, d !== 2 && d !== 4); } };
+    finder(3, 3); finder(size - 4, 3); finder(3, size - 4);
+    const ap = alignPos(ver, size), na = ap.length;
+    for (let i = 0; i < na; i++) for (let j = 0; j < na; j++) {
+      if ((i === 0 && j === 0) || (i === 0 && j === na - 1) || (i === na - 1 && j === 0)) continue;
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) set(ap[i] + dx, ap[j] + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+    }
+    const drawFormat = mask => {
+      const d = FMT[ecl] << 3 | mask; let r = d; for (let i = 0; i < 10; i++) r = (r << 1) ^ ((r >>> 9) * 0x537);
+      const b = ((d << 10) | r) ^ 0x5412, g = i => ((b >>> i) & 1) !== 0;
+      for (let i = 0; i <= 5; i++) set(8, i, g(i));
+      set(8, 7, g(6)); set(8, 8, g(7)); set(7, 8, g(8));
+      for (let i = 9; i < 15; i++) set(14 - i, 8, g(i));
+      for (let i = 0; i < 8; i++) set(size - 1 - i, 8, g(i));
+      for (let i = 8; i < 15; i++) set(8, size - 15 + i, g(i));
+      set(8, size - 8, true);
+    };
+    drawFormat(0);
+    if (ver >= 7) {
+      let r = ver; for (let i = 0; i < 12; i++) r = (r << 1) ^ ((r >>> 11) * 0x1F25);
+      const b = ver << 12 | r;
+      for (let i = 0; i < 18; i++) { const bit = ((b >>> i) & 1) !== 0, a = size - 11 + i % 3, c = Math.floor(i / 3); set(a, c, bit); set(c, a, bit); }
+    }
+    let i = 0;
+    for (let right = size - 1; right >= 1; right -= 2) {
+      if (right === 6) right = 5;
+      for (let vert = 0; vert < size; vert++) for (let j = 0; j < 2; j++) {
+        const x = right - j, up = ((right + 1) & 2) === 0, y = up ? size - 1 - vert : vert;
+        if (!F[y][x] && i < all.length * 8) { M[y][x] = ((all[i >>> 3] >>> (7 - (i & 7))) & 1) !== 0; i++; }
+      }
+    }
+    const maskFn = [(x, y) => (x + y) % 2 === 0, (x, y) => y % 2 === 0, x => x % 3 === 0, (x, y) => (x + y) % 3 === 0, (x, y) => (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0, (x, y) => x * y % 2 + x * y % 3 === 0, (x, y) => (x * y % 2 + x * y % 3) % 2 === 0, (x, y) => ((x + y) % 2 + x * y % 3) % 2 === 0];
+    const applyMask = m => { for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (!F[y][x] && maskFn[m](x, y)) M[y][x] = !M[y][x]; };
+    const penalty = () => {
+      let p = 0, dark = 0;
+      for (let y = 0; y < size; y++) { let run = 1; for (let x = 1; x < size; x++) { if (M[y][x] === M[y][x - 1]) { run++; if (run === 5) p += 3; else if (run > 5) p++; } else run = 1; } }
+      for (let x = 0; x < size; x++) { let run = 1; for (let y = 1; y < size; y++) { if (M[y][x] === M[y - 1][x]) { run++; if (run === 5) p += 3; else if (run > 5) p++; } else run = 1; } }
+      for (let y = 0; y < size - 1; y++) for (let x = 0; x < size - 1; x++) { const c = M[y][x]; if (c === M[y][x + 1] && c === M[y + 1][x] && c === M[y + 1][x + 1]) p += 3; }
+      for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (M[y][x]) dark++;
+      return p + Math.floor(Math.abs(dark * 20 - size * size * 10) / (size * size)) * 10;
+    };
+    let best = 0, bestP = Infinity;
+    for (let m = 0; m < 8; m++) { applyMask(m); drawFormat(m); const pp = penalty(); if (pp < bestP) { bestP = pp; best = m; } applyMask(m); }
+    applyMask(best); drawFormat(best);
+    return { size, modules: M, version: ver, ecl };
+  }
+  /* картинка PNG (data URL), рамка 4 модуля */
+  function dataUrl(text, px = 600, ecl = 'M') {
+    const q = encode(text, ecl), border = 4, n = q.size + border * 2;
+    const scale = Math.max(1, Math.floor(px / n));
+    const c = document.createElement('canvas'); c.width = c.height = n * scale;
+    const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.fillStyle = '#000';
+    for (let y = 0; y < q.size; y++) for (let x = 0; x < q.size; x++) if (q.modules[y][x]) g.fillRect((x + border) * scale, (y + border) * scale, scale, scale);
+    return { url: c.toDataURL('image/png'), version: q.version, size: q.size };
+  }
+  return { encode, dataUrl };
+})();
 
 /* ===== 02-icons.js ===== */
 /* ============================================================
@@ -3077,6 +3244,9 @@ function actionParts(act, ctx) {
   if (a.type === 'goto') {
     const id = parseGoto(a.value);
     if (!id) return { tag: 'button', attrs: ' type="button"' + extra };
+    const scx = ctx.screens || {};
+    const tgt = scx.mode === 'single' && (scx.list || []).find(x => x.pbId && x.pbId === id);
+    if (tgt) return { tag: 'button', attrs: ` type="button" data-ps-act="screen" data-ps-p="${escAttr(JSON.stringify({ value: tgt.id }))}"` + extra, js: true };
     return { tag: 'a', attrs: ` goto_web_page="${escAttr(id)}" role="button" tabindex="0"${a.win ? ' data-ps-gw="1"' : ''}` + extra };
   }
   if (a.type === 'anchor') {
@@ -4168,6 +4338,83 @@ ${R} .ps-pg-k .ps-ic { flex: none; color: var(--ps-muted); opacity: .6; }`;
   t.items.unshift({ id: 'pbRows', label: 'Строки', icon: 'list', make: () => mk('pbRows') });
 })();
 
+/* ===== 04e-launch-splash.js ===== */
+/* ============================================================
+   04e · РЕЖИМ ЗАПУСКА (Launch Mode) И ЗАСТАВКА ПРИ ЗАГРУЗКЕ
+   Launch Mode: compact / fullsize / fullscreen — как в настройках Telegram.
+   В код страницы попадает вызов expand() или requestFullscreen() (Bot API 8.0+).
+   Заставка — чистый CSS: исчезает сама через заданное время, даже без JavaScript.
+   ============================================================ */
+const LAUNCH_MODES = [['compact', 'Compact', 'Половина экрана'], ['fullsize', 'Fullsize', 'Весь экран с шапкой'], ['fullscreen', 'Fullscreen', 'Без шапки · Telegram 8.0+']];
+function launchPicker(cur, onPick) {
+  const wrap = h('div', { class: 'lm', role: 'radiogroup', 'aria-label': 'Режим запуска' });
+  for (const [id, l, sub] of LAUNCH_MODES) {
+    const on = (cur || 'fullsize') === id;
+    wrap.append(h('button', { class: 'lm-o' + (on ? ' on' : ''), type: 'button', role: 'radio', 'aria-checked': String(on), title: sub, onclick: () => onPick(id) },
+      h('span', { class: 'lm-ph lm-' + id }, h('i'), h('em')), h('b', null, l), h('small', null, sub)));
+  }
+  return wrap;
+}
+const LAUNCH_HINT = 'Мокап меняется сразу. В код страницы попадёт команда Telegram: Fullsize — expand(), Fullscreen — requestFullscreen() (Telegram 8.0+; на старых версиях откроется Fullsize). Compact кодом не включается: откройте мини-приложение ссылкой с параметром mode=compact (https://t.me/имя_бота/приложение?startapp&mode=compact) или выберите режим в @BotFather.';
+
+RUNTIME_EXT.launch = (pid, feat) => `
+  /* режим запуска: ${feat.launch} */
+  (function () {
+    if (!tg || PREVIEW) return;
+    try {${feat.launch === 'fullscreen' ? `
+      if (can('8.0') && tg.requestFullscreen) { if (!tg.isFullscreen) tg.requestFullscreen(); } else if (tg.expand) tg.expand();` : feat.launch === 'fullsize' ? `
+      if (tg.isFullscreen && tg.exitFullscreen) tg.exitFullscreen();
+      if (tg.expand) tg.expand();` : `
+      /* compact: размер окна задаёт ссылка с mode=compact */`}
+    } catch (e) {}
+  })();`;
+
+/* ---------- Заставка ---------- */
+const SPLASH_DEF = { on: false, bg: '#ffffff', ink: '#14171c', img: '', size: 96, shape: 'rounded', title: '', sub: '', bar: 'line', color: '#2481cc', track: '#e6e9ef', thick: 4, w: 180, r: 4, min: 1600, anim: 'fade', first: true };
+const SPLASH_BARS = [['line', 'Полоса'], ['ring', 'Кольцо'], ['dots', 'Точки'], ['pulse', 'Пульс'], ['none', 'Без']];
+function splashCfg(page) { return { ...SPLASH_DEF, ...((page && page.splash) || {}) }; }
+function splashHtml(page, ctx, demo) {
+  const s = splashCfg(page);
+  const hex = v => /^#[0-9a-f]{3,8}$/i.test(String(v || '')) ? v : '';
+  const vars = `--spl-bg:${hex(s.bg) || '#fff'};--spl-ink:${hex(s.ink) || '#111'};--spl-c:${hex(s.color) || '#2481cc'};--spl-t:${hex(s.track) || '#e6e9ef'};--spl-h:${clamp(parseInt(s.thick) || 4, 2, 16)}px;--spl-w:${clamp(parseInt(s.w) || 180, 60, 320)}px;--spl-r:${clamp(parseInt(s.r) || 0, 0, 16)}px;--spl-min:${clamp(parseInt(s.min) || 1600, 400, 8000)}ms`;
+  const c = checkUrl(s.img || '', { allowData: true, allowAnchor: false });
+  const sz = clamp(parseInt(s.size) || 96, 32, 220);
+  const shape = CSS.pick(s.shape, ['round', 'rounded', 'square']) || 'rounded';
+  const bar = CSS.pick(s.bar, ['line', 'ring', 'dots', 'pulse', 'none']) || 'line';
+  const img = c.ok && c.url ? `<img class="ps-spl-img ${shape}${bar === 'pulse' ? ' pulse' : ''}" src="${escAttr(c.url)}" alt="" style="width:${sz}px;height:${sz}px">` : '';
+  const ind = bar === 'line' ? '<div class="ps-spl-bar"><i></i></div>' : bar === 'ring' ? '<div class="ps-spl-ring"></div>' : bar === 'dots' ? '<div class="ps-spl-dots"><i></i><i></i><i></i></div>' : '';
+  const anim = CSS.pick(s.anim, ['fade', 'slide', 'zoom']) || 'fade';
+  return `<div class="ps-spl anim-${anim}${demo ? ' demo' : ''}" style="${vars}" aria-hidden="true"><div class="ps-spl-in">${img}${s.title ? `<b>${T(s.title, ctx)}</b>` : ''}${s.sub ? `<span>${T(s.sub, ctx)}</span>` : ''}${ind}</div></div>`;
+}
+const SPLASH_CSS = `
+/* ---- Заставка при загрузке ---- */
+.ps-spl { position: fixed; inset: 0; z-index: 2147483000; display: flex; align-items: center; justify-content: center; background: var(--spl-bg); color: var(--spl-ink); animation: psSplFade .45s ease var(--spl-min) forwards; pointer-events: auto; }
+.ps-spl.anim-slide { animation-name: psSplUp; } .ps-spl.anim-zoom { animation-name: psSplZoom; }
+@keyframes psSplFade { to { opacity: 0; visibility: hidden; pointer-events: none; } }
+@keyframes psSplUp { to { transform: translateY(-100%); visibility: hidden; pointer-events: none; } }
+@keyframes psSplZoom { to { opacity: 0; transform: scale(1.12); visibility: hidden; pointer-events: none; } }
+.ps-spl-in { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 24px; text-align: center; font-family: -apple-system, "SF Pro Text", "Inter", system-ui, sans-serif; }
+.ps-spl-img { display: block; object-fit: cover; } .ps-spl-img.round { border-radius: 50%; } .ps-spl-img.rounded { border-radius: 24%; } .ps-spl-img.square { border-radius: 0; object-fit: contain; }
+.ps-spl-img.pulse { animation: psSplPulse 1.2s ease-in-out infinite; }
+.ps-spl b { font-size: 22px; font-weight: 700; line-height: 1.2; } .ps-spl span { font-size: 14px; opacity: .65; max-width: 260px; }
+.ps-spl-bar { width: var(--spl-w); height: var(--spl-h); border-radius: var(--spl-r); background: var(--spl-t); overflow: hidden; margin-top: 6px; }
+.ps-spl-bar i { display: block; width: 0; height: 100%; border-radius: inherit; background: var(--spl-c); animation: psSplBar var(--spl-min) cubic-bezier(.35,.1,.25,1) forwards; }
+.ps-spl-ring { width: 38px; height: 38px; border-radius: 50%; border: var(--spl-h) solid var(--spl-t); border-top-color: var(--spl-c); animation: psSplSpin .8s linear infinite; margin-top: 6px; }
+.ps-spl-dots { display: flex; gap: 7px; margin-top: 8px; } .ps-spl-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--spl-c); animation: psSplDot 1s ease-in-out infinite; }
+.ps-spl-dots i:nth-child(2) { animation-delay: .15s; } .ps-spl-dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes psSplBar { to { width: 100%; } } @keyframes psSplSpin { to { transform: rotate(360deg); } }
+@keyframes psSplDot { 0%, 80%, 100% { transform: scale(.6); opacity: .4; } 40% { transform: scale(1); opacity: 1; } }
+@keyframes psSplPulse { 50% { transform: scale(1.08); } }
+.ps-spl.demo { position: absolute; z-index: 1; animation: none; } .ps-spl.demo .ps-spl-bar i { animation-iteration-count: infinite; }
+@media (prefers-reduced-motion: reduce) { .ps-spl-ring, .ps-spl-dots i, .ps-spl-img.pulse { animation: none; } }`;
+/* нужна ли заставка этому экрану */
+function splashFor(project) {
+  const s = project.page && project.page.splash;
+  if (!s || !s.on) return false;
+  if (s.first !== false && project.order && project.order.length > 1 && project.root.scr && project.order[0] !== project.root.scr.id) return false;
+  return true;
+}
+
 /* ===== 05-generator.js ===== */
 /* ============================================================
    05 · ГЕНЕРАТОР HTML / CSS / JS
@@ -4822,6 +5069,7 @@ function scanFeatures(root) {
       const d = ACT[t];
       if (d && d.link && t !== 'goto' && t !== 'anchor') { f.links = true; f.js = true; f.acts.add('link'); }
       if (t === 'anchor' && a.confirm) f.acts.add('anchor');
+      if (t === 'goto') f.acts.add('screen'); // в режиме «все экраны в одном блоке» ссылка на страницу проекта = переход на экран
       if (!JS_FREE_ACTIONS.has(t)) { f.js = true; f.acts.add(t); }
       if (a.confirm || a.haptic || (t === 'goto' && a.win)) f.js = true;
     }
@@ -5260,6 +5508,7 @@ function generate(project, opts = {}) {
   page.embedMode = opts.embed || project.page.embed || 'transparent';
   const feat = scanFeatures(project.root);
   feat.nc = ncUsage(project);
+  if (project.page.launch && mode === 'export' && opts.varMode !== 'sample') { feat.launch = CSS.pick(project.page.launch, ['compact', 'fullsize', 'fullscreen']) || ''; if (feat.launch && feat.launch !== 'compact') { feat.js = true; feat.tg = true; } else feat.launch = ''; }
   { const an = analyticsCfg(project.page); if (an && mode === 'export' && opts.varMode !== 'sample') { feat.analytics = true; feat.analyticsCfg = an; feat.js = true; } }
   if (feat.nc.size && mode === 'export' && opts.varMode !== 'sample') feat.js = true;
   feat.fill = page.embedMode === 'fill' && mode !== 'edit';
@@ -5275,6 +5524,7 @@ function generate(project, opts = {}) {
   GEN.presets = project.page.presets || {};
   nodeRules(project.root, R, tokens, out);
   let css = baseCss(R, pid, page, tokens) + '\n/* ---- Блоки страницы ---- */\n' + out.base.join('\n');
+  if (ctx.mode !== 'edit' && !opts.noAnim && splashFor(project)) { html = splashHtml(project.page, ctx) + '\n' + html; css += SPLASH_CSS; }
   if (out.hover.length) css += `\n@media (hover: hover) {\n${out.hover.join('\n')}\n}`;
   if (out.tablet.length) css += `\n/* ---- Планшет (от ${BP.tablet}px) ---- */\n@media (min-width: ${BP.tablet}px) {\n${out.tablet.join('\n')}\n}`;
   if (out.desktop.length) css += `\n/* ---- Компьютер (от ${BP.desktop}px) ---- */\n@media (min-width: ${BP.desktop}px) {\n${out.desktop.join('\n')}\n}`;
@@ -5465,6 +5715,8 @@ function validateImport(raw) {
   const p = newProject({ name: (typeof data.name === 'string' && data.name.trim() ? data.name.trim().slice(0, 80) : 'Импортированная страница'), root });
   p.page = page;
   for (const k of ['embed', 'hostPreview', 'hapticType', 'lang']) if (typeof pageIn[k] === 'string') p.page[k] = pageIn[k].slice(0, 30);
+  if (['compact', 'fullsize', 'fullscreen'].includes(pageIn.launch)) p.page.launch = pageIn.launch;
+  if (pageIn.splash && typeof pageIn.splash === 'object') { const sp = {}; for (const k of Object.keys(SPLASH_DEF)) { const v = pageIn.splash[k]; if (typeof v === typeof SPLASH_DEF[k]) sp[k] = typeof v === 'string' ? v.slice(0, k === 'img' ? 400000 : 200) : v; } p.page.splash = sp; }
   if (pageIn.haptics === false) p.page.haptics = false;
   if (pageIn.botlink && typeof pageIn.botlink === 'object') { const bl = pageIn.botlink; p.page.botlink = { via: ['webhook', 'puzzlebot', 'botapi'].includes(bl.via) ? bl.via : 'webhook', hook: typeof bl.hook === 'string' ? bl.hook.slice(0, 300) : '', platform: bl.platform === 'max' ? 'max' : 'tg', pb: '', bt: '' }; }
   if (pageIn.presets && typeof pageIn.presets === 'object') { p.page.presets = {}; for (const [k, v] of Object.entries(pageIn.presets).slice(0, 60)) if (/^[a-z0-9]{2,16}$/i.test(k) && v && typeof v === 'object') p.page.presets[k] = { name: String(v.name || 'Стиль').slice(0, 40), style: sanitizeValue(v.style || {}) || {} }; }
@@ -6998,7 +7250,9 @@ function hostColor(project) {
   return hp === 'white' ? '#ffffff' : hp === 'tglight' ? '#efeff4' : hp === 'tgdark' ? '#17212b' : embedHex(project);
 }
 function previewSrcdoc(project, varMode, opt = {}) {
-  const g = generate(project, { mode: 'export', js: true, varMode, pretty: false, embed: opt.embed });
+  // все экраны проекта в одной странице: кнопки «Перейти на экран» и «Назад» работают, начинаем с первого экрана
+  const gopt = { mode: 'export', js: true, varMode, pretty: false, embed: opt.embed };
+  const g = opt.single !== false && allScreens(project).length > 1 ? generateSingle(project, gopt) : generate(project, gopt);
   const pad = g.embed !== 'fill' && g.embed !== 'doc';
   return `<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${g.fontsHref ? `<link rel="stylesheet" href="${escAttr(g.fontsHref)}">` : ''}<style>${NO_SCROLLBAR_CSS}html,body{margin:0;background:${g.embed === 'doc' ? embedHex(project) : hostColor(project)}}${pad ? 'body{padding:16px 16px 24px}' : ''}${g.css}</style></head><body>${g.html}<script>window.__psPreview = 1;<\/script>${g.js ? `<script>${g.js}<\/script>` : ''}</body></html>`;
 }
@@ -7224,13 +7478,47 @@ const Screens = {
     const on = r.scr.id === S.project.root.scr.id;
     const hd = f.head;
     hd.innerHTML = '';
-    const name = h('button', { class: 'scr-name', title: 'Переименовать (двойной клик)', onclick: () => { if (!on) Editor.switchScreen(r.scr.id); } }, h('i', null, String(i + 1)), h('span', null, r.scr.name || 'Экран'));
+    const name = h('button', { class: 'scr-name', title: total > 1 ? 'Потяните, чтобы поменять экраны местами. Двойной клик — переименовать' : 'Переименовать (двойной клик)', onclick: () => { if (this._justDragged) return; if (!on) Editor.switchScreen(r.scr.id); } }, h('i', null, String(i + 1)), h('span', null, r.scr.name || 'Экран'));
     name.addEventListener('dblclick', () => Editor.renameScreen(r.scr.id));
     const pb = h('button', { class: 'scr-pb' + (r.scr.pbId ? ' ok' : ''), title: r.scr.pbId ? 'Страница PuzzleBot: ' + r.scr.pbId : 'Укажите ссылку на страницу Mini App в PuzzleBot', onclick: () => Editor.setScreenLink(r.scr.id) }, ic('link', 12), r.scr.pbId ? r.scr.pbId.slice(0, 10) : 'ссылка');
-    hd.append(...[name, pb,
+    if (!hd._drag) { hd._drag = true; hd.addEventListener('pointerdown', e => this.dragStart(e, f)); }
+    hd.classList.toggle('drag-ok', total > 1);
+    hd.append(...[total > 1 ? h('span', { class: 'scr-grip', title: 'Потяните, чтобы переставить экран', html: iconSvg('grip', 14) }) : null, name, pb,
       total > 1 ? h('button', { class: 'scr-ic', title: 'Сдвинуть влево', 'aria-label': 'Сдвинуть влево', disabled: i === 0, onclick: () => Editor.moveScreen(r.scr.id, -1) }, ic('arrow-left', 13)) : null,
       total > 1 ? h('button', { class: 'scr-ic', title: 'Сдвинуть вправо', 'aria-label': 'Сдвинуть вправо', disabled: i === total - 1, onclick: () => Editor.moveScreen(r.scr.id, 1) }, ic('arrow-right', 13)) : null,
       h('button', { class: 'scr-ic', title: 'Ещё', 'aria-label': 'Действия с экраном', onclick: e => Editor.screenMenu(e.currentTarget, r.scr.id) }, ic('more', 14))].filter(Boolean));
+  },
+  /* перетаскивание мокапа за шапку — как блоки в PuzzleBot */
+  dragStart(e, f) {
+    if (e.button !== 0 || e.target.closest('.scr-ic, .scr-pb')) return;
+    const list = this.list(); if (list.length < 2) return;
+    const col = f.col, sx = e.clientX;
+    const k = (col.getBoundingClientRect().width / (col.offsetWidth || 1)) || 1;
+    let dragging = false, idx = list.findIndex(r => r.scr.id === f.id);
+    const others = () => this.list().map(r => this.frames[r.scr.id]).filter(o => o && o !== f);
+    const clear = () => others().forEach(o => o.col.classList.remove('drop-before', 'drop-after'));
+    const mv = ev => {
+      const dx = ev.clientX - sx;
+      if (!dragging) { if (Math.abs(dx) < 6) return; dragging = true; col.classList.add('scr-dragging'); this.strip.classList.add('scr-reorder'); }
+      col.style.transform = `translateX(${dx / k}px)`;
+      const os = others(); idx = 0;
+      os.forEach(o => { const r = o.col.getBoundingClientRect(); if (ev.clientX > r.left + r.width / 2) idx++; });
+      clear();
+      if (idx < os.length) os[idx].col.classList.add('drop-before'); else if (os.length) os[os.length - 1].col.classList.add('drop-after');
+      const sr = this.strip.getBoundingClientRect();
+      if (ev.clientX > sr.right - 60) this.strip.scrollLeft += 18; else if (ev.clientX < sr.left + 60) this.strip.scrollLeft -= 18;
+    };
+    const up = () => {
+      window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up);
+      col.style.transform = ''; col.classList.remove('scr-dragging'); this.strip.classList.remove('scr-reorder'); clear();
+      if (!dragging) return;
+      this._justDragged = true; setTimeout(() => { this._justDragged = false; }, 50);
+      const id = f.id;
+      if (S.project.order.indexOf(id) === idx) return;
+      Editor.act('Порядок экранов', p => { const o = p.order.filter(x => x !== id); o.splice(idx, 0, id); p.order = o; });
+      UI.toast('Экран перемещён на место ' + (idx + 1), { icon: 'check' });
+    };
+    window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
   },
   setActive(id) {
     this.active = id;
@@ -7462,6 +7750,7 @@ function makeDevice(frame) {
   const screen = h('div', { class: 'dev-screen' },
     h('div', { class: 'dev-top' },
       h('div', { class: 'dev-status' }, h('b', null, '9:41'), h('i', { class: 'dev-island' }), h('span', { class: 'dev-sys', html: sys })),
+      h('div', { class: 'dev-pills', 'aria-hidden': 'true' }, h('span', { class: 'dev-pill' }, h('b', { html: iconSvg('x', 13) }), 'Закрыть'), h('span', { class: 'dev-pill' }, h('b', { html: iconSvg('chevron-down', 14) }), h('b', { html: iconSvg('more', 14) }))),
       h('div', { class: 'dev-tg' }, h('span', { class: 'dev-tg-x' }, 'Закрыть'), h('span', { class: 'dev-tg-c' }, title, h('small', null, 'мини-приложение')), h('span', { class: 'dev-tg-m', html: iconSvg('more', 16) }))),
     frame, h('i', { class: 'dev-home' }));
   const dev = h('div', { class: 'device' }, screen);
@@ -7477,6 +7766,7 @@ function deviceTheme(dev, project) {
   dev.style.setProperty('--dev-ink', dark ? '#ffffff' : '#000000');
   dev.style.setProperty('--dev-accent', dark ? '#6ab3f3' : '#2481cc');
   if (dev._title) dev._title.textContent = (project.name || 'Mini App').slice(0, 28);
+  dev.dataset.lm = CSS.pick((project.page || {}).launch, ['compact', 'fullsize', 'fullscreen']) || 'fullsize';
 }
 function fitDevice(wrap, dev, frame, device, info) {
   const cs = getComputedStyle(wrap);
@@ -9026,6 +9316,7 @@ const Inspector = {
     out.push(status);
     check();
     if (d.bot === 'send') out.push(BotConnect.actionBox(nodeId));
+    if (a.type === 'fullscreen') out.push(field('Launch Mode — режим при открытии страницы', launchPicker(S.project.page.launch, v => Editor.act('Режим запуска', p => { p.page.launch = v; }, { struct: false, panel: true }))), h('div', { class: 'hint' }, 'Кнопка переключает режим во время работы, а Launch Mode задаёт, как страница откроется. ' + LAUNCH_HINT));
     if (a.type === 'goto' || a.type === 'app') out.push(h('button', { class: 'btn sm', onclick: () => this.askGoto(a.value, id => upd('value', id)) }, ic('link', 14), 'Вставить ссылку на страницу'));
     if (d.info) out.push(h('div', { class: 'hint box' + (/только|нужен|нужна|не сработает|работает, только/.test(d.info) ? ' warn' : '') }, d.info));
     if (d.min) out.push(h('div', { class: 'hint' }, `Нужен Telegram с Bot API ${d.min} или новее. На старых версиях пользователь увидит просьбу обновить Telegram, вне Telegram — подсказку открыть страницу в Telegram.`));
@@ -9374,6 +9665,39 @@ const Inspector = {
   },
 
   /* ---------- возможности Telegram для всей страницы ---------- */
+  launchCtl() {
+    return [launchPicker(S.project.page.launch, v => Editor.act('Режим запуска', p => { p.page.launch = v; }, { struct: false, panel: true })), h('div', { class: 'hint' }, LAUNCH_HINT)];
+  },
+  splashCtl() {
+    const s = splashCfg(S.project.page);
+    const set = (k, v, panel) => Editor.act('Заставка', p => { p.page.splash = { ...splashCfg(p.page), [k]: v }; }, { struct: false, panel: !!panel, key: 'splash:' + k });
+    const out = [toggle('Показывать заставку при открытии страницы', s.on, v => set('on', v, true))];
+    if (!s.on) { out.push(h('div', { class: 'hint' }, 'Экран с логотипом и индикатором загрузки на 1–3 секунды, пока страница открывается. Работает даже без JavaScript.')); return out; }
+    // живой пример
+    const demo = h('div', { class: 'spl-demo' });
+    const sr = demo.attachShadow ? demo.attachShadow({ mode: 'open' }) : demo;
+    sr.innerHTML = `<style>:host{display:block}${SPLASH_CSS}</style>` + splashHtml(S.project.page, { mode: 'export', project: S.project, varMode: 'sample' }, true);
+    const color = (k, label) => { const i = h('input', { type: 'color', value: /^#[0-9a-f]{6}$/i.test(s[k]) ? s[k] : '#ffffff' }); i.addEventListener('input', () => set(k, i.value)); i.addEventListener('change', () => Inspector.render()); return h('label', { class: 'spl-col' }, i, h('span', null, label)); };
+    const txt = (k, label, ph) => { const i = h('input', { class: 'inp', value: s[k] || '', placeholder: ph || '' }); i.addEventListener('input', () => set(k, i.value)); i.addEventListener('change', () => Inspector.render()); return field(label, i); };
+    const rng = (k, label, min, max, step, unit) => field(label, this.range({ get: () => s[k], set: v => { set(k, v); } }, { min, max, step, unit }));
+    out.push(demo,
+      h('div', { class: 'btn-row' }, h('button', { class: 'btn sm', onclick: () => Editor.preview() }, ic('play', 14), 'Посмотреть в «Просмотре»')),
+      field('Иконка или логотип по центру', this.image({ get: () => s.img, set: v => { set('img', v || '', true); } })),
+      field('Форма иконки', segmented([['round', 'Круг'], ['rounded', 'Скругление'], ['square', 'Как есть']], s.shape, v => set('shape', v, true))),
+      rng('size', 'Размер иконки', 32, 220, 4, 'px'),
+      txt('title', 'Заголовок (необязательно)', 'Название бота'), txt('sub', 'Подпись (необязательно)', 'Загружаем…'),
+      h('div', { class: 'spl-cols' }, color('bg', 'Фон'), color('ink', 'Текст')),
+      field('Индикатор загрузки', segmented(SPLASH_BARS, s.bar, v => set('bar', v, true))),
+      s.bar !== 'none' && s.bar !== 'pulse' ? h('div', { class: 'spl-cols' }, color('color', 'Цвет'), color('track', 'Дорожка')) : null,
+      s.bar === 'line' || s.bar === 'ring' ? rng('thick', 'Толщина', 2, 16, 1, 'px') : null,
+      s.bar === 'line' ? rng('w', 'Ширина полосы', 60, 320, 10, 'px') : null,
+      s.bar === 'line' ? rng('r', 'Скругление полосы', 0, 16, 1, 'px') : null,
+      rng('min', 'Сколько показывать', 400, 6000, 100, 'мс'),
+      field('Как исчезает', segmented([['fade', 'Растворение'], ['slide', 'Вверх'], ['zoom', 'Приближение']], s.anim, v => set('anim', v, true))),
+      toggle('Только на первом экране проекта', s.first !== false, v => set('first', v, true)),
+      h('div', { class: 'hint' }, 'Картинку лучше загружать по ссылке https:// — так код страницы останется лёгким.'));
+    return out.filter(Boolean);
+  },
   telegramCtl() {
     const p = S.project;
     return [
@@ -9410,6 +9734,8 @@ const Inspector = {
     body.append(this.sec('embed', 'Размещение в PuzzleBot', this.embedCtl(), { open: true }));
     body.append(this.sec('back', 'Кнопка «Назад» Telegram', this.backCtl(), { open: !!(S.project.root.back && S.project.root.back.on), mark: !!(S.project.root.back && S.project.root.back.on) }));
     body.append(this.sec('flow', 'При открытии страницы', this.flowCtl(), { open: !!(S.project.root.flow && S.project.root.flow.on), mark: !!(S.project.root.flow && S.project.root.flow.on) }));
+    body.append(this.sec('launch', 'Режим запуска (Launch Mode)', this.launchCtl(), { open: !!S.project.page.launch, mark: !!S.project.page.launch }));
+    body.append(this.sec('splash', 'Заставка при загрузке', this.splashCtl(), { mark: !!(S.project.page.splash && S.project.page.splash.on) }));
     body.append(this.sec('tgapp', 'Telegram', this.telegramCtl()));
     body.append(this.sec('botlink', 'Связь с ботом', this.botCtl(), { mark: !!(S.project.page.botlink && (S.project.page.botlink.hook || S.project.page.botlink.pb || S.project.page.botlink.bt)) }));
     body.append(this.sec('langs', 'Языки', this.langCtl()));
@@ -10133,6 +10459,24 @@ const KB_CATS = [
 ];
 
 const KB = [
+  { id: 'launch', cat: 'telegram', title: 'Режим запуска: Compact, Fullsize, Fullscreen', body: `Настройки страницы → **«Режим запуска (Launch Mode)»** или действие кнопки «Полноэкранный режим».
+
+- **Compact** — окно на половину экрана, чат виден сверху.
+- **Fullsize** — весь экран с шапкой Telegram («Закрыть», название, ⋯).
+- **Fullscreen** — без шапки, только кнопки «Закрыть» и «⌄ ⋯» поверх страницы. Нужен Telegram 8.0 или новее.
+
+Мокап сразу показывает выбранный режим. В код страницы попадает команда: Fullsize — tg.expand(), Fullscreen — tg.requestFullscreen(). На старых версиях Telegram откроется Fullsize.
+
+Compact кодом включить нельзя: откройте мини-приложение ссылкой с параметром mode=compact, например https://t.me/имя_бота/приложение?startapp&mode=compact, или выберите режим в @BotFather.` },
+  { id: 'splash', cat: 'editor', title: 'Заставка при загрузке', body: `Настройки страницы → **«Заставка при загрузке»**.
+
+1. Включите заставку.
+2. Загрузите иконку или логотип (лучше по ссылке https://), выберите форму и размер.
+3. Добавьте заголовок и подпись, если нужно.
+4. Выберите индикатор: полоса, кольцо, точки, пульс иконки или без индикатора. Настройте цвета, толщину и скругление.
+5. Укажите, сколько показывать заставку, и как она исчезает: растворение, вверх или приближение.
+
+Пример виден прямо в настройках, а настоящая заставка — в «Просмотре». Заставка сделана на CSS и исчезает сама, даже если JavaScript отключён. По умолчанию она показывается только на первом экране проекта.` },
   { id: 'plan', cat: 'start', title: 'Тариф: бесплатные выгрузки и Pro', body: `В бесплатной версии можно выгрузить код **10 раз**. Выгрузка — это копирование, скачивание файла, ZIP или отправка в PuzzleBot одной версии страницы. Повторно выгрузить ту же версию можно бесплатно: лимит тратится, только когда страница изменилась.
 
 До выгрузки в окне экспорта видно только начало кода. Сколько выгрузок осталось — вверху окна экспорта и в «Настройки» → «Тариф».
@@ -10254,6 +10598,11 @@ PuzzleBot, Telegram Bot API, NocoDB, вебхуки (n8n, Make, Albato), кар�
   { id: 'news', cat: 'start', title: 'Что нового в Puzzle Studio', body: `Все последние возможности — со ссылками на подробные статьи.
 
 ## Новое
+- **Режим запуска (Launch Mode)**: Compact, Fullsize или Fullscreen — выбор как в Telegram. Мокап меняется на глазах, а в код попадает команда открыть страницу в выбранном режиме. [Подробнее](kb:launch)
+- **Заставка при загрузке**: иконка по центру, заголовок, полоса, кольцо, точки или пульс, свои цвета и время. [Подробнее](kb:splash)
+- **Мокапы перетаскиваются** за шапку экрана — как блоки в PuzzleBot.
+- **«Просмотр» работает как настоящая страница**: все экраны, кнопки «Перейти на экран» и «Назад», шторки, ссылки и эффекты.
+- **QR-код рисуется прямо в конструкторе** — без внешних сервисов.
 - **Главная страница** Puzzle Studio: возможности, шаблоны, интеграции, тарифы и вопросы, с полем «Опишите страницу» — Puzzlo сразу соберёт её.
 - **Ползунок масштаба слева**: потяните кругляшок, чтобы увеличить или уменьшить мокап. Ctrl + колесо и Ctrl +/− тоже меняют масштаб мокапа, а не всей страницы.
 - **История изменений** (значок часов над холстом): каждое действие со временем, «Вернуть до этого» и «Повторить».
@@ -12575,6 +12924,23 @@ const PhoneView = {
     const walkStrip = o => { if (Array.isArray(o)) o.forEach(walkStrip); else if (o && typeof o === 'object') for (const k of Object.keys(o)) { const v = o[k]; if (typeof v === 'string' && v.startsWith('data:') && v.length > 300) { o[k] = ''; removed++; } else walkStrip(v); } };
     walkStrip(strip);
     if (strip.page) { delete strip.page.botlink; delete strip.page.nocodb; }
+    const prune = o => { if (Array.isArray(o)) { o.forEach(prune); return; } if (!o || typeof o !== 'object') return; for (const k of Object.keys(o)) { const v = o[k]; if (v === null || v === undefined || (v === '' && k !== 'text')) delete o[k]; else prune(v); } };
+    prune(strip);
+    // ужимаем: короткие ID, без значений по умолчанию и без названий слоёв
+    strip._v = 2; strip.o = (p.order || []).slice();
+    const ids = {}; let seq = 0;
+    const tops = [strip.root, ...strip.screens];
+    const walkN = (n, f) => { if (!n || typeof n !== 'object') return; f(n); (n.children || []).forEach(c => walkN(c, f)); };
+    tops.forEach(r => { if (r && r.scr && r.scr.id) ids[r.scr.id] = 's' + (seq++).toString(36); walkN(r, n => { if (n.id && n.id !== 'page' && !ids[n.id]) ids[n.id] = (seq++).toString(36); }); });
+    const remap = o => { if (Array.isArray(o)) { o.forEach((v, i) => { if (typeof v === 'string' && ids[v]) o[i] = ids[v]; else remap(v); }); return; } if (!o || typeof o !== 'object') return; for (const k of Object.keys(o)) { const v = o[k]; if (typeof v === 'string' && ids[v]) o[k] = ids[v]; else remap(v); } };
+    remap(strip);
+    const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+    tops.forEach(r => walkN(r, n => {
+      const def = (COMP[n.type] || {}).defaults || {};
+      for (const part of ['props', 'style']) if (n[part] && def[part]) { for (const k of Object.keys(n[part])) if (same(n[part][k], def[part][k])) delete n[part][k]; if (!Object.keys(n[part]).length) delete n[part]; }
+      if (n.children && !n.children.length) delete n.children;
+      delete n.name; delete n.note; delete n.locked;
+    }));
     const json = JSON.stringify(strip);
     let bytes = new TextEncoder().encode(json);
     if (window.CompressionStream) {
@@ -12592,25 +12958,79 @@ const PhoneView = {
     return JSON.parse(new TextDecoder().decode(bytes));
   },
   base() { return /broot-ai\.github\.io/.test(location.host) ? location.origin + location.pathname : VIEW_BASE; },
+  /* Сокращение ссылки через is.gd (JSONP — работает прямо из браузера, без ключа) */
+  shorten(url) {
+    const cacheKey = 'ps-short:' + url.length + ':' + url.slice(-40);
+    try { const c = localStorage.getItem(cacheKey); if (c) return Promise.resolve(c); } catch (e) {}
+    const one = host => new Promise((res, rej) => {
+      const cb = 'psShort' + uid(8);
+      const sc = document.createElement('script');
+      const done = () => { clearTimeout(t); try { delete window[cb]; } catch (e) { window[cb] = undefined; } sc.remove(); };
+      const t = setTimeout(() => { done(); rej(new Error('timeout')); }, 8000);
+      window[cb] = d => { done(); if (d && d.shorturl) res(d.shorturl.replace(/^http:/, 'https:')); else rej(new Error((d && d.errormessage) || 'error')); };
+      sc.onerror = () => { done(); rej(new Error('network')); };
+      sc.src = `https://${host}/create.php?format=json&callback=${cb}&url=${encodeURIComponent(url)}`;
+      document.head.append(sc);
+    });
+    const viaFetch = (api, pick) => fetch(api).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); }).then(t => { const u = pick(t); if (!/^https:\/\/\S{4,60}$/.test(u)) throw new Error('bad'); return u; });
+    return one('is.gd').catch(() => one('v.gd'))
+      .catch(() => viaFetch('https://clck.ru/--?url=' + encodeURIComponent(url), t => t.trim().replace(/^http:/, 'https:')))
+      .catch(() => viaFetch('https://da.gd/s?url=' + encodeURIComponent(url), t => t.trim().replace(/^http:/, 'https:')))
+      .then(u => { try { localStorage.setItem(cacheKey, u); } catch (e) {} return u; });
+  },
+  qrImg(text, ecl) {
+    try {
+      const q = QR.dataUrl(text, 720, ecl || 'M');
+      return h('img', { class: 'pv-qr', alt: 'QR-код для просмотра на телефоне', width: 260, height: 260, src: q.url, 'data-ver': q.version });
+    } catch (e) { return h('div', { class: 'pv-qr pv-qr--big' }, ic('alert', 26), h('span', null, 'Ссылка слишком длинная для QR-кода. Скопируйте её и откройте на телефоне.')); }
+  },
   async dialog() {
     if (!S.project) return;
-    const P = Editor.isDirty() ? S.project : S.project;
+    const P = S.project;
     const { data, removed } = await this.pack(P);
-    const url = this.base() + '#v=' + data;
-    const fits = url.length <= 2800;
-    const qr = fits ? h('img', { class: 'pv-qr', alt: 'QR-код для просмотра на телефоне', width: 260, height: 260, src: 'https://api.qrserver.com/v1/create-qr-code/?size=520x520&ecc=L&margin=8&data=' + encodeURIComponent(url) })
-      : h('div', { class: 'pv-qr pv-qr--big' }, ic('alert', 26), h('span', null, 'Страница слишком большая для QR-кода. Откройте ссылку на телефоне — например, отправьте её себе в Telegram.'));
-    if (fits) qr.addEventListener('error', () => qr.replaceWith(h('div', { class: 'pv-qr pv-qr--big' }, ic('qr', 26), h('span', null, 'Не удалось загрузить QR-код (нет интернета). Используйте ссылку ниже.'))));
+    const full = this.base() + '#v=' + data;
+    let mode = 'short', short = '';
+    const qrBox = h('div', { class: 'pv-qrbox' });
+    const linkLine = h('div', { class: 'pv-link' });
+    const st = h('div', { class: 'status-line' });
+    const cur = () => (mode === 'short' && short) || full;
+    const btns = h('div', { class: 'btn-row' });
+    const drawBtns = () => {
+      btns.innerHTML = '';
+      btns.append(
+        h('button', { class: 'btn primary', onclick: () => UI.copy(cur(), 'Ссылка скопирована') }, ic('copy', 14), 'Копировать ссылку'),
+        h('a', { class: 'btn', href: 'https://t.me/share/url?url=' + encodeURIComponent(cur()) + '&text=' + encodeURIComponent('Посмотрите страницу «' + P.name + '»'), target: '_blank', rel: 'noopener' }, ic('send', 14), 'В Telegram'),
+        h('a', { class: 'btn', href: cur(), target: '_blank', rel: 'noopener' }, ic('external', 14), 'Открыть'));
+    };
+    const draw = async () => {
+      qrBox.innerHTML = ''; st.textContent = ''; st.className = 'status-line';
+      if (mode === 'short' && !short) {
+        qrBox.append(h('div', { class: 'pv-qr pv-qr--big' }, h('div', { class: 'pz-dots' }, h('i'), h('i'), h('i')), h('span', null, 'Сокращаю ссылку…')));
+        try { short = await this.shorten(full); }
+        catch (e) { mode = 'full'; st.className = 'status-line warn'; st.textContent = /claude|usercontent/.test(location.host) || window.top !== window ? 'В этом окне просмотра внешние сервисы заблокированы, поэтому ссылку не сократить. Откройте Puzzle Studio со своего сайта (studio.html) — там короткая ссылка работает. Сейчас показан QR-код полной ссылки.' : 'Сервисы сокращения ссылок не ответили. Показан QR-код полной ссылки — откройте «Показать крупно», так его легче прочитать.'; }
+        qrBox.innerHTML = '';
+      }
+      const u = cur();
+      qrBox.append(this.qrImg(u, mode === 'short' && short ? 'H' : 'L'));
+      linkLine.innerHTML = '';
+      linkLine.append(h('code', null, u.length > 70 ? u.slice(0, 60) + '…' : u), h('small', null, mode === 'short' && short ? 'Короткая ссылка · QR-код крупный и легко читается' : `Полная ссылка · ${u.length} символов — QR-код плотный`));
+      if (mode === 'full' && u.length > 1200 && !st.textContent) { st.className = 'status-line warn'; st.textContent = 'Такой QR-код многие камеры не читают. Включите «Короткая ссылка».'; }
+      drawBtns();
+    };
+    const seg = segmented([['short', 'Короткая ссылка'], ['full', 'Полная ссылка']], mode, v => { mode = v; draw(); });
     UI.dialog({ title: 'Посмотреть на телефоне', cls: 'mid', body: [h('div', { class: 'pv' },
-      qr,
+      h('div', { class: 'pv-l' }, qrBox, h('button', { class: 'btn sm ghost', onclick: () => this.bigQr(cur()) }, ic('qr', 14), 'Показать крупно')),
       h('div', { class: 'pv-m' },
+        seg, linkLine, st,
         h('ol', { class: 'steps' }, h('li', null, 'Откройте камеру телефона и наведите на QR-код.'), h('li', null, 'Нажмите на появившуюся ссылку — страница откроется сразу, без установки.'), h('li', null, 'Переменные {{…}} показываются примерами. Чтобы увидеть настоящие, вставьте код в PuzzleBot.')),
         removed ? h('div', { class: 'hint box warn' }, `Картинок, загруженных с компьютера: ${removed}. В ссылку они не помещаются — на телефоне будет пустое место. Загрузите картинки по ссылке https://, чтобы они были видны.`) : null,
-        h('div', { class: 'btn-row' },
-          h('button', { class: 'btn primary', onclick: () => UI.copy(url, 'Ссылка скопирована') }, ic('copy', 14), 'Копировать ссылку'),
-          h('a', { class: 'btn', href: 'https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent('Посмотрите страницу «' + P.name + '»'), target: '_blank', rel: 'noopener' }, ic('send', 14), 'В Telegram'),
-          h('a', { class: 'btn', href: url, target: '_blank', rel: 'noopener' }, ic('external', 14), 'Открыть')),
-        h('div', { class: 'hint' }, 'Ссылка ведёт на ' + this.base().replace(/^https:\/\//, '') + ' — там должен лежать файл конструктора. Данные страницы хранятся в самой ссылке, на сервер ничего не отправляется.')))] });
+        btns,
+        h('div', { class: 'hint' }, 'Короткую ссылку делает бесплатный сервис is.gd: он хранит полную ссылку со страницей. Не показывайте в ней секретные данные. Полная ссылка ведёт на ' + this.base().replace(/^https:\/\//, '') + ' — там должен лежать файл конструктора.')))] });
+    draw();
+  },
+  bigQr(u) {
+    const ov = h('div', { class: 'pv-big', onclick: () => ov.remove() }, this.qrImg(u, u.length < 200 ? 'H' : 'L'), h('span', null, 'Нажмите, чтобы закрыть'));
+    document.body.append(ov);
   },
   /* открытие ссылки #v=… — показываем только страницу, без редактора */
   async boot() {
@@ -12619,8 +13039,14 @@ const PhoneView = {
     const app = $('#app');
     try {
       const d = await this.unpack(m[1]);
+      if (d._v === 2) {
+        // возвращаем значения по умолчанию, которые убрали при упаковке
+        const fill = n => { if (!n || typeof n !== 'object') return; const def = COMP[n.type] || {}, dd = def.defaults || {}; n.props = { ...clone(dd.props || {}), ...(n.props || {}) }; n.style = { ...clone(dd.style || {}), ...(n.style || {}) }; if (dd.action && !n.action) n.action = clone(dd.action); if (def.container || n.type === 'page') n.children = n.children || []; (n.children || []).forEach(fill); };
+        [d.root, ...(d.screens || [])].forEach(fill);
+      }
       const p = newProject({ name: d.n || 'Страница', themeId: (d.page && d.page.themeId) || 'telegram', root: d.root });
       p.page = { ...p.page, ...(d.page || {}) }; p.screens = d.screens || [];
+      if (Array.isArray(d.o) && d.o.length) p.order = d.o;
       ensureScreens(p);
       document.title = p.name + ' · Puzzle Studio';
       const frame = h('iframe', { class: 'viewer-f', title: p.name, sandbox: 'allow-scripts allow-popups allow-popups-to-escape-sandbox allow-forms' });
